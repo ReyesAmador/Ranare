@@ -4,11 +4,13 @@
  */
 package cat.copernic.ranare.entity.mysql;
 
-import jakarta.persistence.Column;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,11 +23,18 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Localitzacio {
+public class Agent {
     
     @Id
-    @Column(name = "codi_postal")
-    private Integer codiPostal;
+    private String dni;
     
-    private String adreca;
+    private String nom;
+    
+    private String cognom;
+    
+    private String email;
+    
+    @OneToOne(cascade = CascadeType.REMOVE)
+    @JoinColumn(name = "localitzacio")
+    private Localitzacio localitzacio;
 }
