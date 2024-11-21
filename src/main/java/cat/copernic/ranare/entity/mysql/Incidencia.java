@@ -5,19 +5,15 @@
 package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.EstatIncidencia;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +21,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author ngall
+ * @version 21/11/2024.1
  */
 @Entity
 @Data
@@ -50,13 +47,7 @@ public class Incidencia {
     @Column(name = "data_final")
     private LocalDateTime dataFinal;
     
-    @ElementCollection
-    @CollectionTable(name = "incidencia_documents", joinColumns = @JoinColumn(name = "incidencia_id"))
-    @Column(name = "document")
-    private List<String> documents; // Fotos, PDF, etc.
+    @Transient // Evita que este campo sea persistido en la base de datos SQL
+    private String documentsIncidenciaId; 
 
-    // Relació amb Vehicle (una incidència està associada a un vehicle)
-    @ManyToOne
-    @JoinColumn(name = "vehicle_id", nullable = false)
-    private Vehicle vehicle;
 }

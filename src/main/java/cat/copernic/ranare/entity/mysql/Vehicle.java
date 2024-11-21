@@ -5,6 +5,7 @@
 package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.TipusCombustio;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -13,6 +14,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,6 +24,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author ngall
+ * @version 21/11/2024.1
  */
 @Entity
 @Data
@@ -62,4 +66,14 @@ public class Vehicle {
 
     @Column(name = "comentaris_agent", length = 2000)
     private String comentarisAgent;
+    
+    // Relació amb Incidència
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "vehicle_id")
+    private List<Incidencia> incidencies;
+    
+    //Relació Vehicle amb Localització
+    @ManyToOne
+    @JoinColumn(name = "localitzacio", referencedColumnName = "codi_postal")
+    private Localitzacio localitzacio;
 }
