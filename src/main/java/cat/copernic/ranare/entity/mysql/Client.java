@@ -1,0 +1,98 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package cat.copernic.ranare.entity.mysql;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Transient;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+/**
+ *
+ * @author Raú
+ */
+/**
+/**
+ * Classe que representa un client del sistema com a entitat relacional.
+ * Aquesta classe està mapejada a una base de dades relacional utilitzant JPA.
+ * 
+ * Nota: Hereta atributs comuns de la classe Usuari (si s'aplica herència en un futur)
+ * i afegeix atributs específics per als clients.
+ */
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+public class Client {
+
+    /**
+     * Document Nacional d'Identitat (DNI). Actua com a clau primària única.
+     */
+    @Id
+    @Column(nullable = false, unique = true, length = 9)
+    private String dni;
+
+    @Column(nullable = false)
+    private String nom;
+
+    @Column(nullable = false)
+    private String cognoms;
+
+    /**
+     * Data de caducitat del document d'identitat (DNI).
+     */
+    @Column(nullable = false)
+    private String dataExpiracionDni;
+
+    /**
+     * Correu electrònic de l'usuari.
+     */
+    @Column(nullable = false)
+    private String email;
+
+    /**
+     * Adreça física del client.
+     */
+    @Column(nullable = false)
+    private String adreca;
+
+    /**
+     * Data de caducitat del permís de conduir.
+     */
+    @Column(nullable = false)
+    private String dataExpiracioLlicencia;
+
+   @Transient
+    private List<String> documents;
+
+    /**
+     * Número de la targeta de crèdit associada al client.
+     */
+    @Column(nullable = false, unique = true)
+    private String numeroTarjetaCredit;
+
+    /**
+     * Reputació del client. Pot ser "NORMAL" o "PREMIUM".
+     */
+    @Column(nullable = false)
+    private String reputacio;
+
+    /**
+     * Referència a la documentació en la base no relacional. Aquest camp pot
+     * apuntar al document corresponent a MongoDB (pot ser un ID o una URL).
+     */
+    @Column(nullable = true)
+    private String referenciaDocumentacio;
+    
+     public enum Reputacio {
+        NORMAL,
+        PREMIUM
+    }
+
+}
