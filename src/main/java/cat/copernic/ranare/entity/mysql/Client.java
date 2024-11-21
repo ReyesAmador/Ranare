@@ -63,12 +63,6 @@ public class Client {
      */
     @Column(nullable = false)
     private String adreca;
-
-    /**
-     * Data de caducitat del permís de conduir.
-     */
-    @Column(nullable = false)
-    private String dataExpiracioLlicencia;
     
    @Transient
     private List<Binary> documents;
