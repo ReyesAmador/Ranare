@@ -12,7 +12,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- *
+ * Classe que representa els documents associats a una incidència en la base de dades MongoDB.
+ * Aquesta entitat emmagatzema informació relacionada amb els documents d'una incidència,
+ * com poden ser imatges o PDF’s associats a cadascuna.
+ * La col·lecció en MongoDB es denomina "documents_incidencia".
+ * Aquesta classe inclou constructors per defecte i amb tots els arguments, i genera automàticament
+ * els mètodes equals, hashCode, i toString mitjançant Lombok.
  * @author ngall
  * @version 21/11/2024.1
  */
@@ -22,9 +27,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 public class DocumentsIncidencia {
     
+    /**
+     * Identificador únic de la col·lecció de documents associats a una incidència.
+     */
     @Id
     private String id;
     
+    /**
+     * Llista de documents associats a la incidència.
+     * Aquesta llista pot contenir identificadors de documents com imatges, PDF's o altres arxius.
+     */
     private List<String> documents; //Aquí guardarem tant els PDF's com les imatges
     
 }
