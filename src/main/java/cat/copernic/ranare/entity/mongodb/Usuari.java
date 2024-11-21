@@ -4,6 +4,7 @@
  */
 package cat.copernic.ranare.entity.mongodb;
 
+import cat.copernic.ranare.enums.Reputacio;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
@@ -90,11 +91,4 @@ public class Usuari {
     @Field("documents")
     private List<String> documents;
 
-    /**
-     * Enum per als possibles valors de reputació.
-     */
-    public enum Reputacio {
-        NORMAL,
-        PREMIUM
-    }
 }

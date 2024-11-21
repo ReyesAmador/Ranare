@@ -4,6 +4,7 @@
  */
 package cat.copernic.ranare.entity.mongodb;
 
+import cat.copernic.ranare.enums.Estat;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -107,13 +108,5 @@ public class HistoricReserva {
          */
         private Estat estat;
 
-        /**
-         * Enum per als possibles estats de la reserva.
-         */
-        public enum Estat {
-            ACTIVA,
-            FINALITZADA,
-            ANULADA
-        }
     }
 }
