@@ -91,8 +91,7 @@ public class Vehicle {
      * Relació entre Vehicle i Incidència.
      * Aquesta relació es defineix com un "OneToMany" ja que un vehicle pot tenir diverses incidències associades.
      */
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "vehicle_id")
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
     private List<Incidencia> incidencies;
     
     /**

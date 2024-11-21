@@ -4,6 +4,7 @@
  */
 package cat.copernic.ranare.entity.mysql;
 
+import cat.copernic.ranare.enums.Estat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,7 +46,7 @@ public class Reserva {
      * Data i hora d'inici de la reserva.
      */
     @Column(nullable = false)
-    private LocalDateTime dataInicii;
+    private LocalDateTime dataInici;
 
     /**
      * Data i hora de finalització de la reserva.
@@ -101,12 +102,4 @@ public class Reserva {
     @JoinColumn(name = "vehiculo_id", nullable = false)
     private Vehicle vehicle;
 
-    /**
-     * Enum que defineix els possibles estats d'una reserva.
-     */
-    public enum Estat {
-        ACTIVA,
-        ANULADA,
-        FINALITZADA
-    }
 }

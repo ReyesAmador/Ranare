@@ -34,19 +34,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Agent {
-    
-    /**
-     * DNI de l'agent. Aquest camp és la clau primària de l'entitat {@link Agent}.
-     */
-    @Id
-    private String dni;
-    
-    private String nom;
-    
-    private String cognom;
-    
-    private String email;
+public class Agent extends Client{
     
     /**
      * Rol de l'agent, determinat per un valor de l'enumeració {@link Rol}.

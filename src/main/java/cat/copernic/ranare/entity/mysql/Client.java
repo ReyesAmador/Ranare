@@ -4,14 +4,21 @@
  */
 package cat.copernic.ranare.entity.mysql;
 
+import cat.copernic.ranare.enums.Reputacio;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.Binary;
 
 /**
  *
@@ -29,6 +36,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Client {
 
     /**
@@ -43,12 +51,6 @@ public class Client {
 
     @Column(nullable = false)
     private String cognoms;
-
-    /**
-     * Data de caducitat del document d'identitat (DNI).
-     */
-    @Column(nullable = false)
-    private String dataExpiracionDni;
 
     /**
      * Correu electrònic de l'usuari.
@@ -67,9 +69,9 @@ public class Client {
      */
     @Column(nullable = false)
     private String dataExpiracioLlicencia;
-
+    
    @Transient
-    private List<String> documents;
+    private List<Binary> documents;
 
     /**
      * Número de la targeta de crèdit associada al client.
@@ -81,7 +83,10 @@ public class Client {
      * Reputació del client. Pot ser "NORMAL" o "PREMIUM".
      */
     @Column(nullable = false)
-    private String reputacio;
+    private Reputacio reputacio;
+    
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    private Set<Reserva> reserves;
 
     /**
      * Referència a la documentació en la base no relacional. Aquest camp pot
@@ -90,9 +95,5 @@ public class Client {
     @Column(nullable = true)
     private String referenciaDocumentacio;
     
-     public enum Reputacio {
-        NORMAL,
-        PREMIUM
-    }
 
 }

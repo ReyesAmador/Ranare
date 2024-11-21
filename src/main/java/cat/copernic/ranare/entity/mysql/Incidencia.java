@@ -12,6 +12,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
@@ -75,5 +77,9 @@ public class Incidencia {
      */
     @Transient
     private String documentsIncidenciaId; 
+    
+    @ManyToOne
+    @JoinColumn(name = "vehicle_id", nullable = false)
+    private Vehicle vehicle;
 
 }

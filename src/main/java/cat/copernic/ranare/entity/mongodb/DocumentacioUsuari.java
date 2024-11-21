@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -38,13 +39,8 @@ public class DocumentacioUsuari {
      * Poden ser imatges, PDFs, contractes, etc.
      */
     @NotNull
-    private List<String> documents;
+    private List<Binary> documents;
 
-    /**
-     * Data de caducitat del permís de conduir.
-     * Utilitza LocalDate per representar la data de caducitat.
-     */
-    private LocalDate dataExpiracioLlicencia;
 
     /**
      * ID de referència a l'usuari relacionat amb aquest document.
