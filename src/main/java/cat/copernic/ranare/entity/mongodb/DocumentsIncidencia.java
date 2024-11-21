@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
@@ -37,6 +38,6 @@ public class DocumentsIncidencia {
      * Llista de documents associats a la incidència.
      * Aquesta llista pot contenir identificadors de documents com imatges, PDF's o altres arxius.
      */
-    private List<String> documents; //Aquí guardarem tant els PDF's com les imatges
+    private List<Binary> documents; //Aquí guardarem tant els PDF's com les imatges
     
 }

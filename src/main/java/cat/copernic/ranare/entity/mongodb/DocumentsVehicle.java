@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
@@ -36,6 +37,6 @@ public class DocumentsVehicle {
      * Llista de documents associats al vehicle, com PDF o imatges codificades en Base64.
      */
     @Field("documents")
-    private List<String> documents;
+    private List<Binary> documents;
 
 }
