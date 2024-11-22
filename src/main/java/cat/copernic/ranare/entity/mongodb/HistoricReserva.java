@@ -8,10 +8,12 @@ import cat.copernic.ranare.enums.Estat;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * Representa l'històric d'una reserva al sistema.
@@ -32,81 +34,29 @@ public class HistoricReserva {
     @Id
     private String id;
 
-    /**
-     * Detalls específics de la reserva històrica.
-     * Aquest és un subdocument que conté la informació de la reserva.
-     */
-    @NotNull
-    private Reserva reserva;
+   
 
     /**
      * Referències lògiques a les col·leccions relacionades.
      * Aquests camps vinculen l'històric amb altres entitats a MongoDB.
      */
     @NotNull
-    private String clienteId;      // Referència al DNI del client
+    private String clientDNI;      // Referència al DNI del client
 
     @NotNull
-    private String agenteId;       // Referència al DNI de l'agent
+    private String clientEmail;
+    
+    @NotNull
+    private String agentDNI;       // Referència al DNI de l'agent
 
     @NotNull
-    private String vehiculoId;     // Referència a la matrícula del vehicle
+    private String vehicleMatricula;     // Referència a la matrícula del vehicle
 
-    private String localizacionId; // Referència a l'ID de la localització (opcional)
+    @NotNull
+    private Date dataInici;
+    
+    @NotNull
+    private Date dataFinal;
+    
 
-    /**
-     * Classe interna que representa els detalls d'una reserva.
-     */
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Reserva {
-
-        /**
-         * Identificador únic de la reserva.
-         */
-        private String id;
-
-        /**
-         * DNI del client que ha realitzat la reserva.
-         */
-        private String clientDni;
-
-        /**
-         * DNI de l'agent que ha realitzat la reserva.
-         */
-        private String agentDni;
-
-        /**
-         * Identificador del vehicle reservat.
-         */
-        private String matriculaVehicle;
-
-        /**
-         * Data i hora d'inici de la reserva.
-         */
-        private LocalDateTime dataInicio;
-
-        /**
-         * Data i hora de finalització de la reserva.
-         */
-        private LocalDateTime dataFin;
-
-        /**
-         * Fiança associada a la reserva.
-         */
-        private Double fianca;
-
-        /**
-         * Cost total de la reserva.
-         */
-        private Double costReserva;
-
-        /**
-         * Estat actual de la reserva.
-         * Canviat a un enumerat per garantir valors consistents.
-         */
-        private Estat estat;
-
-    }
 }

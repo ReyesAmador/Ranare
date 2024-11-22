@@ -25,12 +25,12 @@ import org.bson.types.Binary;
  * @author Raú
  */
 /**
-/**
- * Classe que representa un client del sistema com a entitat relacional.
- * Aquesta classe està mapejada a una base de dades relacional utilitzant JPA.
- * 
- * Nota: Hereta atributs comuns de la classe Usuari (si s'aplica herència en un futur)
- * i afegeix atributs específics per als clients.
+ * /**
+ * Classe que representa un client del sistema com a entitat relacional. Aquesta
+ * classe està mapejada a una base de dades relacional utilitzant JPA.
+ *
+ * Nota: Hereta atributs comuns de la classe Usuari (si s'aplica herència en un
+ * futur) i afegeix atributs específics per als clients.
  */
 @Data
 @NoArgsConstructor
@@ -63,8 +63,26 @@ public class Client {
      */
     @Column(nullable = false)
     private String adreca;
-    
-   @Transient
+
+    /**
+     * País de residència del client.
+     */
+    @Column(nullable = false)
+    private String pais;
+
+    /**
+     * Ciutat de residència del client.
+     */
+    @Column(nullable = false)
+    private String ciutat;
+
+    /**
+     * Codi postal associat a l'adreça del client.
+     */
+    @Column(nullable = false, length = 10)
+    private String codiPostal;
+
+    @Transient
     private List<Binary> documents;
 
     /**
@@ -78,7 +96,7 @@ public class Client {
      */
     @Column(nullable = false)
     private Reputacio reputacio;
-    
+
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     private Set<Reserva> reserves;
 
@@ -88,6 +106,5 @@ public class Client {
      */
     @Column(nullable = true)
     private String referenciaDocumentacio;
-    
 
 }
