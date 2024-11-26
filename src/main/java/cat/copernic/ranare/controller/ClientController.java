@@ -5,6 +5,7 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.service.mysql.ClientService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Controlador para gestionar las operaciones relacionadas con los clientes.
@@ -74,15 +76,21 @@ public class ClientController {
     @GetMapping("/crear_client")
     public String showForm(Model model) {
         model.addAttribute("client", new Client());
+        model.addAttribute("rols", Rol.values()); // Añadir roles disponibles (AGENT, ADMIN)
         return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
     }
 
+    // Crear un cliente o agente con un rol (POST - Vistas HTML)
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "crear_client"; // Si hay errores, vuelve al formulario
         }
-        clientService.saveClient(client);  // Guardar el cliente en la base de datos
+        
+        if(rol != null)
+            clientService.crearAgent(client, rol); // Crear un agente
+        else
+            clientService.saveClient(client);  // Guardar el cliente normal en la base de datos
       return "redirect:/clients";   // Redirigir a la lista de clientes
     }
 }
