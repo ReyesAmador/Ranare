@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Crear localització</title>
+    </head>
+    <body>
+    <h1>Crear localització</h1>
+    <form th:action="@{/localitzacio/crear-localitzacio}" th:object="${localitzacio}" method="post">
+        <label for="codi_postal">Codi postal:</label>
+        <input type="text" id="codi_postal" th:field="*{codiPostal}" 
+               pattern="\d+" title="El codi postal ha de contenir només números"required />
+        <br>
+        <!-- Mostrar el error si existe -->
+        <div th:if="${error}">
+        <p style="color: red;">[[${error}]]</p>
+        </div>
+        </br>
+        <label for="pais">Pais:</label>
+        <input type="text" id="pais" th:field="*{pais}" maxlength="200" minlength="3" required />
+        <br>
+        <label for="ciutat">Ciutat:</label>
+        <input type="text" id="ciutat" th:field="*{ciutat}" maxlength="200" minlength="2" required />
+        <br>
+        <label for="adreca">Adreça:</label>
+        <input type="text" id="adreca" th:field="*{adreca}" maxlength="255" minlength="3" required />
+        <br>
+        <label for="tipus">Tipus:</label>
+        <input type="text" id="tipus" th:field="*{tipus}" maxlength="200" minlength="3" required />
+        <br>
+        <label for="horari">Horari apertura:</label>
+        <input type="time" id="horari" th:field="*{horariApertura}" step="900" required />
+        <br>
+        <label for="horari">Horari tancament:</label>
+        <input type="time" id="horari" th:field="*{horariTancament}" step="900" required />
+        <!--<br>
+        <label for="agent">Agent:</label>
+        <input type="text" id="agent" th:field="*{agent.dni}" required/> cuando tengamos agente, descomentar -->
+        <br>
+        <button type="submit">Crear localització</button>
+    </form>
+</body>
+</html>

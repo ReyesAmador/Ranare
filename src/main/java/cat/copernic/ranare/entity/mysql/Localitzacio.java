@@ -11,7 +11,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDateTime;
+import jakarta.validation.constraints.Size;
+import java.time.LocalTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -37,28 +38,36 @@ public class Localitzacio {
     
     @Id
     @Column(name = "codi_postal")
-    private Integer codiPostal;
+    private String codiPostal;
     
     @Column(length= 255)
+    @Size(min = 3, max = 255, message = "La adreça ha de tenir entre 3 i 255 caràcters")
     private String adreca;
+    
+    @Size(min = 2, max = 200, message = "La ciutat ha de tenir entre 2 i 200 caràcters")
+    private String ciutat;
+    
+    @Size(min = 3, max = 200, message = "El pais ha de tenir entre 3 i 200 caràcters")
+    private String pais;
     
     /**
      * Tipus de localització (pot ser una parking, un carrer, un aeroport, etc.).
      */
+    @Size(min = 3, max = 200, message = "El tipus ha de tenir entre 3 i 200 caràcters")
     private String tipus;
     
     @Column(name = "horari_apertura")
-    private LocalDateTime horariApertura;
+    private LocalTime horariApertura;
     
     @Column(name = "horari_tancament")
-    private LocalDateTime horariTancament;
+    private LocalTime horariTancament;
     
     
     /**
      * Agent assignat a aquesta localització. Relació un a un amb la classe {@link Agent}.
      * El camp `dni_agent` es refereix a la clau primària de l'entitat {@link Agent} (el camp `dni`).
      */
-    @OneToOne
+    @OneToOne(optional = true, cascade = CascadeType.ALL) //quitar optional cuando creemos agente
     @JoinColumn(name = "dni_agent", referencedColumnName = "dni")
     private Agent agent;
     
@@ -66,6 +75,6 @@ public class Localitzacio {
      * Vehicles associats a aquesta localització. Relació un a molts amb la classe {@link Vehicle}.
      * Les operacions de persistència en una localització també es propagaran als vehicles associats.
      */
-    @OneToMany(mappedBy = "localitzacio", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "localitzacio",cascade = CascadeType.ALL)
     private Set<Vehicle> vehicles;
 }

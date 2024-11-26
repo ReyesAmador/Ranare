@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Localitzacions</title>
+    <!-- Aquí puedes incluir estilos CSS si los necesitas -->
+</head>
+<body>
+    
+    <!-- Botón para crear una nueva localización -->
+    <div style="text-align: right;">
+        <a href="#" th:href="@{/localitzacio/crear-localitzacio}" class="btn btn-primary">Crear Localització</a>
+    </div>
+
+    <!-- Tabla de Localitzacions -->
+    <h2>Totes les Localitzacions</h2>
+    <div th:if="${success}" style="color: green;">
+        <p th:text="${success}"></p>
+    </div>
+    <table border="1" style="width: 100%; margin-top: 20px;">
+        <thead>
+            <tr>
+                <th>Codi Postal</th>
+                <th>Horari Apertura</th>
+                <th>Horari Tancament</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Iterar sobre la lista de localitzacions -->
+            <tr th:each="localitzacio : ${localitzacions}">
+                <td th:text="${localitzacio.codiPostal}"></td>
+                <td th:text="${localitzacio.horariApertura}"></td>
+                <td th:text="${localitzacio.horariTancament}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
