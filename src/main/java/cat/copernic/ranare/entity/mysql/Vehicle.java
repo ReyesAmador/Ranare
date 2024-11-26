@@ -5,6 +5,7 @@
 package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.TipusCombustio;
+import cat.copernic.ranare.enums.TipusTransmissio;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,6 +15,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -36,8 +42,14 @@ public class Vehicle {
      * Matrícula del vehicle, que actua com a identificador únic dins del sistema.
      */
     @Id
+    @NotBlank(message = "La matrícula és obligatòria.")
+    @Pattern(regexp = "[A-Z0-9]{7}", message = "La matrícula ha de tenir 7 caràcters alfanumèrics.")
     private String matricula;
     
+    @Column(name = "nom_vehicle")
+    @NotBlank(message = "El nom del vehicle és obligatori.")
+    @Size(min = 3, max = 50, message = "El nom del vehicle ha de tenir entre 3 i 50 caràcters.")
+    private String nomVehicle;
     /**
      * Tipus de combustible que utilitza el vehicle.
      * Es tracta d'un tipus enum que pot tenir valors com 'Elèctric', 'Híbrid' o 'Combustió'.
@@ -46,10 +58,18 @@ public class Vehicle {
     private TipusCombustio combustio;
     
     /**
+     * Tipus de transmissió que utilitza el vehicle.
+     * Es tracta d'un tipus enum que pot tenir valors com 'Manual' o 'Automàtic'.
+     */
+    @Enumerated(EnumType.STRING)
+    private TipusTransmissio transmissio;
+    
+    /**
      * Límit de quilometratge permès per al vehicle.
      * Aquesta propietat especifica el nombre màxim de quilòmetres que es poden recórrer amb el vehicle abans d'arribar al límit.
      */
     @Column(name = "limit_quilometratge")
+    @PositiveOrZero(message = "El límit de quilometratge ha de ser un valor positiu.")
     private double limitQuilometratge;
 
     /**
@@ -57,6 +77,7 @@ public class Vehicle {
      * Aquesta propietat defineix el cost per cada hora de lloguer d'aquest vehicle.
      */
     @Column(name = "preu_per_hora_lloguer")
+    @PositiveOrZero(message = "El preu per hora ha de ser un valor positiu.")
     private double preuPerHoraLloguer;
 
     /**
@@ -64,6 +85,7 @@ public class Vehicle {
      * Aquesta propietat indica el nombre mínim d'hores que es pot llogar el vehicle.
      */
     @Column(name = "minim_hores_lloguer")
+    @Min(value = 1, message = "El nombre mínim d'hores ha de ser almenys 1.")
     private int minimHoresLloguer;
 
     /**
@@ -71,6 +93,7 @@ public class Vehicle {
      * Aquesta propietat especifica el nombre màxim d'hores per al lloguer del vehicle.
      */
     @Column(name = "maxim_hores_lloguer")
+    @Min(value = 1, message = "El nombre màxim d'hores ha de ser almenys 1.")
     private int maximHoresLloguer;
 
     /**
@@ -78,6 +101,7 @@ public class Vehicle {
      * Aquesta propietat especifica la quantitat de diners que s'ha de dipositar com a garantia en el moment del lloguer.
      */
     @Column(name = "fianca_standard")
+    @PositiveOrZero(message = "La fiança ha de ser un valor positiu.")
     private double fiancaStandard;
 
     /**
@@ -85,6 +109,7 @@ public class Vehicle {
      * Aquesta propietat emmagatzema una cadena de text que permet afegir observacions específiques del vehicle.
      */
     @Column(name = "comentaris_agent", length = 2000)
+    @Size(max = 2000, message = "Els comentaris no poden superar els 2000 caràcters.")
     private String comentarisAgent;
     
     /**

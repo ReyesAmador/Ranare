@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RANARE - Lloguer de Cotxes</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Enlace a CSS personalizado -->
+    <link rel="stylesheet" href="/CSS/crearVehicleStyle.css">
+    </head>
+    <body>
+        <!-- Encabezado -->
+        <div class="header d-flex justify-content-between align-items-center p-3">
+            <h1>RANARE</h1>
+            <div class="nav-links">
+                <img src="/img/cochelogo.png" class="cochelogo">
+                <a href="#" class="text-white">Gestionar les reserves</a>
+            </div>
+            <div>
+                <span class="text-white">Hola Admin!</span>
+            </div>
+        </div>
+        
+        <!-- Formulari Crear/Modificar Vehicles -->
+        <div class="container my-5">
+            <h2 class="text-primary">CREAR / MODIFICAR VEHICLES</h2>
+        </div>
+        <form th:action="@{/crear-vehicle}" th:object="${vehicle}" method="post">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="nomVehicle">Nom vehicle <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="nomVehicle" placeholder="Nom del vehicle" th:field="*{nomVehicle}" required minlength="3">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="matricula">Matrícula <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="matricula" placeholder="Matrícula" th:field="*{matricula}" required pattern="[A-Z0-9]{7}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="tipus-combustio">Tipus de combustió </label>
+                    <select class="form-control" id="tipus-combustio" th:field="*{combustio}">
+                        <option value="">Selecciona un tipus de combustió</option>
+                        <option value="ELECTRIC">Elèctric</option>
+                        <option value="HIBRID">Híbrid</option>
+                        <option value="GASOIL">Gasoil</option>
+                    </select>
+                <div class="form-group col-md-6">
+                    <label for="tipusTransmissio">Tipus de transmissió</label>
+                    <select class="form-control" id="tipusTransmissio" th:field="*{transmissio}">
+                        <option value="">Selecciona un tipus de transmissió</option>
+                        <option value="MANUAL">Manual</option>
+                        <option value="AUTOMATIC">Automàtica</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="limitQuilometratge">Límit Quilometratge</label>
+                    <input type="number" class="form-control" id="limitQuilometratge" placeholder="Límit quilometratge en km" th:field="*{limitQuilometratge}"> 
+                </div>              
+                <div class="form-group col-md-6">
+                    <label for="preuPerHoraLloguer">Preu per hora de lloguer (€)</label>
+                    <input type="number" class="form-control" id="preuPerHoraLloguer" placeholder="Preu per hora en €" step="0.01" min="0" th:field="*{preuPerHoraLloguer}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="minimHoresLloguer">Mínim Hores de Lloguer</label>
+                    <input type="number" class="form-control" id="minimHoresLloguer" placeholder="Hores mínimes de lloguer" min="1" th:field="*{minimHoresLloguer}">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="maximHoresLloguer">Màxim Hores de Lloguer</label>
+                    <input type="number" class="form-control" id="maximHoresLloguer" placeholder="Hores màximes de lloguer" th:field="*{maximHoresLloguer}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="fiancaStandard">Fiança estàndard (€)</label>
+                    <input type="number" class="form-control" id="fiancaStandard" placeholder="Fiança en €" step="0.01" th:field="*{fiancaStandard}">
+                </div>
+
+                <div class="form-group col-md-6">
+                    <label for="comentarisAgent">Comentaris per l'Agent</label>
+                    <textarea class="form-control" id="comentarisAgent" rows="3" placeholder="Afegeix comentaris" th:field="*{comentarisAgent}"></textarea>
+                </div>
+            </div>
+                
+            <div class="form-row">
+                <form action="/pujarImatge" method="post" enctype="multipart/form-data">
+                    <label for="image">Insertar imatge del vehicle</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                    <button type="submit">Insertar Imatge</button>
+                </form>
+                <p th:text="${message}"></p>
+                <button type="submit" class="btn btn-primary">Desa</button>
+            </div>
+        </form>
+    </body>
+</html>
