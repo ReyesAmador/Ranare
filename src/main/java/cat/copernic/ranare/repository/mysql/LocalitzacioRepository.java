@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- *
+ * Una interface que hereda de JpaRepository amb els seus propis mètodes per poder implementar-los en la 
+ * capa service. També es poden definir mètodes personalitzats sense implementar-los
  * @author reyes
  */
 @Repository

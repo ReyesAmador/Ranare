@@ -13,22 +13,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * Servei per gestionar les operacions relacionades amb les localitzacions.
+ * Proporciona funcionalitats per obtenir totes les localitzacions i guardar una nova localització.
  * @author reyes
  */
 
 @Service
 public class LocalitzacioService {
     
+    /**
+     * Repositori de localitzacions utilitzat per interactuar amb la base de dades.
+     */
     @Autowired
     LocalitzacioRepository localitzacioRepository;
     
+    /**
+     * Obté totes les localitzacions emmagatzemades a la base de dades.
+     *
+     * @return Una llista amb totes les localitzacions.
+     */
     public List<Localitzacio> getallLocalitzacio(){
         return localitzacioRepository.findAll();
     }
     
-
-    
+    /**
+     * Guarda una nova localització a la base de dades.
+     * Verifica que el codi postal sigui vàlid abans de guardar.
+     *
+     * @param local La localització que es vol guardar.
+     * @return La localització que s'ha guardat.
+     * @throws InvalidCodiPostalException Si el codi postal no conté només números.
+     */
     public Localitzacio saveLocalitzacio(Localitzacio local){
         
         if(!validarCodiPostal(local.getCodiPostal()))
@@ -36,6 +51,13 @@ public class LocalitzacioService {
         return localitzacioRepository.save(local);
     }
     
+    /**
+     * Valida si el codi postal proporcionat és vàlid.
+     * El codi postal es considera vàlid si no és null i només conté números.
+     *
+     * @param cp El codi postal a validar.
+     * @return True si el codi postal és vàlid, false en cas contrari.
+     */
     private boolean validarCodiPostal(String cp){
         return cp!= null && cp.matches("\\d+");
     }
