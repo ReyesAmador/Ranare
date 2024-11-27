@@ -13,6 +13,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  *
@@ -27,13 +28,13 @@ public class SecurityConfig{
     public InMemoryUserDetailsManager userDetailsService() {
         UserDetails adminUser = User.builder()
                 .username("admin")
-                .password(passwordEncoder().encode("adminpassword"))
+                .password(passwordEncoder().encode("admin"))
                 .roles("ADMIN")
                 .build();
 
         UserDetails agentUser = User.builder()
                 .username("agent")
-                .password(passwordEncoder().encode("agentpassword"))
+                .password(passwordEncoder().encode("agent"))
                 .roles("AGENT")
                 .build();
 
@@ -46,13 +47,15 @@ public class SecurityConfig{
     }
     
     @Bean
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests()
-                .requestMatchers("/clients/crear_client").hasAnyRole("ADMIN", "AGENT") // Permitir acceso a ambos roles
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/clients/crear_client").hasAnyRole("ADMIN", "AGENT")
+                .requestMatchers("/clients").permitAll()
                 .anyRequest().authenticated()
-                .and()
-                .formLogin()
-                .and()
-                .logout().permitAll();
+            )
+        .formLogin(form -> form.permitAll().defaultSuccessUrl("/clients"))
+        .logout(logout -> logout.logoutSuccessUrl("/clients"));
+
+        return http.build();
     }
 }

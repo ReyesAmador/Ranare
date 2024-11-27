@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -79,27 +81,26 @@ public class ClientController {
 
     // Mostrar el formulario para crear cliente (Vistas HTML)
     @GetMapping("/crear_client")
-    public String showForm(Model model, Authentication auth) {
+    public String showForm(Model model, @AuthenticationPrincipal User loggedUser) {
         
         //verificar si es admin
-        boolean isAdmin = auth.getAuthorities().stream()
-                                        .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        boolean isAdmin = loggedUser.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
         
         model.addAttribute("client", new Client());
         model.addAttribute("rols", Rol.values()); // Añadir roles disponibles (AGENT, ADMIN)
-        model.addAttribute("isAdmin", isAdmin); // Pasamos si el usuario es admin al modelo
         return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
     }
 
     // Crear un cliente o agente con un rol (POST - Vistas HTML)
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult, Model model) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult, @AuthenticationPrincipal User loggedUser) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("rols", Rol.values()); // Re-incluir los roles disponibles
             return "crear_client"; // Si hay errores, vuelve al formulario
         }
         
-        if(rol != null)
+        if(loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null)
             // Si el rol es especificado (admin está creando un agente), creamos un agente
             agentService.crearAgent(client, rol); // Crear un agente
         else
