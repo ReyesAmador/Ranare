@@ -58,6 +58,16 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </select><br/>
             <span th:if="${#fields.hasErrors('reputacio')}" th:errors="*{reputacio}"></span><br/>
 
+            <!-- Selector de roles (opcional, solo para admins) -->
+            <div th:if="${isAdmin}">
+                <label for="rol">Rol:</label>
+                <select id="rol" name="rol">
+                    <option value="" selected>Selecci un rol (opcional)</option>
+                    <option value="AGENT">AGENT</option>
+                    <option value="ADMIN">ADMIN</option>
+                </select><br/>
+            </div>
+
             <button type="submit">Crear Cliente</button>
         </form>
     </body>
