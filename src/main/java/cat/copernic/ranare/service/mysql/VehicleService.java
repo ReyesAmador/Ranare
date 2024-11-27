@@ -35,8 +35,9 @@ public class VehicleService {
         return vehicleRepository.save(vehicle);
     }
     
-    public Optional<Vehicle> getVehicleById(String matricula){
-        return vehicleRepository.findById(matricula);
+    public Vehicle getVehicleByMatricula(String matricula){
+        Optional<Vehicle> vehicle = vehicleRepository.findById(matricula);
+        return vehicle.orElse(null);
     }
     
     public List<Vehicle> getAllVehicles(){

@@ -37,8 +37,17 @@ public class ControladorCrearVehicle {
     GridFsTemplate gridFsTemplate;
     
     @GetMapping("/crear-vehicle")
-    public String mostrarFormulari(Model model) {
-        model.addAttribute("vehicle", new Vehicle());
+    public String mostrarFormulari(@RequestParam(name = "matricula", required = false) String matricula, Model model) {
+        if(matricula != null && !matricula.isEmpty()){
+            Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
+            if(vehicle != null){
+                model.addAttribute("vehicle", vehicle);
+            }else{
+                model.addAttribute("errorMessage", "Vehicle no trobat.");
+            }
+        }else{
+            model.addAttribute("vehicle", new Vehicle());
+        }
         return "crear-vehicle";  
     }
     
@@ -50,7 +59,7 @@ public class ControladorCrearVehicle {
         
         vehicleService.saveVehicle(vehicle);
         
-        redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat correctament.");
+        redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat o modificat correctament.");
         return "redirect:/crear-vehicle";
     }
     

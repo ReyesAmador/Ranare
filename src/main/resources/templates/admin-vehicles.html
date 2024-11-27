@@ -8,6 +8,22 @@
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <!-- CSS personalizado -->
         <link rel="stylesheet" href="styles.css">
+        <script>
+            function setModifyLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const modifyLink = document.getElementById('modify-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    modifyLink.href = '/crear-vehicle?matricula=' + matricula; // Actualizar el enlace de "Modificar"
+                } else {
+                    modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
+                }
+            }
+        </script>
+
     </head>
     <body>
         <div class="container-fluid">
@@ -48,7 +64,8 @@
                     
                     <!-- Botones de acción -->
                     <div class="mt-3">
-                        <a href="/crear-vehicle" class="btn btn-custom btn-modify">Crear / Modificar</a>
+                        <a href="/crear-vehicle" class="btn btn-custom btn-modify">Crear</a>
+                        <a href="#" id="modify-link" class="btn btn-custom btn-modify" onclick="setModifyLink()">Modificar</a>
                     </div>
 
                     <!-- Formulario para eliminar vehículos -->

@@ -42,7 +42,7 @@ public class ControladorAdminVehicle {
             return "redirect:/crear-vehicle";
         }
     }
-    
+   
     @PostMapping("/admin/eliminarVehicle")
     public String eliminarVehicle(@RequestParam(name = "matriculas", required = false)
             List<String> matriculas, RedirectAttributes redirectAttributes){
