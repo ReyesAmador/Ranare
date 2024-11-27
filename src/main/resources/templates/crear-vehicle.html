@@ -43,16 +43,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="tipus-combustio">Tipus de combustió </label>
-                    <select class="form-control" id="tipus-combustio" th:field="*{combustio}">
+                    <label for="tipus-combustio">Tipus de combustió <span class="text-danger">*</span></label>
+                    <select class="form-control" id="tipus-combustio" th:field="*{combustio}" required>
                         <option value="">Selecciona un tipus de combustió</option>
                         <option value="ELECTRIC">Elèctric</option>
                         <option value="HIBRID">Híbrid</option>
                         <option value="GASOIL">Gasoil</option>
                     </select>
+                </div>
                 <div class="form-group col-md-6">
-                    <label for="tipusTransmissio">Tipus de transmissió</label>
-                    <select class="form-control" id="tipusTransmissio" th:field="*{transmissio}">
+                    <label for="tipusTransmissio">Tipus de transmissió <span class="text-danger">*</span></label>
+                    <select class="form-control" id="tipusTransmissio" th:field="*{transmissio}" required>
                         <option value="">Selecciona un tipus de transmissió</option>
                         <option value="MANUAL">Manual</option>
                         <option value="AUTOMATIC">Automàtica</option>
@@ -65,8 +66,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <input type="number" class="form-control" id="limitQuilometratge" placeholder="Límit quilometratge en km" th:field="*{limitQuilometratge}"> 
                 </div>              
                 <div class="form-group col-md-6">
-                    <label for="preuPerHoraLloguer">Preu per hora de lloguer (€)</label>
-                    <input type="number" class="form-control" id="preuPerHoraLloguer" placeholder="Preu per hora en €" step="0.01" min="0" th:field="*{preuPerHoraLloguer}">
+                    <label for="preuPerHoraLloguer">Preu / Hora de Lloguer (€) <span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="preuPerHoraLloguer" placeholder="Preu per hora en €" step="0.01" min="1" th:field="*{preuPerHoraLloguer}" required>
                 </div>
             </div>
             <div class="form-row">
@@ -82,8 +83,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="fiancaStandard">Fiança estàndard (€)</label>
-                    <input type="number" class="form-control" id="fiancaStandard" placeholder="Fiança en €" step="0.01" th:field="*{fiancaStandard}">
+                    <label for="fiancaStandard">Fiança estàndard (€)<span class="text-danger">*</span></label>
+                    <input type="number" class="form-control" id="fiancaStandard" placeholder="Fiança en €" step="0.01" th:field="*{fiancaStandard}" required>
                 </div>
 
                 <div class="form-group col-md-6">

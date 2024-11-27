@@ -17,6 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -55,6 +56,7 @@ public class Vehicle {
      * Es tracta d'un tipus enum que pot tenir valors com 'Elèctric', 'Híbrid' o 'Combustió'.
      */
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "El tipus de combustió és obligatori.")
     private TipusCombustio combustio;
     
     /**
@@ -62,6 +64,7 @@ public class Vehicle {
      * Es tracta d'un tipus enum que pot tenir valors com 'Manual' o 'Automàtic'.
      */
     @Enumerated(EnumType.STRING)
+    @NotNull(message = "El tipus de transmissió és obligatori.")
     private TipusTransmissio transmissio;
     
     /**
@@ -77,6 +80,7 @@ public class Vehicle {
      * Aquesta propietat defineix el cost per cada hora de lloguer d'aquest vehicle.
      */
     @Column(name = "preu_per_hora_lloguer")
+    @NotNull(message = "El preu per hora de lloguer és obligatori.")
     @PositiveOrZero(message = "El preu per hora ha de ser un valor positiu.")
     private double preuPerHoraLloguer;
 
@@ -101,6 +105,7 @@ public class Vehicle {
      * Aquesta propietat especifica la quantitat de diners que s'ha de dipositar com a garantia en el moment del lloguer.
      */
     @Column(name = "fianca_standard")
+    @NotNull(message = "La fiança estàndar és obligatoria.")
     @PositiveOrZero(message = "La fiança ha de ser un valor positiu.")
     private double fiancaStandard;
 
