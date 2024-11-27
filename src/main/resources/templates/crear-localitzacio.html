@@ -4,43 +4,80 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to c
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Crear localització</title>
+<head>
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Localització</title>
+    <!-- CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- CSS de Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- JS de Select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </head>
     <body>
-    <h1>Crear localització</h1>
-    <form th:action="@{/localitzacio/crear-localitzacio}" th:object="${localitzacio}" method="post">
-        <label for="codi_postal">Codi postal:</label>
-        <input type="text" id="codi_postal" th:field="*{codiPostal}" 
-               pattern="\d+" title="El codi postal ha de contenir només números"required />
-        <br>
-        <!-- Mostrar el error si existe -->
-        <div th:if="${error}">
-        <p style="color: red;">[[${error}]]</p>
+        <div class="container mt-5">
+            <h2>Crear Localització</h2>
+            <form th:action="@{/localitzacio/crear-localitzacio}" th:object="${localitzacio}" method="post">
+                <div class="mb-3">
+                    <label for="codi_postal" class="form-label">Codi postal:</label>
+                    <input type="text" id="codi_postal" th:field="*{codiPostal}" class="form-control"
+                           pattern="\d+" title="El codi postal ha de contenir només números" required />
+                </div>
+                <div class="mb-3" th:if="${error}">
+                    <p class="text-danger">[[${error}]]</p>
+                </div>
+                <div class="mb-3">
+                    <label for="pais" class="form-label">Pais:</label>
+                    <input type="text" id="pais" th:field="*{pais}" class="form-control" maxlength="200" minlength="3" required />
+                </div>
+                <div class="mb-3">
+                    <label for="ciutat" class="form-label">Ciutat:</label>
+                    <input type="text" id="ciutat" th:field="*{ciutat}" class="form-control" maxlength="200" minlength="2" required />
+                </div>
+                <div class="mb-3">
+                    <label for="adreca" class="form-label">Adreça:</label>
+                    <input type="text" id="adreca" th:field="*{adreca}" class="form-control" maxlength="255" minlength="3" required />
+                </div>
+                <div class="mb-3">
+                    <label for="tipus" class="form-label">Tipus:</label>
+                    <input type="text" id="tipus" th:field="*{tipus}" class="form-control" maxlength="200" minlength="3" required />
+                </div>
+                <div class="mb-3">
+                    <label for="horariApertura" class="form-label">Horari apertura:</label>
+                    <input type="time" id="horariApertura" th:field="*{horariApertura}" class="form-control" step="900" required />
+                </div>
+                <div class="mb-3">
+                    <label for="horariTancament" class="form-label">Horari tancament:</label>
+                    <input type="time" id="horariTancament" th:field="*{horariTancament}" class="form-control" step="900" required />
+                </div>
+                <div class="mb-3">
+                    <label for="agentDropdown" class="form-label">Assignar agent:</label>
+                    <select id="agentDropdown" th:field="*{agent}" class="form-select" required>
+                        <option value="" disabled selected>Selecciona un agent...</option>
+                        <th:block th:each="agent : ${agents}">
+                            <option th:value="${agent.dni}" th:text="${agent.nom} + ' (' + ${agent.dni} + ')'"></option>
+                        </th:block>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Crear localització</button>
+                <a th:href="@{/localitzacio}" class="btn btn-secondary">Tornar enrere</a>
+            </form>
         </div>
-        </br>
-        <label for="pais">Pais:</label>
-        <input type="text" id="pais" th:field="*{pais}" maxlength="200" minlength="3" required />
-        <br>
-        <label for="ciutat">Ciutat:</label>
-        <input type="text" id="ciutat" th:field="*{ciutat}" maxlength="200" minlength="2" required />
-        <br>
-        <label for="adreca">Adreça:</label>
-        <input type="text" id="adreca" th:field="*{adreca}" maxlength="255" minlength="3" required />
-        <br>
-        <label for="tipus">Tipus:</label>
-        <input type="text" id="tipus" th:field="*{tipus}" maxlength="200" minlength="3" required />
-        <br>
-        <label for="horari">Horari apertura:</label>
-        <input type="time" id="horari" th:field="*{horariApertura}" step="900" required />
-        <br>
-        <label for="horari">Horari tancament:</label>
-        <input type="time" id="horari" th:field="*{horariTancament}" step="900" required />
-        <!--<br>
-        <label for="agent">Agent:</label>
-        <input type="text" id="agent" th:field="*{agent.dni}" required/> cuando tengamos agente, descomentar -->
-        <br>
-        <button type="submit">Crear localització</button>
-    </form>
-</body>
+
+        <script>
+            $(document).ready(function () {
+                $('#agentDropdown').select2({
+                    placeholder: "Busca per DNI o per nom",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        </script>
+
+    <!-- JS de Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>

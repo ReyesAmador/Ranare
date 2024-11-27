@@ -7,8 +7,11 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
+import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,7 +39,10 @@ public class LocalitzacioController {
      * Servei de localitzacions utilitzat per realitzar operacions sobre les dades de localitzacions.
      */
     @Autowired  
-    LocalitzacioService localitzacioService;
+    private LocalitzacioService localitzacioService;
+    
+    @Autowired
+    private AgentService agentService;
     
     /**
      * Mostra una llista amb totes les localitzacions disponibles.
@@ -59,7 +65,16 @@ public class LocalitzacioController {
      */
     @GetMapping("/crear-localitzacio")
     public String showCrearLocalitzacioPage(Model model){
+        
+        Logger logger = LoggerFactory.getLogger(ClientController.class);
+
+        List<Agent> agents = agentService.getAllAgents();
+
+        // Depuración: registra la lista de agentes en el log
+        agents.forEach(agent -> logger.info("Agent: {}, DNI: {}", agent.getNom(), agent.getDni()));
+        
         model.addAttribute("localitzacio", new Localitzacio());
+        model.addAttribute("agents", agentService.getAllAgents());
         
         return "crear-localitzacio";
     }
