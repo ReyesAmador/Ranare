@@ -5,43 +5,59 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>Lista de Clientes</title>
-</head>
-<body>
-    <h1>Lista de Clientes</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>DNI</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>Email</th>
-                <th>Dirección</th>
-                <th>País</th>
-                <th>Ciudad</th>
-                <th>Código Postal</th>
-                <th>Reputación</th>
-                <th>Fecha de Nacimiento</th>
-                <th>Número de Tarjeta</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="client : ${clients}">
-                <td th:text="${client.dni}"></td>
-                <td th:text="${client.nom}"></td>
-                <td th:text="${client.cognoms}"></td>
-                <td th:text="${client.email}"></td>
-                <td th:text="${client.adreca}"></td>
-                <td th:text="${client.pais}"></td>
-                <td th:text="${client.ciutat}"></td>
-                <td th:text="${client.codiPostal}"></td>
-                <td th:text="${client.reputacio}"></td>
-                <td th:text="${client.dataNaixement}"></td>
-                <td th:text="${client.numeroTarjetaCredit}"></td>
-            </tr>
-        </tbody>
-    </table>
-    <a href="/clients/crear_client">Crear Cliente</a>
-</body>
+    <head>
+        <title>Lista de Clientes</title>
+    </head>
+    <body>
+        <h1>Llista de Clientes</h1>
+
+        <div th:if="${successMessage}" style="color: green; font-weight: bold;">
+            <p th:text="${successMessage}"></p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Email</th>
+                    <th>Dirección</th>
+                    <th>País</th>
+                    <th>Ciudad</th>
+                    <th>Código Postal</th>
+                    <th>Reputación</th>
+                    <th>Fecha de Nacimiento</th>
+                    <th>Número de Tarjeta</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="client : ${clients}">
+                    <td th:text="${client.dni}"></td>
+                    <td th:text="${client.nom}"></td>
+                    <td th:text="${client.cognoms}"></td>
+                    <td th:text="${client.email}"></td>
+                    <td th:text="${client.adreca}"></td>
+                    <td th:text="${client.pais}"></td>
+                    <td th:text="${client.ciutat}"></td>
+                    <td th:text="${client.codiPostal}"></td>
+                    <td th:text="${client.reputacio}"></td>
+                    <td th:text="${client.dataNaixement}"></td>
+                    <td th:text="${client.numeroTarjetaCredit}"></td>
+                    <td>
+                        <form th:action="@{'/clients/' + ${client.dni}}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit">Eliminar</button>
+                        </form>
+
+                        <!-- Formulario para modificar cliente -->
+                        <form th:action="@{'/clients/modificar/' + ${client.dni}}" method="get" style="display:inline;">
+                            <button type="submit">Modificar</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <a href="/clients/crear_client">Crear Cliente</a>
+    </body>
 </html>

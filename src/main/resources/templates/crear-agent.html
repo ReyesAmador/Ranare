@@ -10,65 +10,66 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <body>
         <h1>Formulario para Crear un Cliente</h1>
 
-        <form th:action="@{/clients/crear_client}" th:object="${client}" method="post">
+        <form th:action="@{/agents/crear-agent}" th:object="${agent}" method="post">
             <label for="dni">DNI:</label>
             <input type="text" id="dni" th:field="*{dni}" placeholder="00000000X" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span><br/>
 
-            <label for="nom">Nombre:</label>
-            <input type="text" id="nom" th:field="*{nom}" placeholder="Nombre" required /><br/>
+            <label for="nom">Nom:</label>
+            <input type="text" id="nom" th:field="*{nom}" placeholder="Nom" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></span><br/>
 
-            <label for="cognoms">Apellidos:</label>
-            <input type="text" id="cognoms" th:field="*{cognoms}" placeholder="Apellidos" required /><br/>
+            <label for="cognoms">Cognoms</label>
+            <input type="text" id="cognoms" th:field="*{cognoms}" placeholder="Cognoms" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('cognoms')}" th:errors="*{cognoms}"></span><br/>
 
-            <label for="dataNaixement">Fecha de Nacimiento:</label>
+            <label for="dataNaixement">Data naixement:</label>
             <input type="date" id="dataNaixement" th:field="*{dataNaixement}" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('dataNaixement')}" th:errors="*{dataNaixement}"></span><br/>
 
-            <label for="email">Correo Electrónico:</label>
+            <label for="email">E-mail:</label>
             <input type="email" id="email" th:field="*{email}" placeholder="correo@dominio.com" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
 
-            <label for="numeroTarjetaCredit">Número de Tarjeta de Crédito:</label>
-            <input type="text" id="numeroTarjetaCredit" th:field="*{numeroTarjetaCredit}" placeholder="Número de tarjeta de crédito" required /><br/>
+            <label for="numeroTarjetaCredit">Número tarjeta de credit:</label>
+            <input type="text" id="numeroTarjetaCredit" th:field="*{numeroTarjetaCredit}" placeholder="Número tarjeta de credit" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('numeroTarjetaCredit')}" th:errors="*{numeroTarjetaCredit}"></span><br/>
 
-            <label for="adreca">Dirección:</label>
-            <input type="text" id="adreca" th:field="*{adreca}" placeholder="Dirección" required /><br/>
+            <label for="adreca">Adreça:</label>
+            <input type="text" id="adreca" th:field="*{adreca}" placeholder="Adreça" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('adreca')}" th:errors="*{adreca}"></span><br/>
 
-            <label for="pais">País:</label>
-            <input type="text" id="pais" th:field="*{pais}" placeholder="País" required /><br/>
+            <label for="pais">Pais:</label>
+            <input type="text" id="pais" th:field="*{pais}" placeholder="Pais" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></span><br/>
 
-            <label for="ciutat">Ciudad:</label>
-            <input type="text" id="ciutat" th:field="*{ciutat}" placeholder="Ciudad" required /><br/>
+            <label for="ciutat">Ciutat:</label>
+            <input type="text" id="ciutat" th:field="*{ciutat}" placeholder="Ciutat" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('ciutat')}" th:errors="*{ciutat}"></span><br/>
 
-            <label for="codiPostal">Código Postal:</label>
-            <input type="text" id="codiPostal" th:field="*{codiPostal}" placeholder="Código Postal" required /><br/>
+            <label for="codiPostal">Codi postal:</label>
+            <input type="text" id="codiPostal" th:field="*{codiPostal}" placeholder="Codi postal" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('codiPostal')}" th:errors="*{codiPostal}"></span><br/>
 
-            <label for="reputacio">Reputación:</label>
+            <label for="reputacio">Reputació:</label>
             <select id="reputacio" th:field="*{reputacio}">
                 <option value="NORMAL">Normal</option>
                 <option value="PREMIUM">Premium</option>
             </select><br/>
             <span th:if="${#fields.hasErrors('reputacio')}" th:errors="*{reputacio}"></span><br/>
 
-            <!-- Selector de roles (opcional, solo para admins) -->
-            <div th:if="${isAdmin}">
-                <label for="rol">Rol:</label>
-                <select id="rol" name="rol">
-                    <option value="" selected>Selecci un rol (opcional)</option>
-                    <option value="AGENT">AGENT</option>
-                    <option value="ADMIN">ADMIN</option>
-                </select><br/>
-            </div>
+            <label for="rol">Rol:</label>
+            <select id="rol" name="rol">
+                <option value="" selected>Selecci un rol (opcional)</option>
+                <option value="AGENT">AGENT</option>
+                <option value="ADMIN">ADMIN</option>
+            </select><br/>
 
-            <button type="submit">Crear Cliente</button>
+            <button type="submit">Crear Agent</button>
         </form>
+        
+        <button>
+        <a th:href="@{/agents}">Tornar enrere</a>
+        </button>
     </body>
 </html>

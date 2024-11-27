@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Llista d'agents</title>
+</head>
+<body>
+    <h1>Llista d'agents</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="agent : ${agents}">
+                <td th:text="${agent.dni}"></td>
+                <td th:text="${agent.nom}"></td>
+                <td th:text="${agent.email}"></td>
+                <td th:text="${agent.rol}"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <button>
+        <a th:href="@{/agents/crear-agent}">Crear Agent</a>
+    </button>
+</body>
+</html>
