@@ -25,7 +25,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
- * Controlador para gestionar las operaciones relacionadas con los clientes.
+ * Controlador per gestionar les operacions relacionades amb els clients.
+ *
+ * Aquest controlador inclou operacions per crear, modificar, eliminar i 
+ * consultar clients tant en vistes HTML com en API REST.
  *
  * @author Raú
  */
@@ -36,12 +39,24 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
+    /**
+     * Crea o actualitza un client a través d'una API REST.
+     *
+     * @param client El client que es vol crear o actualitzar.
+     * @return La resposta amb el client creat o actualitzat.
+     */
     @PostMapping("/api")
     public ResponseEntity<Client> createOrUpdateClient(@RequestBody Client client) {
         Client savedClient = clientService.saveClient(client);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
 
+    /**
+     * Obté un client pel seu DNI a través d'una API REST.
+     *
+     * @param dni El DNI del client que es vol obtenir.
+     * @return La resposta amb el client si existeix, o un error 404 si no es troba.
+     */
     @GetMapping("/api/{dni}")
     public ResponseEntity<Client> getClientById(@PathVariable String dni) {
         Optional<Client> client = clientService.getClientById(dni);
@@ -49,11 +64,23 @@ public class ClientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * Obté tots els clients a través d'una API REST.
+     *
+     * @return La llista de tots els clients disponibles.
+     */
     @GetMapping("/api")
     public List<Client> getAllClients() {
         return clientService.getAllClients();
     }
 
+    /**
+     * Elimina un client pel seu DNI.
+     *
+     * @param dni El DNI del client que es vol eliminar.
+     * @param redirectAttributes Atributs de redirecció per passar missatges d'èxit.
+     * @return La redirecció a la pàgina de llista de clients.
+     */
     @DeleteMapping("/{dni}")
     public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
         clientService.deleteClient(dni);
@@ -61,18 +88,38 @@ public class ClientController {
         return "redirect:/clients";
     }
 
+    /**
+     * Mostra la llista de clients en una vista HTML.
+     *
+     * @param model El model per passar dades a la vista.
+     * @return El nom de la plantilla Thymeleaf per mostrar la llista de clients.
+     */
     @GetMapping
     public String showClientList(Model model) {
         model.addAttribute("clients", clientService.getAllClients());
         return "llista_de_clients";
     }
 
+    /**
+     * Mostra el formulari per crear un nou client.
+     *
+     * @param model El model per passar un client buit a la vista.
+     * @return El nom de la plantilla Thymeleaf per crear un client.
+     */
     @GetMapping("/crear_client")
     public String showForm(Model model) {
         model.addAttribute("client", new Client());
         return "crear_client";
     }
 
+    /**
+     * Processa el formulari de creació de clients.
+     *
+     * @param client El client creat a partir del formulari.
+     * @param bindingResult El resultat de la validació del formulari.
+     * @param redirectAttributes Atributs de redirecció per passar missatges d'èxit.
+     * @return La redirecció a la pàgina de llista de clients si és correcte, o el formulari si hi ha errors.
+     */
     @PostMapping("/crear_client")
     public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
@@ -83,6 +130,13 @@ public class ClientController {
         return "redirect:/clients";
     }
 
+    /**
+     * Mostra el formulari per modificar un client existent.
+     *
+     * @param dni El DNI del client que es vol modificar.
+     * @param model El model per passar les dades del client a la vista.
+     * @return El nom de la plantilla Thymeleaf per modificar el client, o la redirecció a la llista de clients si no es troba.
+     */
     @GetMapping("/modificar/{dni}")
     public String showEditForm(@PathVariable String dni, Model model) {
         Optional<Client> clientOpt = clientService.getClientById(dni);
@@ -93,6 +147,15 @@ public class ClientController {
         return "redirect:/clients";
     }
 
+    /**
+     * Processa la modificació d'un client.
+     *
+     * @param dni El DNI del client que es vol modificar.
+     * @param client Les noves dades del client.
+     * @param result El resultat de la validació del formulari.
+     * @param redirectAttributes Atributs de redirecció per passar missatges d'èxit.
+     * @return La redirecció a la pàgina de llista de clients si és correcte, o el formulari si hi ha errors.
+     */
     @PostMapping("/modificar/{dni}")
     public String updateClient(@PathVariable String dni, @ModelAttribute @Valid Client client, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {

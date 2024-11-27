@@ -15,6 +15,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
@@ -124,6 +125,7 @@ public class Client  {
     /**
      * Data de naixement del client.
      */
+    @Past (message = "{dataNaixement.Past}")
     @Column(nullable = false) // Puedes cambiar a false si es obligatorio
     private LocalDate dataNaixement;
 
