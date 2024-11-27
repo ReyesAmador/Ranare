@@ -12,9 +12,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
         <form th:action="@{/clients/crear_client}" th:object="${client}" method="post">
             <label for="dni">DNI:</label>
-            <input type="text" id="dni" th:field="*{dni}" placeholder="00000000X" required /><br/>
-            <span class="error" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span><br/>
-
+            <input type="text" id="dni" th:field="*{dni}" required />
+            <span th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span>
+            <br/>
             <label for="nom">Nombre:</label>
             <input type="text" id="nom" th:field="*{nom}" placeholder="Nombre" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></span><br/>
@@ -28,8 +28,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <span class="error" th:if="${#fields.hasErrors('dataNaixement')}" th:errors="*{dataNaixement}"></span><br/>
 
             <label for="email">Correo Electrónico:</label>
-            <input type="email" id="email" th:field="*{email}" placeholder="correo@dominio.com" required /><br/>
-            <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
+            <input type="email" id="email" th:field="*{email}" required />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+            <br/>
 
             <label for="numeroTarjetaCredit">Número de Tarjeta de Crédito:</label>
             <input type="text" id="numeroTarjetaCredit" th:field="*{numeroTarjetaCredit}" placeholder="Número de tarjeta de crédito" required /><br/>

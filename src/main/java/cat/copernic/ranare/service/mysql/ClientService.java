@@ -9,6 +9,7 @@ import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -23,7 +24,16 @@ public class ClientService {
     
     // Crear o actualizar un cliente
     public Client saveClient(Client client) {
-        return clientRepository.save(client);
+        try {
+            return clientRepository.save(client);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("dni")) {
+                throw new DuplicateResourceException("El DNI ja està registrat.");
+            } else if (e.getMessage().contains("email")) {
+                throw new DuplicateResourceException("El correu electrònic ja està registrat.");
+            }
+            throw new DuplicateResourceException("Un camp únic ja està duplicat.");
+        }
     }
 
     // Leer un cliente por su DNI

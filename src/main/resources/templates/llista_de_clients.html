@@ -13,25 +13,25 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <h1>Llista de Clientes</h1>
 
     <!-- Mostrar mensajes de éxito -->
-    <div th:if="${successMessage}" style="color: green; font-weight: bold;">
-        <p th:text="${successMessage}"></p>
+    <div th:if="${missatge}" style="color: green; font-weight: bold;">
+        <p th:text="${missatge}"></p>
     </div>
 
     <table>
         <thead>
             <tr>
                 <th>DNI</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
+                <th>Nom</th>
+                <th>Cognoms</th>
                 <th>Email</th>
-                <th>Dirección</th>
+                <th>Direcció</th>
                 <th>País</th>
-                <th>Ciudad</th>
-                <th>Código Postal</th>
-                <th>Reputación</th>
-                <th>Fecha de Nacimiento</th>
+                <th>Ciutat</th>
+                <th>Codi postal</th>
+                <th>Reputació</th>
+                <th>Data de naixement</th>
                 <th>Número de Tarjeta</th>
-                <th>Acciones</th>
+                <th>Accions</th>
             </tr>
         </thead>
         <tbody>

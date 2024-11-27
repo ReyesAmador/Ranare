@@ -5,13 +5,16 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.service.mysql.ClientService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,13 +25,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador per gestionar les operacions relacionades amb els clients.
  *
- * Aquest controlador inclou operacions per crear, modificar, eliminar i 
+ * Aquest controlador inclou operacions per crear, modificar, eliminar i
  * consultar clients tant en vistes HTML com en API REST.
+ *
+ * També afegeix suport per a la creació d'agents per part d'usuaris administradors.
  *
  * @author Raú
  */
@@ -38,6 +44,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+
+    @Autowired
+    private AgentService agentService; // **Nou: Suport per gestionar agents.**
 
     /**
      * Crea o actualitza un client a través d'una API REST.
@@ -84,7 +93,7 @@ public class ClientController {
     @DeleteMapping("/{dni}")
     public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
         clientService.deleteClient(dni);
-        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha eliminat correctament.");
+        redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
         return "redirect:/clients";
     }
 
@@ -103,30 +112,50 @@ public class ClientController {
     /**
      * Mostra el formulari per crear un nou client.
      *
+     * Inclou comprovació del rol de l'usuari autenticat per determinar si pot crear agents.
+     *
      * @param model El model per passar un client buit a la vista.
+     * @param loggedUser L'usuari autenticat per comprovar permisos.
      * @return El nom de la plantilla Thymeleaf per crear un client.
      */
     @GetMapping("/crear_client")
-    public String showForm(Model model) {
+    public String showForm(Model model, @AuthenticationPrincipal User loggedUser) {
+        boolean isAdmin = loggedUser.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")); // **Nou: Comprovació de rol.**
+        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("client", new Client());
+        model.addAttribute("rols", Rol.values()); // **Nou: Passa els rols disponibles (AGENT, ADMIN).**
         return "crear_client";
     }
 
     /**
-     * Processa el formulari de creació de clients.
+     * Processa el formulari de creació de clients o agents.
      *
-     * @param client El client creat a partir del formulari.
+     * Admins poden especificar un rol per crear agents, mentre que usuaris sense permisos només poden crear clients.
+     *
+     * @param client El client o agent creat a partir del formulari.
+     * @param rol El rol seleccionat si es tracta d'un agent.
      * @param bindingResult El resultat de la validació del formulari.
      * @param redirectAttributes Atributs de redirecció per passar missatges d'èxit.
+     * @param loggedUser L'usuari autenticat per comprovar permisos.
      * @return La redirecció a la pàgina de llista de clients si és correcte, o el formulari si hi ha errors.
      */
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, 
+                               BindingResult bindingResult, RedirectAttributes redirectAttributes, 
+                               @AuthenticationPrincipal User loggedUser) {
         if (bindingResult.hasErrors()) {
             return "crear_client";
         }
-        clientService.saveClient(client);
-        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha creat correctament.");
+        if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
+            // **Nou: Creació d'un agent si l'usuari és administrador.**
+            agentService.crearAgent(client, rol);
+            redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
+        } else {
+            // Creació d'un client normal.
+            clientService.saveClient(client);
+            redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
+        }
         return "redirect:/clients";
     }
 
@@ -157,13 +186,14 @@ public class ClientController {
      * @return La redirecció a la pàgina de llista de clients si és correcte, o el formulari si hi ha errors.
      */
     @PostMapping("/modificar/{dni}")
-    public String updateClient(@PathVariable String dni, @ModelAttribute @Valid Client client, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String updateClient(@PathVariable String dni, @ModelAttribute @Valid Client client, BindingResult result, 
+                               RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
             return "modificar_client";
         }
         client.setDni(dni);
         clientService.saveClient(client);
-        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha modificat correctament.");
+        redirectAttributes.addFlashAttribute("missatge", "El client s'ha modificat correctament.");
         return "redirect:/clients";
     }
 }

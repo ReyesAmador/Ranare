@@ -23,6 +23,7 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.bson.types.Binary;
 
 /**
@@ -40,6 +41,7 @@ import org.bson.types.Binary;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Client  {
@@ -109,7 +111,7 @@ public class Client  {
     /**
      * Número de la targeta de crèdit associada al client.
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @NotNull(message = "{numeroTarjetaCredit.NotNull}")
     private String numeroTarjetaCredit;
 
@@ -126,7 +128,7 @@ public class Client  {
      * Data de naixement del client.
      */
     @Past (message = "{dataNaixement.Past}")
-    @Column(nullable = false) // Puedes cambiar a false si es obligatorio
+    @Column(nullable = false, unique = true) // Puedes cambiar a false si es obligatorio
     private LocalDate dataNaixement;
 
     /**
