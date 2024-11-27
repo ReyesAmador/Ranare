@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -42,13 +43,14 @@ public class ControladorCrearVehicle {
     }
     
     @PostMapping("/crear-vehicle")
-    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, Model model){
+    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes){
         if(result.hasErrors()){
             return "crear-vehicle";
         }
         
-        vehicleService.saveVehicle(vehicle); 
-        model.addAttribute("message", "El vehicle s'ha creat correctament.");
+        vehicleService.saveVehicle(vehicle);
+        
+        redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat correctament.");
         return "redirect:/crear-vehicle";
     }
     

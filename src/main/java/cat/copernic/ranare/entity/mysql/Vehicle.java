@@ -19,6 +19,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import java.util.List;
@@ -72,7 +73,7 @@ public class Vehicle {
      * Aquesta propietat especifica el nombre màxim de quilòmetres que es poden recórrer amb el vehicle abans d'arribar al límit.
      */
     @Column(name = "limit_quilometratge")
-    @PositiveOrZero(message = "El límit de quilometratge ha de ser un valor positiu.")
+    @Positive(message = "El límit de quilometratge ha de ser un valor positiu i major que 0.")
     private double limitQuilometratge;
 
     /**
@@ -81,7 +82,7 @@ public class Vehicle {
      */
     @Column(name = "preu_per_hora_lloguer")
     @NotNull(message = "El preu per hora de lloguer és obligatori.")
-    @PositiveOrZero(message = "El preu per hora ha de ser un valor positiu.")
+    @Positive(message = "El preu per hora ha de ser un valor positiu.")
     private double preuPerHoraLloguer;
 
     /**
@@ -106,7 +107,7 @@ public class Vehicle {
      */
     @Column(name = "fianca_standard")
     @NotNull(message = "La fiança estàndar és obligatoria.")
-    @PositiveOrZero(message = "La fiança ha de ser un valor positiu.")
+    @Positive(message = "La fiança ha de ser un valor positiu.")
     private double fiancaStandard;
 
     /**

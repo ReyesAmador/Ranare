@@ -30,6 +30,10 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div class="container my-5">
             <h2 class="text-primary">CREAR / MODIFICAR VEHICLES</h2>
         </div>
+        <!-- Mensaje flash -->
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
         <form th:action="@{/crear-vehicle}" th:object="${vehicle}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
@@ -63,7 +67,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="limitQuilometratge">Límit Quilometratge</label>
-                    <input type="number" class="form-control" id="limitQuilometratge" placeholder="Límit quilometratge en km" th:field="*{limitQuilometratge}"> 
+                    <input type="number" class="form-control" id="limitQuilometratge" placeholder="Límit quilometratge en km" min="1" th:field="*{limitQuilometratge}" required> 
                 </div>              
                 <div class="form-group col-md-6">
                     <label for="preuPerHoraLloguer">Preu / Hora de Lloguer (€) <span class="text-danger">*</span></label>
@@ -73,18 +77,18 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="minimHoresLloguer">Mínim Hores de Lloguer</label>
-                    <input type="number" class="form-control" id="minimHoresLloguer" placeholder="Hores mínimes de lloguer" min="1" th:field="*{minimHoresLloguer}">
+                    <input type="number" class="form-control" id="minimHoresLloguer" placeholder="Hores mínimes de lloguer" min="1" th:field="*{minimHoresLloguer}" required>
                 </div>
 
                 <div class="form-group col-md-6">
                     <label for="maximHoresLloguer">Màxim Hores de Lloguer</label>
-                    <input type="number" class="form-control" id="maximHoresLloguer" placeholder="Hores màximes de lloguer" th:field="*{maximHoresLloguer}">
+                    <input type="number" class="form-control" id="maximHoresLloguer" placeholder="Hores màximes de lloguer" min="1" th:field="*{maximHoresLloguer}" required>
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="fiancaStandard">Fiança estàndard (€)<span class="text-danger">*</span></label>
-                    <input type="number" class="form-control" id="fiancaStandard" placeholder="Fiança en €" step="0.01" th:field="*{fiancaStandard}" required>
+                    <input type="number" class="form-control" id="fiancaStandard" placeholder="Fiança en €" step="0.01" min="1" th:field="*{fiancaStandard}" required>
                 </div>
 
                 <div class="form-group col-md-6">
@@ -96,10 +100,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <div class="form-row">
                 <form action="/pujarImatge" method="post" enctype="multipart/form-data">
                     <label for="image">Insertar imatge del vehicle</label>
+                    <br>
                     <input type="file" id="image" name="image" accept="image/*">
-                    <button type="submit">Insertar Imatge</button>
+                    <button type="submit" class="btn btn-primary">Insertar Imatge</button>
                 </form>
-                <p th:text="${message}"></p>
+            </div>
+            <div center>
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>
         </form>
