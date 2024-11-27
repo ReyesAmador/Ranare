@@ -5,6 +5,8 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Rol;
+import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -12,6 +14,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -22,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -37,6 +43,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+    
+    @Autowired
+    private AgentService agentService;
 
     /**
      * Crear o actualitzar un client a través d'una API REST.
@@ -105,26 +114,37 @@ public class ClientController {
      * @return El nom de la plantilla Thymeleaf per mostrar el formulari de creació.
      */
     @GetMapping("/crear_client")
-    public String showForm(Model model) {
+    public String showForm(Model model, @AuthenticationPrincipal User loggedUser) {
+        
+        //verificar si es admin
+        boolean isAdmin = loggedUser.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        model.addAttribute("isAdmin", isAdmin);
+        
         model.addAttribute("client", new Client());
-        return "crear_client"; // Plantilla Thymeleaf per crear un client
+        model.addAttribute("rols", Rol.values()); // Añadir roles disponibles (AGENT, ADMIN)
+        return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
     }
 
-    /**
-     * Processar el formulari de creació de client.
-     *
-     * @param client El client creat a partir del formulari.
-     * @param bindingResult Resultat de la validació del formulari.
-     * @return La vista de llistat de clients si la validació és correcta, o el formulari en cas d'error.
-     */
+    // Crear un cliente o agente con un rol (POST - Vistas HTML)
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult
+            ,RedirectAttributes redirectAttributes, @AuthenticationPrincipal User loggedUser) {
         if (bindingResult.hasErrors()) {
             return "crear_client";
         }
-        clientService.saveClient(client);
-        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha creat correctament.");
-        return "redirect:/clients";
+        
+        if(loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null){
+            // Si el rol es especificado (admin está creando un agente), creamos un agente
+            agentService.crearAgent(client, rol); // Crear un agente
+        redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
+        }
+        else{
+            // Si no se especifica rol, se crea un cliente normal
+            clientService.saveClient(client);  // Guardar el cliente normal en la base de datos
+            redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
+        }
+      return "redirect:/clients";   // Redirigir a la lista de clientes
     }
 
     /**

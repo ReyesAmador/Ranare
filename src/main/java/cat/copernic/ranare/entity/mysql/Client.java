@@ -22,6 +22,7 @@ import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.bson.types.Binary;
 
 /**
@@ -40,6 +41,7 @@ import org.bson.types.Binary;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Client  {
 
