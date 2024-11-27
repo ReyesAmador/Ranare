@@ -6,12 +6,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <html>
     <head>
         <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RANARE - Lloguer de Cotxes</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <!-- Enlace a CSS personalizado -->
-    <link rel="stylesheet" href="/CSS/crearVehicleStyle.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RANARE - Lloguer de Cotxes</title>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Enlace a CSS personalizado -->
+        <link rel="stylesheet" href="/CSS/crearVehicleStyle.css">
     </head>
     <body>
         <!-- Encabezado -->
@@ -25,7 +25,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <span class="text-white">Hola Admin!</span>
             </div>
         </div>
-        
+
         <!-- Formulari Crear/Modificar Vehicles -->
         <div class="container my-5">
             <h2 class="text-primary">CREAR / MODIFICAR VEHICLES</h2>
@@ -96,18 +96,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <textarea class="form-control" id="comentarisAgent" rows="3" placeholder="Afegeix comentaris" th:field="*{comentarisAgent}"></textarea>
                 </div>
             </div>
-                
-            <div class="form-row">
-                <form action="/pujarImatge" method="post" enctype="multipart/form-data">
-                    <label for="image">Insertar imatge del vehicle</label>
-                    <br>
-                    <input type="file" id="image" name="image" accept="image/*">
-                    <button type="submit" class="btn btn-primary">Insertar Imatge</button>
-                </form>
-            </div>
-            <div center>
+
+            <div>
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>
+        </form>
+
+
+        <form th:action="@{/pujarImatge}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="image">Insertar imatge del vehicle</label>
+                <input type="file" id="image" name="image" accept="image/*">
+            </div>
+            <button type="submit" class="btn btn-primary">Insertar Imatge</button>
         </form>
     </body>
 </html>

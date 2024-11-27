@@ -48,7 +48,7 @@ public class HistoricReserva {
     
     @NotNull
     private String agentDNI;       // Referència al DNI de l'agent
-
+ 
     @NotNull
     private String vehicleMatricula;     // Referència a la matrícula del vehicle
 
