@@ -43,6 +43,7 @@ import org.bson.types.Binary;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
+@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Client  {
 
