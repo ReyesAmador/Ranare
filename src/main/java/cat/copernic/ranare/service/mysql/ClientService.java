@@ -4,10 +4,7 @@
  */
 package cat.copernic.ranare.service.mysql;
 
-import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
-import cat.copernic.ranare.enums.Rol;
-import cat.copernic.ranare.repository.mysql.AgentRepository;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.List;
 import java.util.Optional;

@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador para gestionar las operaciones relacionadas con los clientes.
@@ -95,17 +96,22 @@ public class ClientController {
 
     // Crear un cliente o agente con un rol (POST - Vistas HTML)
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult, @AuthenticationPrincipal User loggedUser) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult
+            ,RedirectAttributes redirectAttributes, @AuthenticationPrincipal User loggedUser) {
         if (bindingResult.hasErrors()) {
             return "crear_client"; // Si hay errores, vuelve al formulario
         }
         
-        if(loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null)
+        if(loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null){
             // Si el rol es especificado (admin está creando un agente), creamos un agente
             agentService.crearAgent(client, rol); // Crear un agente
-        else
+        redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
+        }
+        else{
             // Si no se especifica rol, se crea un cliente normal
             clientService.saveClient(client);  // Guardar el cliente normal en la base de datos
+            redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
+        }
       return "redirect:/clients";   // Redirigir a la lista de clientes
     }
 }
