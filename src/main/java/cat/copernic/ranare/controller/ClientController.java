@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  * Controlador para gestionar las operaciones relacionadas con los clientes.
@@ -35,14 +36,12 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    // Crear o actualizar un cliente (API REST) -> Mantén esta ruta para las peticiones API
     @PostMapping("/api")
     public ResponseEntity<Client> createOrUpdateClient(@RequestBody Client client) {
         Client savedClient = clientService.saveClient(client);
         return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
     }
 
-    // Leer un cliente por su DNI (API REST)
     @GetMapping("/api/{dni}")
     public ResponseEntity<Client> getClientById(@PathVariable String dni) {
         Optional<Client> client = clientService.getClientById(dni);
@@ -50,39 +49,58 @@ public class ClientController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Leer todos los clientes (API REST)
     @GetMapping("/api")
     public List<Client> getAllClients() {
         return clientService.getAllClients();
     }
 
-    // Eliminar un cliente por su DNI (API REST)
-    @DeleteMapping("/api/{dni}")
-    public ResponseEntity<Void> deleteClient(@PathVariable String dni) {
+    @DeleteMapping("/{dni}")
+    public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
         clientService.deleteClient(dni);
-        return ResponseEntity.noContent().build();
+        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha eliminat correctament.");
+        return "redirect:/clients";
     }
 
-    // Mostrar lista de clientes (Vistas HTML)
     @GetMapping
     public String showClientList(Model model) {
         model.addAttribute("clients", clientService.getAllClients());
-        return "llista_de_clients"; // Plantilla Thymeleaf para listar clientes
+        return "llista_de_clients";
     }
 
-    // Mostrar el formulario para crear cliente (Vistas HTML)
     @GetMapping("/crear_client")
     public String showForm(Model model) {
         model.addAttribute("client", new Client());
-        return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
+        return "crear_client";
     }
 
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult) {
+    public String createClient(@ModelAttribute @Valid Client client, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
         if (bindingResult.hasErrors()) {
-            return "crear_client"; // Si hay errores, vuelve al formulario
+            return "crear_client";
         }
-        clientService.saveClient(client);  // Guardar el cliente en la base de datos
-      return "redirect:/clients";   // Redirigir a la lista de clientes
+        clientService.saveClient(client);
+        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha creat correctament.");
+        return "redirect:/clients";
+    }
+
+    @GetMapping("/modificar/{dni}")
+    public String showEditForm(@PathVariable String dni, Model model) {
+        Optional<Client> clientOpt = clientService.getClientById(dni);
+        if (clientOpt.isPresent()) {
+            model.addAttribute("client", clientOpt.get());
+            return "modificar_client";
+        }
+        return "redirect:/clients";
+    }
+
+    @PostMapping("/modificar/{dni}")
+    public String updateClient(@PathVariable String dni, @ModelAttribute @Valid Client client, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "modificar_client";
+        }
+        client.setDni(dni);
+        clientService.saveClient(client);
+        redirectAttributes.addFlashAttribute("successMessage", "El client s'ha modificat correctament.");
+        return "redirect:/clients";
     }
 }
