@@ -6,6 +6,7 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
+import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -36,6 +38,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
+    
+    @Autowired
+    private AgentService agentService;
 
     // Crear o actualizar un cliente (API REST) -> Mantén esta ruta para las peticiones API
     @PostMapping("/api")
@@ -74,22 +79,31 @@ public class ClientController {
 
     // Mostrar el formulario para crear cliente (Vistas HTML)
     @GetMapping("/crear_client")
-    public String showForm(Model model) {
+    public String showForm(Model model, Authentication auth) {
+        
+        //verificar si es admin
+        boolean isAdmin = auth.getAuthorities().stream()
+                                        .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ROLE_ADMIN"));
+        
         model.addAttribute("client", new Client());
         model.addAttribute("rols", Rol.values()); // Añadir roles disponibles (AGENT, ADMIN)
+        model.addAttribute("isAdmin", isAdmin); // Pasamos si el usuario es admin al modelo
         return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
     }
 
     // Crear un cliente o agente con un rol (POST - Vistas HTML)
     @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult) {
+    public String createClient(@ModelAttribute @Valid Client client, @RequestParam(required = false) Rol rol, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
+            model.addAttribute("rols", Rol.values()); // Re-incluir los roles disponibles
             return "crear_client"; // Si hay errores, vuelve al formulario
         }
         
         if(rol != null)
-            clientService.crearAgent(client, rol); // Crear un agente
+            // Si el rol es especificado (admin está creando un agente), creamos un agente
+            agentService.crearAgent(client, rol); // Crear un agente
         else
+            // Si no se especifica rol, se crea un cliente normal
             clientService.saveClient(client);  // Guardar el cliente normal en la base de datos
       return "redirect:/clients";   // Redirigir a la lista de clientes
     }

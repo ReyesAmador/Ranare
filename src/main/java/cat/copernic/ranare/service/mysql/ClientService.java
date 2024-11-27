@@ -24,9 +24,6 @@ public class ClientService {
     @Autowired
     private ClientRepository clientRepository;
     
-    @Autowired
-    private AgentRepository agentRepository;
-    
     // Crear o actualizar un cliente
     public Client saveClient(Client client) {
         return clientRepository.save(client);
@@ -47,21 +44,4 @@ public class ClientService {
         clientRepository.deleteById(dni);
     }
     
-    public Agent crearAgent(Client client, Rol rol){
-        Agent agent = Agent.builder().dni(client.getDni())
-                .nom(client.getNom())
-                .cognoms(client.getCognoms())
-                .dataNaixement(client.getDataNaixement())
-                .email(client.getEmail())
-                .numeroTarjetaCredit(client.getNumeroTarjetaCredit())
-                .adreca(client.getAdreca())
-                .pais(client.getPais())
-                .ciutat(client.getCiutat())
-                .codiPostal(client.getCodiPostal())
-                .reputacio(client.getReputacio())
-                .rol(rol) // Establecer el rol (AGENT o ADMIN)
-                .build();
-        
-        return agentRepository.save(agent);
-    }
 }
