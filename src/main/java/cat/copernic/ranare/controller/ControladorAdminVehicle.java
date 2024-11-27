@@ -44,10 +44,10 @@ public class ControladorAdminVehicle {
     }
     
     @PostMapping("/admin/eliminarVehicle")
-    public String eliminarVehicle(@RequestParam(name = "matricula", required = true)
-            String matricula, RedirectAttributes redirectAttributes){
-        if(matricula != null && !matricula.isEmpty()){
-            adminVehicleService.deleteVehicle(matricula);
+    public String eliminarVehicle(@RequestParam(name = "matriculas", required = false)
+            List<String> matriculas, RedirectAttributes redirectAttributes){
+        if(matriculas != null && !matriculas.isEmpty()){
+            adminVehicleService.deleteVehiclesByIds(matriculas);
             redirectAttributes.addFlashAttribute("message", "Vehicle eliminat correctament.");
         }else{
             redirectAttributes.addFlashAttribute("errorMessage","No s'ha seleccionat cap vehicle per eliminar.");

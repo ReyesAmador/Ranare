@@ -7,7 +7,6 @@ package cat.copernic.ranare.repository.mysql;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
 /**
  *
  * @author ngall

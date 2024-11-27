@@ -39,13 +39,25 @@
                 <!-- Contenido principal -->
                 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         
+                    <div th:if="${message}" class="alert alert-success mt-3" role="alert">
+                        <p th:text="${message}"></p>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger mt-3" role="alert">
+                        <p th:text="${errorMessage}"></p>
+                    </div>
+                    
                     <!-- Botones de acción -->
                     <div class="mt-3">
                         <a href="/crear-vehicle" class="btn btn-custom btn-modify">Crear / Modificar</a>
                     </div>
 
                     <!-- Formulario para eliminar vehículos -->
-                    <form action="/admin/vehicles/delete" method="post">
+                    <form action="/admin/eliminarVehicle" method="post">
+                        
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        
+                        <button type="submit" class="btn btn-custom btn-delete mt-3">Eliminar</button>
+                        
                         <!-- Instrucciones y tabla de vehículos -->
                         <div class="text-instructions mt-3">
                             <p>Selecciona un vehicle existent per Eliminar-lo.</p>
@@ -57,25 +69,22 @@
                                 <thead>
                                     <tr>
                                         <th>Seleccionar</th>
-                                        <th>ID del Vehículo</th>
-                                        <th>Modelo</th>
-                                        <th>Marca</th>
+                                        <th>Matrícula</th>
+                                        <th>Nom del Vehicle</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="vehicle : ${vehicles}">
                                         <td>
-                                            <input type="checkbox" name="vehicleIds" th:value="${vehicle.id}">
+                                            <input type="checkbox" name="matriculas" th:value="${vehicle.matricula}">
                                         </td>
-                                        <td th:text="${vehicle.id}">ID del Vehículo</td>
-                                        <td th:text="${vehicle.modelo}">Modelo</td>
-                                        <td th:text="${vehicle.marca}">Marca</td>
+                                        <td th:text="${vehicle.matricula}">Matrícula</td>
+                                        <td th:text="${vehicle.nomVehicle}">Nom del Vehicle</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
 
-                        <button type="submit" class="btn btn-custom btn-delete mt-3">Eliminar</button>
                     </form>
                 </main>
             </div>
