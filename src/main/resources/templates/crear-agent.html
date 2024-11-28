@@ -5,49 +5,51 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
-        <title>Crear Client</title>
+        <title>Crear agent</title>
+        <!-- CSS de Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
-        <h1>Formulario para Crear un Cliente</h1>
+        <h1>Formulari per crear client</h1>
 
         <form th:action="@{/agents/crear-agent}" th:object="${agent}" method="post">
-            <label for="dni">DNI:</label>
+            <label for="dni">DNI:<span class="text-danger">*</span></label>
             <input type="text" id="dni" th:field="*{dni}" placeholder="00000000X" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span><br/>
 
-            <label for="nom">Nom:</label>
+            <label for="nom">Nom:<span class="text-danger">*</span></label>
             <input type="text" id="nom" th:field="*{nom}" placeholder="Nom" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></span><br/>
 
-            <label for="cognoms">Cognoms</label>
+            <label for="cognoms">Cognoms:<span class="text-danger">*</span></label>
             <input type="text" id="cognoms" th:field="*{cognoms}" placeholder="Cognoms" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('cognoms')}" th:errors="*{cognoms}"></span><br/>
 
-            <label for="dataNaixement">Data naixement:</label>
+            <label for="dataNaixement">Data naixement:<span class="text-danger">*</span></label>
             <input type="date" id="dataNaixement" th:field="*{dataNaixement}" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('dataNaixement')}" th:errors="*{dataNaixement}"></span><br/>
 
-            <label for="email">E-mail:</label>
+            <label for="email">E-mail:<span class="text-danger">*</span></label>
             <input type="email" id="email" th:field="*{email}" placeholder="correo@dominio.com" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br/>
 
-            <label for="numeroTarjetaCredit">Número tarjeta de credit:</label>
+            <label for="numeroTarjetaCredit">Número tarjeta de credit:<span class="text-danger">*</span></label>
             <input type="text" id="numeroTarjetaCredit" th:field="*{numeroTarjetaCredit}" placeholder="Número tarjeta de credit" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('numeroTarjetaCredit')}" th:errors="*{numeroTarjetaCredit}"></span><br/>
 
-            <label for="adreca">Adreça:</label>
+            <label for="adreca">Adreça:<span class="text-danger">*</span></label>
             <input type="text" id="adreca" th:field="*{adreca}" placeholder="Adreça" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('adreca')}" th:errors="*{adreca}"></span><br/>
 
-            <label for="pais">Pais:</label>
+            <label for="pais">Pais:<span class="text-danger">*</span></label>
             <input type="text" id="pais" th:field="*{pais}" placeholder="Pais" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('pais')}" th:errors="*{pais}"></span><br/>
 
-            <label for="ciutat">Ciutat:</label>
+            <label for="ciutat">Ciutat:<span class="text-danger">*</span></label>
             <input type="text" id="ciutat" th:field="*{ciutat}" placeholder="Ciutat" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('ciutat')}" th:errors="*{ciutat}"></span><br/>
 
-            <label for="codiPostal">Codi postal:</label>
+            <label for="codiPostal">Codi postal:<span class="text-danger">*</span></label>
             <input type="text" id="codiPostal" th:field="*{codiPostal}" placeholder="Codi postal" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('codiPostal')}" th:errors="*{codiPostal}"></span><br/>
 
@@ -64,7 +66,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <option value="ADMIN">ADMIN</option>
             </select><br/>
 
-            <button type="submit">Crear Agent</button>
+            <button type="submit" class="btn btn-primary">Crear Agent</button>
         </form>
         
         <button>
