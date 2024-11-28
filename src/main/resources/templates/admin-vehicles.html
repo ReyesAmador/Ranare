@@ -88,6 +88,7 @@
                                         <th>Seleccionar</th>
                                         <th>Matrícula</th>
                                         <th>Nom del Vehicle</th>
+                                        <th>Localització</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -97,6 +98,7 @@
                                         </td>
                                         <td th:text="${vehicle.matricula}">Matrícula</td>
                                         <td th:text="${vehicle.nomVehicle}">Nom del Vehicle</td>
+                                        <td th:text="${vehicle.localitzacio?.codiPostal}">Localització</td>
                                     </tr>
                                 </tbody>
                             </table>
