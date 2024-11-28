@@ -5,6 +5,7 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Agent;
+import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
  *
@@ -49,12 +52,26 @@ public class AgentController {
 
     // Crear un  agente con un rol
     @PostMapping("/crear-agent")
-    public String createAgent(@ModelAttribute @Valid Agent agent, BindingResult bindingResult){
+    public String crearAgent(@ModelAttribute @Valid Agent agent, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         if (bindingResult.hasErrors()) {
             return "crear_agent"; // Volver al formulario si hay errores
         }
         
         agentService.guardarAgent(agent); // Guardar el nuevo agente
+        redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
         return "redirect:/agents"; // Redirigir a la lista de agentes
+    }
+    
+    //Eliminar agent
+    @PostMapping("/eliminar-agent")
+    public String eliminarAgent(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes){
+        try{
+            agentService.eliminarAgent(dni);
+            redirectAttributes.addFlashAttribute("success", "Agent amb dni: " + dni +" eliminat correctament");
+        }catch(AgentNotFoundException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
+        }
+        
+        return "redirect:/agents";
     }
 }
