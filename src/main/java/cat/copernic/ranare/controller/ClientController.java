@@ -6,6 +6,7 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
+import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
@@ -107,20 +108,7 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
-    /**
-     * Eliminar un client pel seu DNI.
-     *
-     * @param dni El DNI del client que volem eliminar.
-     * @param redirectAttributes
-     * @return Una redirecció a la llista de clients després d'eliminar el
-     * client.
-     */
-    @DeleteMapping("/{dni}")
-    public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
-        clientService.deleteClient(dni);
-        redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
-        return "redirect:/clients";
-    }
+    
 
     /**
      * Mostrar la llista de clients en una vista HTML.
@@ -172,52 +160,7 @@ public class ClientController {
      * @return La redirección a la página de lista de clientes si es correcto, o
      * el formulario si hay errores.
      */
- /*
-    @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client,
-            @RequestParam(required = false) Rol rol,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            @AuthenticationPrincipal User loggedUser) {
 
-        // Validación inicial: Si hay errores, retorna al formulario antes de hacer nada más
-        if (bindingResult.hasErrors()) {
-            return "crear_client";  // Retorna inmediatamente si hay errores de validación
-        }
-
-        // Convertir DNI a mayúsculas si no es nulo
-        if (client.getDni() != null) {
-            client.setDni(client.getDni().toUpperCase());
-        }
-
-        // Comprobación del rol y creación del cliente o agente
-        if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
-            // Si el rol está especificado, el admin está creando un agente
-            agentService.crearAgent(client, rol);
-            redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
-        } else {
-            // Si no se especifica un rol, se crea un cliente normal
-            try {
-                Client savedClient = clientService.saveClient(client, false, bindingResult);
-                if (savedClient == null) {
-                    return "crear_client";  // Si hay errores de duplicado, vuelve al formulario
-                }
-
-                redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
-            } catch (DuplicateResourceException e) {
-                // Manejo de duplicados
-                if (e.getMessage().contains("DNI")) {
-                    bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
-                } else if (e.getMessage().contains("email")) {
-                    bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
-                }
-                return "crear_client";  // Retorna al formulario con los errores de duplicado
-            }
-        }
-
-        // Si todo está bien, redirige a la lista de clientes
-        return "redirect:/clients";
-    } */
     @PostMapping("/crear_client")
     public String createClient(@ModelAttribute @Valid Client client,
             BindingResult bindingResult,
@@ -327,6 +270,37 @@ public class ClientController {
         }
 
         return "redirect:/clients"; // Redirige a la lista de clientes si no hay errores
+    }
+    
+    
+    
+    /**
+     * Eliminar un client pel seu DNI.
+     *
+     * @param dni El DNI del client que volem eliminar.
+     * @param redirectAttributes
+     * @return Una redirecció a la llista de clients després d'eliminar el
+     * client.
+     */
+    /*
+    @DeleteMapping("/{dni}")
+    public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
+        clientService.deleteClient(dni);
+        redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
+        return "redirect:/clients";
+    }*/
+    
+    //Eliminar agent
+    @PostMapping("/eliminar_client")
+    public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes){
+        try{
+            clientService.eliminarClient(dni);
+            redirectAttributes.addFlashAttribute("success", "Client amb dni: " + dni +" eliminat correctament");
+        }catch(ClientNotFoundException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
+        }
+        
+        return "redirect:/clients";
     }
 
 }
