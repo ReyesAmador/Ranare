@@ -1,4 +1,5 @@
 /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -15,6 +16,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
@@ -40,8 +43,8 @@ import org.bson.types.Binary;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @SuperBuilder
+@Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Client  {
 
@@ -51,6 +54,7 @@ public class Client  {
     @Id
     @Column(nullable = false, unique = true, length = 9)
     @NotNull(message = "{dni.NotNull}") // Mensaje de error para campo DNI no nulo
+    @Pattern(regexp = "^[0-9]{8}[A-Za-z]$", message = "{dni.Pattern}")
     @Size(min = 9, max = 9, message = "{dni.Size}") // Mensaje de error para tamaño de DNI
 
     private String dni;
@@ -110,7 +114,7 @@ public class Client  {
     /**
      * Número de la targeta de crèdit associada al client.
      */
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @NotNull(message = "{numeroTarjetaCredit.NotNull}")
     private String numeroTarjetaCredit;
 
@@ -126,7 +130,8 @@ public class Client  {
     /**
      * Data de naixement del client.
      */
-    @Column(nullable = false) // Puedes cambiar a false si es obligatorio
+    @Past (message = "{dataNaixement.Past}")
+    @Column(nullable = false, unique = true) // Puedes cambiar a false si es obligatorio
     private LocalDate dataNaixement;
 
     /**
@@ -136,6 +141,5 @@ public class Client  {
     @Column(nullable = true)
     private String referenciaDocumentacio;
     
-    
+}  
 
-}
