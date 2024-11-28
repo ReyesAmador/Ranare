@@ -4,11 +4,15 @@
  */
 package cat.copernic.ranare.controller;
 
+import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
+import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
@@ -34,22 +38,34 @@ public class ControladorCrearVehicle {
     VehicleService vehicleService;
     
     @Autowired
+    LocalitzacioService localitzacioService;
+    
+    @Autowired
+    LocalitzacioRepository localitzacioRepository;
+    
+    @Autowired
     GridFsTemplate gridFsTemplate;
     
     @GetMapping("/crear-vehicle")
     public String mostrarFormulari(@RequestParam(name = "matricula", required = false) String matricula, Model model) {
+        List<Localitzacio> localitzacions = localitzacioRepository.findAll();
+        model.addAttribute("localitzacions", localitzacions);
         if(matricula != null && !matricula.isEmpty()){
             Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
             if(vehicle != null){
                 model.addAttribute("vehicle", vehicle);
+                
             }else{
                 model.addAttribute("errorMessage", "Vehicle no trobat.");
             }
         }else{
             model.addAttribute("vehicle", new Vehicle());
         }
-        return "crear-vehicle";  
+        
+        
+        return "crear-vehicle";
     }
+    
     
     @PostMapping("/crear-vehicle")
     public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes){

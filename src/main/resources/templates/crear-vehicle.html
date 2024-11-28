@@ -12,6 +12,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <!-- Enlace a CSS personalizado -->
         <link rel="stylesheet" href="/CSS/crearVehicleStyle.css">
+        <!-- CSS de Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- JS de Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </head>
     <body>
         <!-- Encabezado -->
@@ -42,7 +48,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <div class="form-group col-md-6">
                     <label for="matricula">Matrícula <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" id="matricula" placeholder="Matrícula" th:field="*{matricula}" required pattern="[A-Z0-9]{7}" th:readonly="${vehicle.matricula != null}">
-                    <small class="form-text text-muted">(El format ha de ser de 8 números i una lletra majúscula al final. Ex: 48953202S)</small>
+                    <small class="form-text text-muted">(El format ha de ser de 4 números i tres lletres majúscules al final. Ex: 4895KMR)</small>
                 </div>
             </div>
             <div class="form-row">
@@ -96,7 +102,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <textarea class="form-control" id="comentarisAgent" rows="3" placeholder="Afegeix comentaris" th:field="*{comentarisAgent}"></textarea>
                 </div>
             </div>
-
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="localitzacioDropdown" class="form-label">Assignar localització:</label>
+                    <select id="localitzacioDropdown" th:field="*{localitzacio}" class="form-select" required>
+                        <option value="" disabled selected>Selecciona una localització...</option>
+                        <th:block th:each="localitzacio : ${localitzacions}">
+                            <option th:value="${localitzacio.codiPostal}" th:text="${localitzacio.codiPostal}"
+                                    th:selected="${localitzacio.codiPostal == vehicle.localitzacio?.codiPostal}">
+                                
+                            </option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
             <div>
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>
@@ -110,5 +129,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <button type="submit" class="btn btn-primary">Insertar Imatge</button>
         </form>
+        
+        <script>
+            $(document).ready(function () {
+                $('#localitzacioDropdown').select2({
+                    placeholder: "Buscar per Codi Postal",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        </script>
     </body>
 </html>

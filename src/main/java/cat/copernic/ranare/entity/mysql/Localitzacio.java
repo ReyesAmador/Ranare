@@ -16,6 +16,7 @@ import java.time.LocalTime;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 /**
@@ -34,6 +35,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "codiPostal")
 public class Localitzacio {
     
     @Id
@@ -76,5 +78,18 @@ public class Localitzacio {
      * Les operacions de persistència en una localització també es propagaran als vehicles associats.
      */
     @OneToMany(mappedBy = "localitzacio",cascade = CascadeType.ALL)
+    
     private Set<Vehicle> vehicles;
+    
+    @Override
+    public String toString(){
+         return "Localitzacio{" +
+               "codiPostal='" + codiPostal + '\'' +
+               ", adreca='" + adreca + '\'' +
+               ", ciutat='" + ciutat + '\'' +
+               ", pais='" + pais + '\'' +
+               ", tipus='" + tipus + '\'' +
+               ", horariApertura=" + horariApertura +
+               ", horariTancament=" + horariTancament + "}";
+    }
 }
