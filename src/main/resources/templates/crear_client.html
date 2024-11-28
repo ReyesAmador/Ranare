@@ -19,19 +19,19 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <!-- Campo de DNI -->
             <label for="dni">DNI:</label>
-            <input type="text" id="dni" th:field="*{dni}" required />
+            <input type="text" id="dni" th:field="*{dni}" required oninput="this.value = this.value.toUpperCase();" />
             <span class="error" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span>
             <br/>
 
             <!-- Campo de Nombre -->
             <label for="nom">Nom:</label>
-            <input type="text" id="nom" th:field="*{nom}" placeholder="Nom" required />
+            <input type="text" id="nom" th:field="*{nom}" placeholder="Nom" required oninput="capitalize(this);" />
             <span class="error" th:if="${#fields.hasErrors('nom')}" th:errors="*{nom}"></span>
             <br/>
 
             <!-- Campo de Apellidos -->
             <label for="cognoms">Cognoms:</label>
-            <input type="text" id="cognoms" th:field="*{cognoms}" placeholder="Cognoms" required />
+            <input type="text" id="cognoms" th:field="*{cognoms}" placeholder="Cognoms" required oninput="capitalize(this)" />
             <span class="error" th:if="${#fields.hasErrors('cognoms')}" th:errors="*{cognoms}"></span>
             <br/>
 

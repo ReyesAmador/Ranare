@@ -17,6 +17,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.List;
@@ -53,6 +54,7 @@ public class Client  {
     @Id
     @Column(nullable = false, unique = true, length = 9)
     @NotNull(message = "{dni.NotNull}") // Mensaje de error para campo DNI no nulo
+    @Pattern(regexp = "^[0-9]{8}[A-Za-z]$", message = "{dni.Pattern}")
     @Size(min = 9, max = 9, message = "{dni.Size}") // Mensaje de error para tamaño de DNI
 
     private String dni;

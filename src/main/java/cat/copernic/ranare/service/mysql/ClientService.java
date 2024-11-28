@@ -42,6 +42,10 @@ public class ClientService {
         // Verificación de duplicados sin interrumpir el flujo
         List<String> errorMessages = new ArrayList<>();
 
+        if (client.getDni() != null) {
+        client.setDni(client.getDni().toUpperCase());
+    }
+        
         // Verificación de duplicado para DNI
         if (isUpdate) {
             Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());

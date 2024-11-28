@@ -179,6 +179,10 @@ public class ClientController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User loggedUser) {
         // Si hay errores de validación, retorna al formulario
+        if (client.getDni() != null) {
+        client.setDni(client.getDni().toUpperCase());
+    }
+        
         if (bindingResult.hasErrors()) {
             return "crear_client";  // Si hay errores, vuelve al formulario con los mensajes
         }

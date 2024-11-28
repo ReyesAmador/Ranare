@@ -5,7 +5,6 @@
 package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.Estat;
-import ch.qos.logback.core.net.server.Client;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
