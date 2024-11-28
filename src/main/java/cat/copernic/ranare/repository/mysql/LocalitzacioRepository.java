@@ -4,20 +4,16 @@
  */
 package cat.copernic.ranare.repository.mysql;
 
-import cat.copernic.ranare.entity.mysql.Client;
-import java.util.Optional;
+import cat.copernic.ranare.entity.mysql.Localitzacio;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- *
- * @author Raú
+ * Una interface que hereda de JpaRepository amb els seus propis mètodes per poder implementar-los en la 
+ * capa service. També es poden definir mètodes personalitzats sense implementar-los
+ * @author reyes
  */
 @Repository
-public interface ClientRepository extends JpaRepository<Client, String> {
-    @Override
-    Optional<Client> findById(String dni); // Para buscar por DNI
-    
-    Optional<Client> findByEmail(String email); // Para buscar por email
+public interface LocalitzacioRepository extends JpaRepository <Localitzacio,String>{
     
 }

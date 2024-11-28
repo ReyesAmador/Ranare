@@ -1,4 +1,5 @@
 /*
+/*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -43,7 +44,6 @@ import org.bson.types.Binary;
 @AllArgsConstructor
 @SuperBuilder
 @Entity
-@SuperBuilder
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Client  {
 
@@ -139,6 +139,5 @@ public class Client  {
     @Column(nullable = true)
     private String referenciaDocumentacio;
     
-    
+}  
 
-}

@@ -43,4 +43,8 @@ public class AgentService {
         
         return agentRepository.save(agent);
     }
+    
+    public void guardarAgent(Agent agent){
+        agentRepository.save(agent);
+    }
 }

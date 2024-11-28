@@ -6,12 +6,14 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
-import exceptions.DuplicateResourceException;
+import cat.copernic.ranare.exceptions.DuplicateResourceException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
 /**
  *
@@ -31,40 +33,117 @@ public class ClientService {
      * client.
      *
      * @param client El client a desar.
+     * @param isUpdate
+     * @param bindingResult
      * @return `true` si l'operació és correcta, `false` si falla per
      * duplicació.
      */
-    public Client saveClient(Client client, boolean isUpdate) {
-        // Si es una operación de actualización, aseguramos que no se modifique el DNI
+    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
+        // Verificación de duplicados sin interrumpir el flujo
+        List<String> errorMessages = new ArrayList<>();
+
+        // Verificación de duplicado para DNI
         if (isUpdate) {
-            Optional<Client> existingClient = clientRepository.findById(client.getDni());
-            if (existingClient.isPresent() && !existingClient.get().getDni().equals(client.getDni())) {
-                throw new DuplicateResourceException("El DNI ja està registrat.", "update", client.getDni());
+            Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+            if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
+                // Si ya existe un cliente con ese DNI, se agrega un error específico para el DNI
+                bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
             }
         } else {
-            // Para creación, primero comprobamos si el DNI ya está registrado
-            Optional<Client> existingClient = clientRepository.findById(client.getDni());
-            if (existingClient.isPresent()) {
-                throw new DuplicateResourceException("El DNI ja està registrat.", "create", client.getDni());
+            Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+            if (existingClientByDni.isPresent()) {
+                // Si ya existe un cliente con ese DNI, se agrega un error específico para el DNI
+                bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
             }
         }
 
-        try {
-            // Guardamos el cliente en la base de datos
-            return clientRepository.save(client);
-        } catch (DataIntegrityViolationException e) {
-            // Si hay un error de integridad, lo capturamos y lo gestionamos
-            String errorMessage;
-            if (e.getMessage().contains("dni")) {
-                errorMessage = "El DNI ja està registrat.";
-            } else if (e.getMessage().contains("email")) {
-                errorMessage = "El correu electrònic ja està registrat.";
-            } else {
-                errorMessage = "Un camp únic ja està duplicat.";
-            }
-            throw new DuplicateResourceException(errorMessage, isUpdate ? "update" : "create", client.getDni());
+        // Verificación de duplicado para email
+        Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
+        if (existingClientByEmail.isPresent()) {
+            // Si ya existe un cliente con ese correo electrónico, se agrega un error específico para el correo
+            bindingResult.rejectValue("email", "duplicate.email", "El correu electrònic ja està registrat.");
+        }
+
+        // Si se encontraron errores, no procedemos a guardar el cliente
+        if (bindingResult.hasErrors()) {
+            return null; // Si hay errores de validación, no guardamos el cliente
+        }
+
+        // Si no hay duplicados, guardamos el cliente
+        return clientRepository.save(client);
+    }
+
+    /*
+    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
+    // Verificación de duplicados sin interrumpir el flujo
+    List<String> errorMessages = new ArrayList<>();
+
+    // Verificación de duplicado para DNI
+    if (isUpdate) {
+        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+        if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
+            errorMessages.add("El DNI ja està registrat.");
+        }
+    } else {
+        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+        if (existingClientByDni.isPresent()) {
+            errorMessages.add("El DNI ja està registrat.");
         }
     }
+
+    // Verificación de duplicado para email
+    Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
+    if (existingClientByEmail.isPresent()) {
+        errorMessages.add("El correu electrònic ja està registrat.");
+    }
+
+    // Si se encontraron errores, los agregamos al bindingResult
+    if (!errorMessages.isEmpty()) {
+        for (String errorMessage : errorMessages) {
+            bindingResult.rejectValue("email", "duplicate.email", errorMessage);  // Para email
+            bindingResult.rejectValue("dni", "duplicate.dni", errorMessage);  // Para DNI
+        }
+        return null; // Para evitar que el cliente se guarde si hay errores
+    }
+
+    // Si no hay duplicados, guardamos el cliente
+    return clientRepository.save(client);
+} */
+ /*
+    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
+    // Verificación de duplicados sin interrumpir el flujo
+    List<String> errorMessages = new ArrayList<>();
+
+    // Verificación de duplicado para DNI
+    if (isUpdate) {
+        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+        if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
+            bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
+        }
+    } else {
+        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
+        if (existingClientByDni.isPresent()) {
+            bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
+        }
+    }
+
+    // Verificación de duplicado para email
+    Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
+    if (existingClientByEmail.isPresent()) {
+        bindingResult.rejectValue("email", "duplicate.email", "El correu electrònic ja està registrat.");
+    }
+
+    // Si hay errores, devolvemos el formulario con los errores
+    if (bindingResult.hasErrors()) {
+        return null; // Para evitar que se guarde el cliente si hay errores
+    }
+
+    // Si no hay duplicados, guardamos el cliente
+    return clientRepository.save(client);
+}
+    
+    
+  
 
     /**
      * Obté un client pel seu DNI.
@@ -88,7 +167,7 @@ public class ClientService {
     /**
      * Elimina un client pel seu DNI.
      *
-     * @param dni El DNI del client a eliminar.
+     * @param dni El DNI del client a eliminar.s
      */
     public void deleteClient(String dni) {
         clientRepository.deleteById(dni);
