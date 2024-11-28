@@ -44,9 +44,9 @@ public class ClientService {
         List<String> errorMessages = new ArrayList<>();
 
         if (client.getDni() != null) {
-        client.setDni(client.getDni().toUpperCase());
-    }
-        
+            client.setDni(client.getDni().toUpperCase());
+        }
+
         // Verificación de duplicado para DNI
         if (isUpdate) {
             Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
@@ -78,10 +78,6 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
-   
-   
-  
-
     /**
      * Obté un client pel seu DNI.
      *
@@ -109,15 +105,21 @@ public class ClientService {
     public void deleteClient(String dni) {
         clientRepository.deleteById(dni);
     }
-    
-   public void eliminarClient(String dni){
-       Optional<Client> clientOpt = clientRepository.findById(dni);
-       if(clientOpt.isPresent())
-           clientRepository.delete(clientOpt.get());
-       else throw new ClientNotFoundException("L'agent amb DNI " + dni + " no existeix");
-           
-   }
-    
+
+    public void eliminarClient(String dni) {
+        Optional<Client> clientOpt = clientRepository.findById(dni);
+        if (clientOpt.isPresent()) {
+            clientRepository.delete(clientOpt.get());
+        } else {
+            throw new ClientNotFoundException("L'agent amb DNI " + dni + " no existeix");
+        }
+
+    }
+
+    public List<Client> getOnlyClients() {
+        return clientRepository.findAllClientsExcludingAgents();
+    }
+
     /*
      public void eliminarAgent(String dni) {
         Optional<Agent> agentOpt = agentRepository.findById(dni);
