@@ -172,38 +172,7 @@ public class ClientController {
      * @return La redirección a la página de lista de clientes si es correcto, o
      * el formulario si hay errores.
      */
-
-    @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            @AuthenticationPrincipal User loggedUser) {
-        // Si hay errores de validación, retorna al formulario
-        if (client.getDni() != null) {
-        client.setDni(client.getDni().toUpperCase());
-    }
-        
-        if (bindingResult.hasErrors()) {
-            return "crear_client";  // Si hay errores, vuelve al formulario con los mensajes
-        }
-
-        // Si no hay errores, intenta guardar el cliente
-        try {
-            Client savedClient = clientService.saveClient(client, false, bindingResult);
-            if (savedClient == null) {
-                return "crear_client";  // Si hay errores de duplicado, vuelve al formulario
-            }
-
-            redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
-        } catch (DuplicateResourceException e) {
-            // Manejo de duplicados
-            return "crear_client";
-        }
-
-        return "redirect:/clients";  // Si todo está bien, redirige a la lista de clientes
-    }
-
-    /*
+ /*
     @PostMapping("/crear_client")
     public String createClient(@ModelAttribute @Valid Client client,
             @RequestParam(required = false) Rol rol,
@@ -211,42 +180,91 @@ public class ClientController {
             RedirectAttributes redirectAttributes,
             @AuthenticationPrincipal User loggedUser) {
 
-        // Si hay errores de validación, retornamos al formulario
+        // Validación inicial: Si hay errores, retorna al formulario antes de hacer nada más
         if (bindingResult.hasErrors()) {
-            return "crear_client";
+            return "crear_client";  // Retorna inmediatamente si hay errores de validación
         }
 
-        // Si no hay errores, intentamos guardar el cliente
+        // Convertir DNI a mayúsculas si no es nulo
+        if (client.getDni() != null) {
+            client.setDni(client.getDni().toUpperCase());
+        }
+
+        // Comprobación del rol y creación del cliente o agente
+        if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
+            // Si el rol está especificado, el admin está creando un agente
+            agentService.crearAgent(client, rol);
+            redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
+        } else {
+            // Si no se especifica un rol, se crea un cliente normal
+            try {
+                Client savedClient = clientService.saveClient(client, false, bindingResult);
+                if (savedClient == null) {
+                    return "crear_client";  // Si hay errores de duplicado, vuelve al formulario
+                }
+
+                redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
+            } catch (DuplicateResourceException e) {
+                // Manejo de duplicados
+                if (e.getMessage().contains("DNI")) {
+                    bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
+                } else if (e.getMessage().contains("email")) {
+                    bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
+                }
+                return "crear_client";  // Retorna al formulario con los errores de duplicado
+            }
+        }
+
+        // Si todo está bien, redirige a la lista de clientes
+        return "redirect:/clients";
+    } */
+    @PostMapping("/crear_client")
+    public String createClient(@ModelAttribute @Valid Client client,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            @RequestParam(required = false) Rol rol,
+            @AuthenticationPrincipal User loggedUser) {
+
+        // Validar errores del formulario
+        if (bindingResult.hasErrors()) {
+            return "crear_client"; // Retornar al formulario si hay errores
+        }
+
+        // Convertir DNI a mayúsculas
+        if (client.getDni() != null) {
+            client.setDni(client.getDni().toUpperCase());
+        }
+
         try {
-            if (loggedUser.getAuthorities().stream()
-                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
-                // Si es admin y se especifica un rol, crear un agente
+            // Guardar cliente
+            Client savedClient = clientService.saveClient(client, false, bindingResult);
+            if (savedClient == null || bindingResult.hasErrors()) {
+                return "crear_client"; // Retornar si hay errores de duplicado
+            }
+
+            // Manejo de roles: Si es administrador y se especifica un rol
+            if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
                 agentService.crearAgent(client, rol);
                 redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
             } else {
-                // Si no es admin, simplemente se crea el cliente
-                Client savedClient = clientService.saveClient(client, false, bindingResult);
-                if (savedClient == null) {
-                    return "crear_client"; // Si hubo errores de duplicado, vuelve al formulario
-                }
                 redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
             }
+
         } catch (DuplicateResourceException e) {
-            // Rechazamos el valor del DNI o email en el caso de que sea duplicado
+            // Manejar errores de duplicado
             if (e.getMessage().contains("DNI")) {
                 bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
-            } else if (e.getMessage().contains("email")) {
+            }
+            if (e.getMessage().contains("email")) {
                 bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
             }
-
-            // Retornamos al formulario con los errores
-            return "crear_client";
+            return "crear_client"; // Retornar con errores al formulario
         }
 
-        // Si no hay errores, redirigimos a la lista de clientes
+        // Redirigir a la lista de clientes si todo está correcto
         return "redirect:/clients";
-    }  
-     */
+    }
+
     /**
      * Mostrar el formulari per modificar un client.
      *
@@ -265,17 +283,6 @@ public class ClientController {
         return "redirect:/clients"; // Redirigeix a la llista si no es troba el client
     }
 
-    /**
-     * Processa la modificació d'un client. Gestiona errors de duplicació.
-     *
-     * @param dni El DNI del client que es vol modificar.
-     * @param client Les noves dades del client.
-     * @param result El resultat de la validació del formulari.
-     * @param redirectAttributes Atributs de redirecció per passar missatges
-     * d'èxit.
-     * @return La redirecció a la pàgina de llista de clients si és correcte, o
-     * el formulari si hi ha errors.
-     */
     /**
      * Procesa la modificación de un cliente. Gestiona errores de duplicación.
      *
