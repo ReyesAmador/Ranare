@@ -7,6 +7,7 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
+import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import java.util.List;
@@ -93,16 +94,23 @@ public class LocalitzacioController {
     public String createLocalitzacio(@ModelAttribute Localitzacio local, RedirectAttributes redirectAttributes, Model model){
         
         try{
-        localitzacioService.saveLocalitzacio(local);
-        
-        // Afegeix un missatge de confirmació utilitzant flash attributes.
-        redirectAttributes.addFlashAttribute("success", "Localització afegida correctament!");
-        
-        return "redirect:/localitzacio";
+            //validar horaris
+            localitzacioService.validarHorari(local.getHorariApertura(), local.getHorariTancament());
+            localitzacioService.saveLocalitzacio(local);
+
+            // Afegeix un missatge de confirmació utilitzant flash attributes.
+            redirectAttributes.addFlashAttribute("success", "Localització afegida correctament!");
+
+            return "redirect:/localitzacio";
         
         }catch(InvalidCodiPostalException e){
             // Afegeix un missatge d'error al model en cas d'excepció.
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute("error_codi", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
+            return "crear-localitzacio";
+        }catch(InvalidHorariException e){
+            model.addAttribute("error_horari", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
             return "crear-localitzacio";
         }
     }
