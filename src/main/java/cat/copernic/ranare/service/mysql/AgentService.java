@@ -7,8 +7,10 @@ package cat.copernic.ranare.service.mysql;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
+import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.repository.mysql.AgentRepository;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,5 +48,13 @@ public class AgentService {
     
     public void guardarAgent(Agent agent){
         agentRepository.save(agent);
+    }
+    
+    public void eliminarAgent(String dni) {
+        Optional<Agent> agentOpt = agentRepository.findById(dni);
+        if(agentOpt.isPresent())
+            agentRepository.delete(agentOpt.get());
+        else
+            throw new AgentNotFoundException("L'agent amb DNI " + dni + " no existeix");
     }
 }
