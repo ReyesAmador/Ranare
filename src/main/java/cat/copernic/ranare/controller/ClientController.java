@@ -4,12 +4,14 @@
  */
 package cat.copernic.ranare.controller;
 
+import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
+import cat.copernic.ranare.repository.mysql.AgentRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -51,9 +53,7 @@ public class ClientController {
     @Autowired
     private ClientService clientService;
 
-    @Autowired
-    private AgentService agentService;
-
+    
     /**
      * Processa el formulari de creació de clients o agents. Gestiona errors de
      * duplicació.
@@ -108,8 +108,6 @@ public class ClientController {
         return clientService.getAllClients();
     }
 
-    
-
     /**
      * Mostrar la llista de clients en una vista HTML.
      *
@@ -119,7 +117,8 @@ public class ClientController {
      */
     @GetMapping
     public String showClientList(Model model) {
-        model.addAttribute("clients", clientService.getAllClients());
+        List<Client> clients = clientService.getOnlyClients();
+        model.addAttribute("clients", clients);
         return "llista_de_clients"; // Plantilla Thymeleaf per mostrar la llista de clients
     }
 
@@ -160,7 +159,6 @@ public class ClientController {
      * @return La redirección a la página de lista de clientes si es correcto, o
      * el formulario si hay errores.
      */
-
     @PostMapping("/crear_client")
     public String createClient(@ModelAttribute @Valid Client client,
             BindingResult bindingResult,
@@ -168,44 +166,45 @@ public class ClientController {
             @RequestParam(required = false) Rol rol,
             @AuthenticationPrincipal User loggedUser) {
 
-        // Validar errores del formulario
+        // Si hay errores de validación, regresa al formulario
         if (bindingResult.hasErrors()) {
-            return "crear_client"; // Retornar al formulario si hay errores
+            return "crear_client";  // Vuelve al formulario de cliente si hay errores
         }
 
-        // Convertir DNI a mayúsculas
+        // Convertir el DNI a mayúsculas
         if (client.getDni() != null) {
             client.setDni(client.getDni().toUpperCase());
         }
 
         try {
-            // Guardar cliente
+            // Guardar el cliente
             Client savedClient = clientService.saveClient(client, false, bindingResult);
+
             if (savedClient == null || bindingResult.hasErrors()) {
-                return "crear_client"; // Retornar si hay errores de duplicado
+                return "crear_client";  // Si hay errores de duplicados, vuelve al formulario
             }
 
-            // Manejo de roles: Si es administrador y se especifica un rol
-            if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null) {
-                agentService.crearAgent(client, rol);
-                redirectAttributes.addFlashAttribute("missatge", "Agent creat correctament.");
+            // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
+            if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
+                // Crear un agente con los datos del cliente y redirigir al formulario de agente
+                redirectAttributes.addFlashAttribute("success", "Agente creado correctamente.");
+                return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
             } else {
-                redirectAttributes.addFlashAttribute("missatge", "Client creat correctament.");
+                // Si es un cliente normal
+                redirectAttributes.addFlashAttribute("missatge", "Cliente creado correctamente.");
+                return "redirect:/clients";  // Redirige a la lista de clientes
             }
 
         } catch (DuplicateResourceException e) {
-            // Manejar errores de duplicado
+            // Manejar errores de duplicados
             if (e.getMessage().contains("DNI")) {
                 bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
             }
             if (e.getMessage().contains("email")) {
                 bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
             }
-            return "crear_client"; // Retornar con errores al formulario
+            return "crear_client";  // Vuelve al formulario si hay errores
         }
-
-        // Redirigir a la lista de clientes si todo está correcto
-        return "redirect:/clients";
     }
 
     /**
@@ -271,9 +270,7 @@ public class ClientController {
 
         return "redirect:/clients"; // Redirige a la lista de clientes si no hay errores
     }
-    
-    
-    
+
     /**
      * Eliminar un client pel seu DNI.
      *
@@ -289,17 +286,16 @@ public class ClientController {
         redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
         return "redirect:/clients";
     }*/
-    
     //Eliminar agent
     @PostMapping("/eliminar_client")
-    public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes){
-        try{
+    public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes) {
+        try {
             clientService.eliminarClient(dni);
-            redirectAttributes.addFlashAttribute("success", "Client amb dni: " + dni +" eliminat correctament");
-        }catch(ClientNotFoundException e){
+            redirectAttributes.addFlashAttribute("success", "Client amb dni: " + dni + " eliminat correctament");
+        } catch (ClientNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
         }
-        
+
         return "redirect:/clients";
     }
 
