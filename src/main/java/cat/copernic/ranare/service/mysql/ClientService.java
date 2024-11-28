@@ -5,6 +5,7 @@
 package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import java.util.ArrayList;
@@ -77,76 +78,8 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
-    /*
-    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
-    // Verificación de duplicados sin interrumpir el flujo
-    List<String> errorMessages = new ArrayList<>();
-
-    // Verificación de duplicado para DNI
-    if (isUpdate) {
-        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
-        if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
-            errorMessages.add("El DNI ja està registrat.");
-        }
-    } else {
-        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
-        if (existingClientByDni.isPresent()) {
-            errorMessages.add("El DNI ja està registrat.");
-        }
-    }
-
-    // Verificación de duplicado para email
-    Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
-    if (existingClientByEmail.isPresent()) {
-        errorMessages.add("El correu electrònic ja està registrat.");
-    }
-
-    // Si se encontraron errores, los agregamos al bindingResult
-    if (!errorMessages.isEmpty()) {
-        for (String errorMessage : errorMessages) {
-            bindingResult.rejectValue("email", "duplicate.email", errorMessage);  // Para email
-            bindingResult.rejectValue("dni", "duplicate.dni", errorMessage);  // Para DNI
-        }
-        return null; // Para evitar que el cliente se guarde si hay errores
-    }
-
-    // Si no hay duplicados, guardamos el cliente
-    return clientRepository.save(client);
-} */
- /*
-    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
-    // Verificación de duplicados sin interrumpir el flujo
-    List<String> errorMessages = new ArrayList<>();
-
-    // Verificación de duplicado para DNI
-    if (isUpdate) {
-        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
-        if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
-            bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
-        }
-    } else {
-        Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
-        if (existingClientByDni.isPresent()) {
-            bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
-        }
-    }
-
-    // Verificación de duplicado para email
-    Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
-    if (existingClientByEmail.isPresent()) {
-        bindingResult.rejectValue("email", "duplicate.email", "El correu electrònic ja està registrat.");
-    }
-
-    // Si hay errores, devolvemos el formulario con los errores
-    if (bindingResult.hasErrors()) {
-        return null; // Para evitar que se guarde el cliente si hay errores
-    }
-
-    // Si no hay duplicados, guardamos el cliente
-    return clientRepository.save(client);
-}
-    
-    
+   
+   
   
 
     /**
@@ -176,4 +109,21 @@ public class ClientService {
     public void deleteClient(String dni) {
         clientRepository.deleteById(dni);
     }
+    
+   public void eliminarClient(String dni){
+       Optional<Client> clientOpt = clientRepository.findById(dni);
+       if(clientOpt.isPresent())
+           clientRepository.delete(clientOpt.get());
+       else throw new ClientNotFoundException("L'agent amb DNI " + dni + " no existeix");
+           
+   }
+    
+    /*
+     public void eliminarAgent(String dni) {
+        Optional<Agent> agentOpt = agentRepository.findById(dni);
+        if(agentOpt.isPresent())
+            agentRepository.delete(agentOpt.get());
+        else
+            throw new AgentNotFoundException("L'agent amb DNI " + dni + " no existeix");
+    }*/
 }
