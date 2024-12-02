@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Detalls del Client</title>
+</head>
+<body>
+    <h1>Detalls del Client</h1>
+
+    <!-- Mostrar los datos completos -->
+    <p><strong>DNI:</strong> <span th:text="${client.dni}"></span></p>
+    <p><strong>Nom:</strong> <span th:text="${client.nom}"></span></p>
+    <p><strong>Cognoms:</strong> <span th:text="${client.cognoms}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${client.email}"></span></p>
+    <p><strong>Direcció:</strong> <span th:text="${client.adreca}"></span></p>
+    <p><strong>País:</strong> <span th:text="${client.pais}"></span></p>
+    <p><strong>Ciutat:</strong> <span th:text="${client.ciutat}"></span></p>
+    <p><strong>Codi Postal:</strong> <span th:text="${client.codiPostal}"></span></p>
+    <p><strong>Reputació:</strong> <span th:text="${client.reputacio}"></span></p>
+    <p><strong>Data de Naixement:</strong> <span th:text="${client.dataNaixement}"></span></p>
+    <p><strong>Número de Tarjeta:</strong> <span th:text="${client.numeroTarjetaCredit}"></span></p>
+
+    <!-- Botones de Modificar y Eliminar -->
+    <a th:href="@{/clients/modificar/{dni}(dni=${client.dni})}" class="btn btn-warning">Modificar</a>
+    <form th:action="@{/clients/eliminar_client}" method="post" style="display:inline;">
+        <input type="hidden" name="dni" th:value="${client.dni}" />
+        <button type="submit" class="btn btn-danger" onclick="return confirm('Estàs segur que vols eliminar aquest client?');">Eliminar</button>
+    </form>
+
+    <br/><br/>
+    <a href="/clients">Tornar a la llista</a>
+</body>
+</html>

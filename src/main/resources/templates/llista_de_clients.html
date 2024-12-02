@@ -3,8 +3,6 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
-
-<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Llista de Clientes</title>
@@ -24,13 +22,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <th>Nom</th>
                 <th>Cognoms</th>
                 <th>Email</th>
-                <th>Direcció</th>
-                <th>País</th>
-                <th>Ciutat</th>
-                <th>Codi postal</th>
-                <th>Reputació</th>
-                <th>Data de naixement</th>
-                <th>Número de Tarjeta</th>
                 <th>Accions</th>
             </tr>
         </thead>
@@ -40,20 +31,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <td th:text="${client.nom}"></td>
                 <td th:text="${client.cognoms}"></td>
                 <td th:text="${client.email}"></td>
-                <td th:text="${client.adreca}"></td>
-                <td th:text="${client.pais}"></td>
-                <td th:text="${client.ciutat}"></td>
-                <td th:text="${client.codiPostal}"></td>
-                <td th:text="${client.reputacio}"></td>
-                <td th:text="${client.dataNaixement}"></td>
-                <td th:text="${client.numeroTarjetaCredit}"></td>
                 <td>
-                    
-                    <form th:action="@{/clients/eliminar_client}" method="post">
-                        <input type="hidden" name="dni" th:value="${client.dni}" />
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Estàs segur que vols eliminar aquest client?');">Eliminar</button>
-                    </form>
-                    <a th:href="@{/clients/modificar/{dni}(dni=${client.dni})}">Modificar</a>
+                    <a th:href="@{/clients/detall/{dni}(dni=${client.dni})}" class="btn btn-primary btn-sm">Ver más</a>
                 </td>
             </tr>
         </tbody>
