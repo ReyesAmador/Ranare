@@ -6,7 +6,9 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
+import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,5 +62,11 @@ public class LocalitzacioService {
      */
     private boolean validarCodiPostal(String cp){
         return cp!= null && cp.matches("\\d+");
+    }
+    
+    //comprovar si l'horari d'apertura es abans de l'horari de tancament
+    public void validarHorari(LocalTime horariApertura, LocalTime horariTancament) throws InvalidHorariException{
+        if(horariApertura.isAfter(horariTancament) || horariApertura.equals(horariTancament))
+            throw new InvalidHorariException("L'horari de tancament ha de ser més tard que el d'apertura");
     }
 }
