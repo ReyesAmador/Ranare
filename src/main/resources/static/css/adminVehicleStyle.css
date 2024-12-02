@@ -71,3 +71,12 @@ body {
     text-align: center;
     vertical-align: middle;
 }
+
+.details-row {
+    display: none;
+    background-color: #f9f9f9;
+}
+
+.details-row td {
+    padding: 10px;
+}

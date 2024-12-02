@@ -7,7 +7,10 @@
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
         <!-- CSS personalizado -->
-        <link rel="stylesheet" href="styles.css">
+        <!-- <link rel="stylesheet" href="styles.css">-->
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
         <script>
             function setModifyLink() {
                 // Obtener todos los checkboxes seleccionados
@@ -22,7 +25,26 @@
                     modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
                 }
             }
+            
+            function toggleDetails(matricula) {
+                console.log("toggleDetails ejecutado para matrícula:", matricula);
+                const detailsRow = document.getElementById(`details-${matricula}`);
+                if (detailsRow) {
+                    detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+                } else {
+                    console.error(`No se encontró la fila con ID details-${matricula}`);
+                }
+            }
         </script>
+        <style>
+            .details-row {
+                display: none;
+                background-color: #f9f9f9;
+            }
+            .details-row td {
+                padding: 10px;
+            }
+        </style>
 
     </head>
     <body>
@@ -89,6 +111,7 @@
                                         <th>Matrícula</th>
                                         <th>Nom del Vehicle</th>
                                         <th>Localització</th>
+                                        <th>Accions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -99,11 +122,29 @@
                                         <td th:text="${vehicle.matricula}">Matrícula</td>
                                         <td th:text="${vehicle.nomVehicle}">Nom del Vehicle</td>
                                         <td th:text="${vehicle.localitzacio?.codiPostal}">Localització</td>
+                                        <td>
+                                            <button type="button" class="btn btn-info btn-sm" 
+                                                    th:attr="onclick=|toggleDetails('${vehicle.matricula}')|">
+
+                                                Veure més
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr th:each="vehicle : ${vehicles}" th:id="'details-' + ${vehicle.matricula}" class="details-row">
+                                        <td colspan="5">
+                                            <strong>Combustió:</strong> <span th:text="${vehicle.combustio}"></span><br>
+                                            <strong>Transmissió:</strong> <span th:text="${vehicle.transmissio}"></span><br>
+                                            <strong>Límit Quilometratge:</strong> <span th:text="${vehicle.limitQuilometratge}"></span><br>
+                                            <strong>Preu per Hora de Lloguer:</strong> <span th:text="${vehicle.preuPerHoraLloguer}"></span><br>
+                                            <strong>Mínim Hores Lloguer:</strong> <span th:text="${vehicle.minimHoresLloguer}"></span><br>
+                                            <strong>Màxim Hores Lloguer:</strong> <span th:text="${vehicle.maximHoresLloguer}"></span><br>
+                                            <strong>Fiança Estàndard:</strong> <span th:text="${vehicle.fiancaStandard}"></span><br>
+                                            <strong>Comentaris Agent:</strong> <span th:text="${vehicle.comentarisAgent}"></span>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-
                     </form>
                 </main>
             </div>
