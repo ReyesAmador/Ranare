@@ -69,6 +69,37 @@ public class Client  {
     @NotNull(message = "cognoms.NotNull")
     @Size(min = 2, max = 200, message = "{cognoms.Size}")
     private String cognoms;
+    
+    
+    /**
+     * Nacionalitat del client. Obligatori.
+     */
+    @Column(nullable = false)
+    @NotNull(message = "{nacionalitat.NotNull}")
+    private String nacionalitat;
+
+    /**
+     * Telèfon de contacte del client. Obligatori i ha de tenir 9 dígits.
+     */
+    @Column(nullable = false, length = 9)
+    @NotNull(message = "{telefon.NotNull}")
+    @Pattern(regexp = "^[0-9]{9}$", message = "{telefon.Pattern}")
+    private String telefon;
+    
+    
+    /**
+     * Nom d'usuari per a l'autenticació del client.
+     */
+    @Column(nullable = false, unique = true)
+    @NotNull(message = "{username.NotNull}")
+    private String username;
+
+    /**
+     * Contrasenya del client. No es visible en detalles ni se expone.
+     */
+    @Column(nullable = false)
+    @NotNull(message = "{pwd.NotNull}")
+    private String pwd;
 
     /**
      * Correu electrònic de l'usuari.
@@ -131,7 +162,7 @@ public class Client  {
      * Data de naixement del client.
      */
     @Past (message = "{dataNaixement.Past}")
-    @Column(nullable = false, unique = true) // Puedes cambiar a false si es obligatorio
+    @Column(nullable = false)
     private LocalDate dataNaixement;
 
     /**
