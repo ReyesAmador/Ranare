@@ -29,7 +29,7 @@
             <!-- Iterar sobre la lista de localitzacions -->
             <tr th:each="localitzacio : ${localitzacions}">
                 <td>
-                    <a th:href="@{/localitzacio/{codiPostal}(codiPostal=${local.codiPostal})}" th:text="${local.codiPostal}"></a>
+                    <a th:href="@{/localitzacio/{codiPostal}(codiPostal=${localitzacio.codiPostal})}" th:text="${localitzacio.codiPostal}"></a>
                 </td>
                 <td th:text="${localitzacio.horariApertura}"></td>
                 <td th:text="${localitzacio.horariTancament}"></td>
