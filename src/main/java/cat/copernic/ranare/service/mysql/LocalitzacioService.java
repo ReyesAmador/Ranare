@@ -79,4 +79,16 @@ public class LocalitzacioService {
         
         return localitzacio.getVehicles();
     }
+    
+    /**
+     * Retorna una localització pel seu codi postal.
+     * 
+     * @param codiPostal El codi postal de la localització.
+     * @return La localització corresponent al codi postal.
+     * @throws EntityNotFoundException Si no es troba cap localització amb el codi postal.
+     */
+    public Localitzacio getLocalitzacioPerCodiPostal(String codiPostal){
+        return localitzacioRepository.findById(codiPostal)
+                .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
+    }
 }

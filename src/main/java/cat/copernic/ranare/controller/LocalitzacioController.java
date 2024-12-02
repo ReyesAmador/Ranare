@@ -130,4 +130,17 @@ public class LocalitzacioController {
             return "error";
         }
     }
+    
+    @GetMapping("/{codiPostal}")
+    public String detallLocalitzacio(@PathVariable String codiPostal, Model model){
+        try{
+            Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
+            model.addAttribute("localitzacio",localitzacio);
+
+            return "detall-localitzacio";
+        }catch(InvalidCodiPostalException e){
+            model.addAttribute("errorMissatge", e.getMessage());
+            return "error";
+        }
+    }
 }
