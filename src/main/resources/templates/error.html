@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Error</h4>
+            <p th:text="${errorMissatge}">Un error inesperat ha ocorregut.</p>
+            <hr>
+            <a th:href="@{/localitzacio}" class="btn btn-primary">Tornar a la llista</a>
+        </div>
+    </div>
+</body>
+</html>

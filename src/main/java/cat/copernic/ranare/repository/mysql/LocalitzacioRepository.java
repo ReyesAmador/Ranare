@@ -5,7 +5,10 @@
 package cat.copernic.ranare.repository.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,5 +18,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface LocalitzacioRepository extends JpaRepository <Localitzacio,String>{
+    
+    /*Utilitzem el Join Fetch ja que necessitem carregar les dades de vehicles, per defecte el oneToMany està configurat amb
+    Lazy no en Eager, per tant no carregará les dades de la taula relacionada*/
+    @Query("SELECT l FROM Localitzacio l LEFT JOIN FETCH l.vehicles WHERE l.codiPostal = :codiPostal")
+    Optional<Localitzacio> trobarVehiclesPerCodiPostal(@Param("codiPostal") String codiPostal);
     
 }
