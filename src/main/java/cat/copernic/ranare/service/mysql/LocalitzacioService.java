@@ -5,11 +5,13 @@
 package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
+import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,5 +70,25 @@ public class LocalitzacioService {
     public void validarHorari(LocalTime horariApertura, LocalTime horariTancament) throws InvalidHorariException{
         if(horariApertura.isAfter(horariTancament) || horariApertura.equals(horariTancament))
             throw new InvalidHorariException("L'horari de tancament ha de ser més tard que el d'apertura");
+    }
+    
+    //retorna els vehicles associats a una localitzacio, es comproba també que el codi postal existeixi
+    public Set<Vehicle> getVehiclePerLocalitzacio(String codiPostal){
+        Localitzacio localitzacio = localitzacioRepository.trobarVehiclesPerCodiPostal(codiPostal)
+                .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
+        
+        return localitzacio.getVehicles();
+    }
+    
+    /**
+     * Retorna una localització pel seu codi postal.
+     * 
+     * @param codiPostal El codi postal de la localització.
+     * @return La localització corresponent al codi postal.
+     * @throws EntityNotFoundException Si no es troba cap localització amb el codi postal.
+     */
+    public Localitzacio getLocalitzacioPerCodiPostal(String codiPostal){
+        return localitzacioRepository.findById(codiPostal)
+                .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
     }
 }
