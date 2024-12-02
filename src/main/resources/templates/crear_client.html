@@ -9,7 +9,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <title>Crear Client</title>
     </head>
     <body>
-        <h1>Formulario para Crear un Cliente</h1>
+        <h1>Formulario per crear un client</h1>
 
         <!-- Mostrar errores globales -->
         <form th:action="@{/clients/crear_client}" th:object="${client}" method="post">
@@ -19,7 +19,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <!-- Campo de DNI -->
             <label for="dni">DNI:</label>
-            <input type="text" id="dni" th:field="*{dni}" required oninput="this.value = this.value.toUpperCase();" />
+            <input type="text" id="dni" th:field="*{dni}"  placeholder="00000000X" required oninput="this.value = this.value.toUpperCase();" />
             <span class="error" th:if="${#fields.hasErrors('dni')}" th:errors="*{dni}"></span>
             <br/>
 
@@ -97,7 +97,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <br/>
             </div>
 
-            <button type="submit">Crear Cliente</button>
+            <button type="submit">Crear Client</button>
         </form>
     </body>
 </html>

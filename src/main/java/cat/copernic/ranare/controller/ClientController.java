@@ -4,14 +4,12 @@
  */
 package cat.copernic.ranare.controller;
 
-import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
-import cat.copernic.ranare.service.mysql.AgentService;
+
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
-import cat.copernic.ranare.repository.mysql.AgentRepository;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +23,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -297,6 +295,18 @@ public class ClientController {
         }
 
         return "redirect:/clients";
+    }
+    
+     @GetMapping("/detall/{dni}")
+    public String veureDetallsClient(@PathVariable String dni, Model model) {
+        Optional<Client> clientOpt = clientService.getClientById(dni);
+        if (clientOpt.isPresent()) {
+            model.addAttribute("client", clientOpt.get());
+            return "detalls_client";
+        } else {
+            model.addAttribute("missatge", "Client no trobat.");
+            return "redirect:/clients";
+        }
     }
     
     
