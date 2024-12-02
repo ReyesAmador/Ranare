@@ -6,11 +6,13 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
+import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import java.util.List;
+import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -112,6 +115,32 @@ public class LocalitzacioController {
             model.addAttribute("error_horari", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
             return "crear-localitzacio";
+        }
+    }
+    
+    @GetMapping("/{codiPostal}/vehicles")
+    public String mostrarVehicles(@PathVariable String codiPostal, Model model){
+        try{
+            Set<Vehicle> vehicles = localitzacioService.getVehiclePerLocalitzacio(codiPostal);
+            model.addAttribute("vehicles",vehicles);
+
+            return "admin-vehicles";
+        }catch(InvalidCodiPostalException e){
+            model.addAttribute("errorMissatge", e.getMessage());
+            return "error";
+        }
+    }
+    
+    @GetMapping("/{codiPostal}")
+    public String detallLocalitzacio(@PathVariable String codiPostal, Model model){
+        try{
+            Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
+            model.addAttribute("localitzacio",localitzacio);
+
+            return "detall-localitzacio";
+        }catch(InvalidCodiPostalException e){
+            model.addAttribute("errorMissatge", e.getMessage());
+            return "error";
         }
     }
 }
