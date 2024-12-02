@@ -53,6 +53,5 @@ public class ControladorAdminVehicle {
             redirectAttributes.addFlashAttribute("errorMessage","No s'ha seleccionat cap vehicle per eliminar.");
         }
         return "redirect:/admin/vehicles";
-    }
-    
+    } 
 }

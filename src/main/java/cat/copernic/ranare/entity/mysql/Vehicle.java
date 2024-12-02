@@ -74,7 +74,7 @@ public class Vehicle {
      */
     @Column(name = "limit_quilometratge")
     @Positive(message = "El límit de quilometratge ha de ser un valor positiu i major que 0.")
-    private double limitQuilometratge;
+    private int limitQuilometratge;
 
     /**
      * Preu per hora de lloguer del vehicle.
