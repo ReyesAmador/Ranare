@@ -75,7 +75,7 @@ public class LocalitzacioService {
     //retorna els vehicles associats a una localitzacio, es comproba també que el codi postal existeixi
     public Set<Vehicle> getVehiclePerLocalitzacio(String codiPostal){
         Localitzacio localitzacio = localitzacioRepository.trobarVehiclesPerCodiPostal(codiPostal)
-                .orElseThrow(() -> new InvalidCodiPostalException("Localització no trobada"));
+                .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
         
         return localitzacio.getVehicles();
     }
