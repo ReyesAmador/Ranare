@@ -103,10 +103,6 @@ public class ClientService {
      * @param dni El DNI del client a eliminar.s
      */
     public void deleteClient(String dni) {
-        clientRepository.deleteById(dni);
-    }
-
-    public void eliminarClient(String dni) {
         Optional<Client> clientOpt = clientRepository.findById(dni);
         if (clientOpt.isPresent()) {
             clientRepository.delete(clientOpt.get());
@@ -116,16 +112,25 @@ public class ClientService {
 
     }
 
-    public List<Client> getOnlyClients() {
-        return clientRepository.findAllClientsExcludingAgents();
-    }
+    /**
+ * Retorna una llista de clients que exclou els agents.
+ *
+ * @return Una llista de clients (sense incloure els agents).
+ */
+public List<Client> getOnlyClients() {
+    return clientRepository.findAllClientsExcludingAgents();
+}
 
-    /*
-     public void eliminarAgent(String dni) {
-        Optional<Agent> agentOpt = agentRepository.findById(dni);
-        if(agentOpt.isPresent())
-            agentRepository.delete(agentOpt.get());
-        else
-            throw new AgentNotFoundException("L'agent amb DNI " + dni + " no existeix");
-    }*/
+/**
+ * Cerca clients en funció d'un filtre proporcionat. El filtre pot ser parcial i 
+ * buscarà coincidències en els camps rellevants (com ara nom, cognoms, correu electrònic, etc.).
+ *
+ * @param query El filtre de cerca, es convertirà a minúscules per realitzar una cerca insensible a majúscules/minúscules.
+ * @return Una llista de clients que coincideixen amb el filtre especificat.
+ */
+public List<Client> searchClients(String query) {
+    return clientRepository.searchByFilters(query.toLowerCase());
+}
+
+   
 }
