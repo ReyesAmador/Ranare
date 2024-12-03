@@ -96,7 +96,19 @@ public class LocalitzacioService {
     public void updateLocalitzacio(Localitzacio localitzacio){
         Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(localitzacio.getCodiPostal());
         if(localitzacioExisteix.isPresent()){
-            localitzacioRepository.save(localitzacio);
+            //recuperem dades d'aquesta localitzacio
+            Localitzacio localitzacioExistent = localitzacioExisteix.get();
+            
+            //actualitzem les dades
+            localitzacioExistent.setAdreca(localitzacio.getAdreca());
+            localitzacioExistent.setAgent(localitzacio.getAgent());
+            localitzacioExistent.setCiutat(localitzacio.getCiutat());
+            localitzacioExistent.setHorariApertura(localitzacio.getHorariApertura());
+            localitzacioExistent.setHorariTancament(localitzacio.getHorariTancament());
+            localitzacioExistent.setPais(localitzacio.getPais());
+            localitzacioExistent.setTipus(localitzacio.getTipus());
+            
+            localitzacioRepository.save(localitzacioExistent);
         }else{
             throw new InvalidCodiPostalException("Localització amb el codi postal " + localitzacio.getCodiPostal() +" no trobada");
         }

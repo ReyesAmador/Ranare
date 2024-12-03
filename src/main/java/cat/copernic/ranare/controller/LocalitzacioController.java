@@ -79,6 +79,7 @@ public class LocalitzacioController {
         
         model.addAttribute("localitzacio", new Localitzacio());
         model.addAttribute("agents", agentService.getAllAgents());
+        model.addAttribute("crear", true);//passem aquesta variable per indivar al HTML que es per crear i mostri "crear"
         
         return "crear-localitzacio";
     }
@@ -148,12 +149,14 @@ public class LocalitzacioController {
     public String mostrarModificarLocalitzacio(@PathVariable String codiPostal, Model model){
         Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
         model.addAttribute("localitzacio",localitzacio);
+        model.addAttribute("agents", agentService.getAllAgents());
+        model.addAttribute("crear", false);
         
-        return "modificar-localitzacio";
+        return "crear-localitzacio";
     }
     
     @PostMapping("/{codiPostal}/modificar")
-    public String modificarLocalitzacio(@ModelAttribute Localitzacio localitzacio, RedirectAttributes redirectAttributes, Model model){
+    public String modificarLocalitzacio(@PathVariable String codiPostal,@ModelAttribute Localitzacio localitzacio, RedirectAttributes redirectAttributes, Model model){
         try{
             localitzacioService.validarHorari(localitzacio.getHorariApertura(), localitzacio.getHorariTancament());
             localitzacioService.updateLocalitzacio(localitzacio);
@@ -162,11 +165,11 @@ public class LocalitzacioController {
         }catch(InvalidCodiPostalException e){
            model.addAttribute("error_codi", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "modificar-localitzacio";
+            return "crear-localitzacio";
         }catch(InvalidHorariException e){
             model.addAttribute("error_horari", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "modificar-localitzacio";
+            return "crear-localitzacio";
         }
     }
     
