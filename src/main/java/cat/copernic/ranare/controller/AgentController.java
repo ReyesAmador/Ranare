@@ -54,7 +54,7 @@ public class AgentController {
     @PostMapping("/crear-agent")
     public String crearAgent(@ModelAttribute @Valid Agent agent, BindingResult bindingResult, RedirectAttributes redirectAttributes){
         if (bindingResult.hasErrors()) {
-            return "crear_agent"; // Volver al formulario si hay errores
+            return "crear-agent"; // Volver al formulario si hay errores
         }
         
         agentService.guardarAgent(agent); // Guardar el nuevo agente

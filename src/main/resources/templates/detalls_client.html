@@ -6,6 +6,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Detalls del Client</title>
+    <script>
+        // Función para mostrar/ocultar contraseña
+        function togglePasswordVisibility() {
+            const pwdField = document.getElementById("pwd");
+            const toggleButton = document.getElementById("togglePwdVisibility");
+
+            if (pwdField.type === "password") {
+                pwdField.type = "text";
+                toggleButton.textContent = "Ocultar";
+            } else {
+                pwdField.type = "password";
+                toggleButton.textContent = "Mostrar";
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Detalls del Client</h1>
@@ -14,6 +29,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <p><strong>DNI:</strong> <span th:text="${client.dni}"></span></p>
     <p><strong>Nom:</strong> <span th:text="${client.nom}"></span></p>
     <p><strong>Cognoms:</strong> <span th:text="${client.cognoms}"></span></p>
+    <p><strong>Username:</strong> <span th:text="${client.username}"></span></p>
     <p><strong>Email:</strong> <span th:text="${client.email}"></span></p>
     <p><strong>Direcció:</strong> <span th:text="${client.adreca}"></span></p>
     <p><strong>País:</strong> <span th:text="${client.pais}"></span></p>
@@ -22,6 +38,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <p><strong>Reputació:</strong> <span th:text="${client.reputacio}"></span></p>
     <p><strong>Data de Naixement:</strong> <span th:text="${client.dataNaixement}"></span></p>
     <p><strong>Número de Tarjeta:</strong> <span th:text="${client.numeroTarjetaCredit}"></span></p>
+    <p><strong>Nacionalitat:</strong> <span th:text="${client.nacionalitat}"></span></p>
+    <p><strong>Telèfon:</strong> <span th:text="${client.telefon}"></span></p>
+
+    <!-- Campo de Contraseña con Mostrar/Ocultar -->
+    <p>
+        <strong>Contrasenya:</strong>
+        <input type="password" id="pwd" readonly th:value="${client.pwd}" />
+        <button type="button" id="togglePwdVisibility" onclick="togglePasswordVisibility()">Mostrar</button>
+    </p>
 
     <!-- Botones de Modificar y Eliminar -->
     <a th:href="@{/clients/modificar/{dni}(dni=${client.dni})}" class="btn btn-warning">Modificar</a>

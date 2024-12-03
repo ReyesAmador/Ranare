@@ -109,16 +109,29 @@ public class ClientController {
     /**
      * Mostrar la llista de clients en una vista HTML.
      *
+     * @param filtro
      * @param model El model per passar la llista de clients a la vista.
      * @return El nom de la plantilla Thymeleaf per mostrar la llista de
      * clients.
-     */
-    @GetMapping
-    public String showClientList(Model model) {
-        List<Client> clients = clientService.getOnlyClients();
+     */    
+     @GetMapping
+    public String showClientList(
+            @RequestParam(value = "filtro", required = false) String filtro,
+            Model model) {
+
+        List<Client> clients;
+        if (filtro != null && !filtro.isEmpty()) {
+            clients = clientService.searchClients(filtro);
+        } else {
+            clients = clientService.getOnlyClients();
+        }
+
         model.addAttribute("clients", clients);
-        return "llista_de_clients"; // Plantilla Thymeleaf per mostrar la llista de clients
+        model.addAttribute("filtro", filtro);
+        return "llista_de_clients";
     }
+    
+    
 
     /**
      * Mostra el formulari per crear un nou client.
@@ -277,18 +290,11 @@ public class ClientController {
      * @return Una redirecció a la llista de clients després d'eliminar el
      * client.
      */
-    /*
-    @DeleteMapping("/{dni}")
-    public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
-        clientService.deleteClient(dni);
-        redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
-        return "redirect:/clients";
-    }*/
-    //Eliminar agent
+
     @PostMapping("/eliminar_client")
     public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes) {
         try {
-            clientService.eliminarClient(dni);
+            clientService.deleteClient(dni);
             redirectAttributes.addFlashAttribute("success", "Client amb dni: " + dni + " eliminat correctament");
         } catch (ClientNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
@@ -310,5 +316,8 @@ public class ClientController {
     }
     
     
-
+   
 }
+    
+
+
