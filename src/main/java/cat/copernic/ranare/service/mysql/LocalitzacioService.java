@@ -11,6 +11,7 @@ import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,5 +91,14 @@ public class LocalitzacioService {
     public Localitzacio getLocalitzacioPerCodiPostal(String codiPostal){
         return localitzacioRepository.findById(codiPostal)
                 .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
+    }
+    
+    public void updateLocalitzacio(Localitzacio localitzacio){
+        Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(localitzacio.getCodiPostal());
+        if(localitzacioExisteix.isPresent()){
+            localitzacioRepository.save(localitzacio);
+        }else{
+            throw new InvalidCodiPostalException("Localització amb el codi postal " + localitzacio.getCodiPostal() +" no trobada");
+        }
     }
 }

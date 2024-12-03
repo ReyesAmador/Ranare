@@ -143,4 +143,31 @@ public class LocalitzacioController {
             return "error";
         }
     }
+    
+    @GetMapping("/{codiPostal}/modificar")
+    public String mostrarModificarLocalitzacio(@PathVariable String codiPostal, Model model){
+        Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
+        model.addAttribute("localitzacio",localitzacio);
+        
+        return "modificar-localitzacio";
+    }
+    
+    @PostMapping("/{codiPostal}/modificar")
+    public String modificarLocalitzacio(@ModelAttribute Localitzacio localitzacio, RedirectAttributes redirectAttributes, Model model){
+        try{
+            localitzacioService.validarHorari(localitzacio.getHorariApertura(), localitzacio.getHorariTancament());
+            localitzacioService.updateLocalitzacio(localitzacio);
+            redirectAttributes.addFlashAttribute("success", "Localització modificada correctament!");
+            return "redirect:/localitzacio";
+        }catch(InvalidCodiPostalException e){
+           model.addAttribute("error_codi", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
+            return "modificar-localitzacio";
+        }catch(InvalidHorariException e){
+            model.addAttribute("error_horari", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
+            return "modificar-localitzacio";
+        }
+    }
+    
 }

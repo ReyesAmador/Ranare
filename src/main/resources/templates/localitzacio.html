@@ -38,6 +38,17 @@
                     </td>
                     <td th:text="${localitzacio.horariApertura}"></td>
                     <td th:text="${localitzacio.horariTancament}"></td>
+                    <td>
+                        <a th:href="@{/localitzacio/{codiPostal}/modificar(codiPostal=${localitzacio.codiPostal})}" 
+                            class="btn btn-warning btn-sm">Modificar</a>
+                        <form th:action="@{/localitzacio/eliminar}" method="post" style="display:inline;">
+                            <input type="hidden" name="codiPostal" th:value="${localitzacio.codiPostal}">
+                            <button type="submit" class="btn btn-danger btn-sm" 
+                                    onclick="return confirm('Estàs segur que vols eliminar aquesta localització?');">
+                                Eliminar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
             </tbody>
         </table>
