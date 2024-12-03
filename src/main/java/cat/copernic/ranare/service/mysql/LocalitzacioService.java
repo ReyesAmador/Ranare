@@ -10,10 +10,10 @@ import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -86,7 +86,7 @@ public class LocalitzacioService {
      * 
      * @param codiPostal El codi postal de la localització.
      * @return La localització corresponent al codi postal.
-     * @throws EntityNotFoundException Si no es troba cap localització amb el codi postal.
+     * @throws InvalidCodiPostalException Si no es troba cap localització amb el codi postal.
      */
     public Localitzacio getLocalitzacioPerCodiPostal(String codiPostal){
         return localitzacioRepository.findById(codiPostal)
@@ -112,5 +112,21 @@ public class LocalitzacioService {
         }else{
             throw new InvalidCodiPostalException("Localització amb el codi postal " + localitzacio.getCodiPostal() +" no trobada");
         }
+    }
+    
+    public String horariAperturaFormategat (Localitzacio localitzacio){
+        //Possar les hores i minuts en format correcte per al HTML
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        String formatHora = localitzacio.getHorariApertura().format(format);
+        
+        return formatHora;
+    }
+    
+    public String horariTancamentFormategat (Localitzacio localitzacio){
+        //Possar les hores i minuts en format correcte per al HTML
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        String formatHora = localitzacio.getHorariTancament().format(format);
+        
+        return formatHora;
     }
 }

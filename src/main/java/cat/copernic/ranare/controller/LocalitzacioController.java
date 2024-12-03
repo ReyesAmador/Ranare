@@ -48,6 +48,8 @@ public class LocalitzacioController {
     @Autowired
     private AgentService agentService;
     
+    Logger logger = LoggerFactory.getLogger(ClientController.class);
+    
     /**
      * Mostra una llista amb totes les localitzacions disponibles.
      *
@@ -70,8 +72,6 @@ public class LocalitzacioController {
     @GetMapping("/crear-localitzacio")
     public String showCrearLocalitzacioPage(Model model){
         
-        Logger logger = LoggerFactory.getLogger(ClientController.class);
-
         List<Agent> agents = agentService.getAllAgents();
 
         // Depuración: registra la lista de agentes en el log
@@ -148,10 +148,11 @@ public class LocalitzacioController {
     @GetMapping("/{codiPostal}/modificar")
     public String mostrarModificarLocalitzacio(@PathVariable String codiPostal, Model model){
         Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
+        logger.info("Valor de horariApertura antes de procesar: " + localitzacio.getHorariApertura());
         model.addAttribute("localitzacio",localitzacio);
         model.addAttribute("agents", agentService.getAllAgents());
         model.addAttribute("crear", false);
-        
+      
         return "crear-localitzacio";
     }
     
