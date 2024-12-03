@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -32,7 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * i processar el formulari per afegir una localització.
  *
  * @author reyes
- * @version 22/11/2024 v2
+ * @version 03/12/2024 v7
  */
 
 @Controller
@@ -174,4 +175,16 @@ public class LocalitzacioController {
         }
     }
     
+    //eliminar localitzacio
+    @PostMapping("/{codiPostal}/eliminar")
+    public String eliminarLocalitzacio(@RequestParam("codiPostal") String codiPostal, RedirectAttributes redirectAttributes){
+        try{
+            localitzacioService.eliminarLocalitzacio(codiPostal);
+            redirectAttributes.addFlashAttribute("success", "Localització amb codi postal: " + codiPostal +" eliminada correctament");
+        }catch(InvalidCodiPostalException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
+        }
+        
+        return "redirect:/localitzacio";
+    }
 }

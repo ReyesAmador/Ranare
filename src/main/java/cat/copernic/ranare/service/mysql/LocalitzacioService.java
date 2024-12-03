@@ -129,4 +129,13 @@ public class LocalitzacioService {
         
         return formatHora;
     }
+    
+    public void eliminarLocalitzacio(String codiPostal){
+        Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(codiPostal);
+        if(localitzacioExisteix.isPresent()){
+            localitzacioRepository.delete(localitzacioExisteix.get());
+        }else{
+            throw new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada");
+        }
+    }
 }
