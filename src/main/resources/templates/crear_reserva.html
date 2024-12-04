@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Crear Reserva</title>
+    </head>
+    <body>
+        <h1>Crear Reserva</h1>
+
+        <form th:action="@{/reserves/crear}" th:object="${reserva}" method="post">
+            <table>
+                <tr>
+                    <td><label for="dataInici">Data Inici:</label></td>
+                    <td><input type="datetime-local" id="dataInici" th:field="*{dataInici}" required /></td>
+                </tr>
+                <tr>
+                    <td><label for="dataFin">Data Fin:</label></td>
+                    <td><input type="datetime-local" id="dataFin" th:field="*{dataFin}" required /></td>
+                </tr>
+                <tr>
+                    <td><label for="fianca">Fiança (Calculada):</label></td>
+                    <td><input type="number" id="fianca" th:field="*{fianca}" step="0.01" readonly /></td>
+                </tr>
+                <tr>
+                    <td><label for="costReserva">Cost Reserva (Calculat):</label></td>
+                    <td><input type="number" id="costReserva" th:field="*{costReserva}" step="0.01" readonly /></td>
+                </tr>
+                <tr th:if="${clients != null and !#lists.isEmpty(clients)}">
+                    <td><label for="client">Selecciona un client:</label></td>
+                    <td>
+                        <select id="client" th:field="*{client}">
+                            <option th:each="client : ${clients}" th:value="${client.dni}" th:text="${client.nom + ' ' + client.cognoms}"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr th:if="${vehicles != null and !#lists.isEmpty(vehicles)}">
+                    <td><label for="vehicle">Vehicle:</label></td>
+                    <td>
+                        <select id="vehicle" th:field="*{vehicle}">
+                            <option th:each="vehicle : ${vehicles}" th:value="${vehicle.matricula}" th:text="${vehicle.nomVehicle}"></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" th:disabled="${clients == null or #lists.isEmpty(clients) or vehicles == null or #lists.isEmpty(vehicles)}">
+                Crear Reserva
+            </button>
+        </form>
+    </body>
+</html>

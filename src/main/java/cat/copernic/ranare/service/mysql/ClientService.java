@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -7,14 +8,20 @@ package cat.copernic.ranare.service.mysql;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
-import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+
+import java.util.List;
+
+import java.util.List;
+
+import cat.copernic.ranare.exceptions.ClientNotFoundException;
+
+import cat.copernic.ranare.entity.mysql.Client;
 
 /**
  *
