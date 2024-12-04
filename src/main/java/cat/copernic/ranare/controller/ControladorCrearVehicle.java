@@ -62,7 +62,6 @@ public class ControladorCrearVehicle {
             model.addAttribute("vehicle", new Vehicle());
         }
         
-        
         return "crear-vehicle";
     }
     

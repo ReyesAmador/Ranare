@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html lang="es">
+    <head>
+        <title>RANARE - Crear Incidencia</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- CSS de Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <div class="header d-flex justify-content-between align-items-center p-3">
+            <h1>RANARE</h1>
+            <div class="nav-links">
+                <a href="/admin/incidencies" class="btn btn-secondary">Administrar Incidències</a>
+            </div>
+            <div>
+                <span class="text-white">Hola Admin!</span>
+            </div>
+        </div>
+        <div class="container my-5">
+            <h2 class="text-primary">CREAR INCIDÈNCIA</h2>
+        </div>
+        <div th:if="${message}" class="alert alert-success" role="alert">
+            <p th:text="${message}"></p>
+        </div>
+        <form th:action="@{/crear-incidencia}" th:object="${incidencia}" method="post">
+            <div class="form-row">
+                <div class="from-group col-md-6">
+                    <label for="estat">Estat <span class="text-danger">*</span></label>
+                    <select class="form-control" id="estat" th:field="*{estat}" required>
+                        <option value="">Selecciona un estat</option>
+                        <option value="OBERTA">Oberta</option>
+                        <option value="TANCADA">Tancada</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="vehicle">Vehicle <span class="text-danger">*</span></label>
+                    <select class="form-control" id="vehicle" th:field="*{vehicle}" required>
+                        <option value="">Selecciona un vehicle</option>
+                        <th:block th:each="vehicle : ${vehicles}">
+                            <option th:value="${vehicle.matricula}" th:text="${vehicle.nomVehicle + ' (' + vehicle.matricula + ')'}"></option>
+                        </th:block>
+                    </select>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="descripcio">Motiu de la incidència <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="motiu" rows="5" placeholder="Detalla el motiu" th:field="*{motiu}" required></textarea>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="dataInici">Data d'Inici</label>
+                    <input type="datetime-local" class="form-control" id="dataInici" th:field="*{dataInici}" required>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="dataFinal">Data Final</label>
+                    <input type="datetime-local" class="form-control" id="dataFinal" th:field="*{dataFinal}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="cost">Cost</label>
+                    <input type="number" class="form-control" id="cost" placeholder="Cost de la incidència" th:field="*{cost}" step="0.10">
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="documentsIncidenciaId">Documents Relacionats</label>
+                    <input type="text" class="form-control" id="documentsIncidenciaId" placeholder="ID dels documents" th:field="*{documentsIncidenciaId}">
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Desa</button>
+            </div>   
+        </form>
+        
+        <script>
+            $(document).ready(function () {
+                $('#vehicle').select2({
+                    placeholder: "Selecciona un vehicle",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        </script>
+    </body>
+</html>
