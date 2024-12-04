@@ -7,6 +7,7 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.service.mysql.AgentService;
@@ -182,6 +183,8 @@ public class LocalitzacioController {
             localitzacioService.eliminarLocalitzacio(codiPostal);
             redirectAttributes.addFlashAttribute("success", "Localització amb codi postal: " + codiPostal +" eliminada correctament");
         }catch(InvalidCodiPostalException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
+        }catch(EntitatRelacionadaException e){
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
         }
         
