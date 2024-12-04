@@ -6,6 +6,7 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
@@ -133,7 +134,20 @@ public class LocalitzacioService {
     public void eliminarLocalitzacio(String codiPostal){
         Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(codiPostal);
         if(localitzacioExisteix.isPresent()){
-            localitzacioRepository.delete(localitzacioExisteix.get());
+            Localitzacio localitzacio = localitzacioExisteix.get();
+            
+            boolean vehiclesAsociats = !localitzacio.getVehicles().isEmpty();
+            boolean agentsAsociats = localitzacio.getAgent() != null;
+            
+            if(vehiclesAsociats || agentsAsociats){
+                String missatge = "No es pot eliminar la localització amb codi postal " + codiPostal + " perquè";
+                if(vehiclesAsociats) missatge += " té vehicles asociats";
+                if(vehiclesAsociats && agentsAsociats) missatge += " i";
+                if(agentsAsociats) missatge += " té un agent asociat";
+                throw new EntitatRelacionadaException(missatge);
+            }
+            
+            localitzacioRepository.delete(localitzacio);
         }else{
             throw new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada");
         }
