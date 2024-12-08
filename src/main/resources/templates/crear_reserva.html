@@ -60,12 +60,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         fianca = fiancaStandard.toFixed(2);  // Si no es PREMIUM, fianza estándar
                     }
 
+
+                    const costHoras = (diferenciaHoras * preuPerHoraLloguer).toFixed(2);
                     // Calcular el coste total
                     const costTotal = (diferenciaHoras * preuPerHoraLloguer + parseFloat(fianca)).toFixed(2);
 
                     // Actualizar los valores en el DOM
                     document.getElementById('totalHoras').textContent = diferenciaHoras;
-                    document.getElementById('costHoras').textContent = preuPerHoraLloguer.toFixed(2);
+                    document.getElementById('costHoras').textContent = costHoras;
                     document.getElementById('fiancaCalculada').textContent = fianca;
                     document.getElementById('costTotal').textContent = costTotal;
 
@@ -130,49 +132,58 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             // Función para actualizar los detalles del vehículo (precio por hora y fianza)
             function actualizarVehiculo() {
-                setTimeout(() => {
-                    const vehiculoSelect = document.getElementById('vehicle');
-                    const selectedOption = vehiculoSelect.selectedOptions[0];
-
-                    if (!selectedOption) {
-                        console.error("No hay un vehículo seleccionado.");
-                        return;
-                    }
-
-                    const preuPerHoraLloguer = selectedOption.dataset.preuperhoralloguer || '0';
-                    const fiancaStandard = selectedOption.dataset.fiancastandard || '0';
-
-                    document.getElementById('preuPerHoraLloguer').textContent = preuPerHoraLloguer;
-                    document.getElementById('fiancaStandard').textContent = fiancaStandard;
-
-                    calcularReserva(); // Recalcular después de actualizar
-                }, 100); // Retraso opcional de 100 ms
-            }
-
-            // Configuración de eventos al cargar la página
-            document.addEventListener('DOMContentLoaded', function () {
-                const dataIniciElem = document.getElementById('dataInici');
-                const dataFinElem = document.getElementById('dataFin');
-                const clienteSelect = document.getElementById('client');
                 const vehiculoSelect = document.getElementById('vehicle');
+                const selectedOption = vehiculoSelect.selectedOptions[0];
 
-                if (dataIniciElem && dataFinElem && clienteSelect && vehiculoSelect) {
-                    dataIniciElem.addEventListener('change', habilitarOpciones);
-                    dataFinElem.addEventListener('change', habilitarOpciones);
-                    clienteSelect.addEventListener('change', habilitarVehiculos);
-                    vehiculoSelect.addEventListener('change', calcularReserva);  // Recalcular al cambiar el vehículo
-                } else {
-                    console.error("Elementos necesarios no disponibles en el DOM.");
+                // Verificamos que hay un vehículo seleccionado
+                if (!selectedOption) {
+                    console.error("No hay un vehículo seleccionado.");
+                    return;
                 }
 
-                // Actualizar el campo de reputación según el cliente seleccionado
-                clienteSelect.addEventListener('change', function () {
-                    const selectedClient = clienteSelect.selectedOptions[0];
-                    const reputacio = selectedClient ? selectedClient.dataset.reputacio : 'NORMAL';
-                    document.getElementById('reputacio').value = reputacio; // Actualiza el campo de reputación
-                    calcularReserva();  // Recalcular al cambiar el cliente
-                });
-            });
+                // Obtener los detalles del vehículo desde el atributo 'data-*'
+                const nombreVehiculo = selectedOption.text;
+                const preuPerHoraLloguer = selectedOption.dataset.preuperhoralloguer || '0';
+                const fiancaStandard = selectedOption.dataset.fiancastandard || '0';
+                const limitQuilm = selectedOption.dataset.limitquilm || '0';
+
+                // Actualizar los campos de la tabla con los detalles del vehículo
+                document.getElementById('vehiclePrice').textContent = preuPerHoraLloguer + ' €';
+                document.getElementById('vehicleFianca').textContent = fiancaStandard + ' €';
+                document.getElementById('vehicleLimitQuilm').textContent = limitQuilm + ' km';
+                // Mostrar la tabla con los detalles del vehículo
+                document.getElementById('vehicleDetails').style.display = 'block';
+
+                // Recalcular los costos
+                calcularReserva();
+            }
+
+           // Configuración de eventos al cargar la página
+document.addEventListener('DOMContentLoaded', function () {
+    const dataIniciElem = document.getElementById('dataInici');
+    const dataFinElem = document.getElementById('dataFin');
+    const clienteSelect = document.getElementById('client');
+    const vehiculoSelect = document.getElementById('vehicle');
+
+    // Verificamos que los elementos estén disponibles en el DOM
+    if (dataIniciElem && dataFinElem && clienteSelect && vehiculoSelect) {
+        dataIniciElem.addEventListener('change', habilitarOpciones);
+        dataFinElem.addEventListener('change', habilitarOpciones);
+        clienteSelect.addEventListener('change', habilitarVehiculos);
+        vehiculoSelect.addEventListener('change', calcularReserva);  // Recalcular al cambiar el vehículo
+        vehiculoSelect.addEventListener('change', actualizarVehiculo); // Agregar este listener para actualizar los detalles del vehículo
+    } else {
+        console.error("Elementos necesarios no disponibles en el DOM.");
+    }
+
+    // Actualizar el campo de reputación según el cliente seleccionado
+    clienteSelect.addEventListener('change', function () {
+        const selectedClient = clienteSelect.selectedOptions[0];
+        const reputacio = selectedClient ? selectedClient.dataset.reputacio : 'NORMAL';
+        document.getElementById('reputacio').value = reputacio; // Actualiza el campo de reputación
+        calcularReserva();  // Recalcular al cambiar el cliente
+    });
+});
         </script>
     </head>
     <body>
@@ -181,13 +192,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <form th:action="@{/reserves/crear}" th:object="${reserva}" method="post">
             <!-- Fechas -->
             <fieldset>
-                <legend>1. Selecciona las fechas</legend>
+                <legend>1. Selecciona les dates</legend>
                 <input type="datetime-local" id="dataInici"  name="dataInici" required />
                 <input type="datetime-local" id="dataFin" name="dataFin" required />
             </fieldset>
 
             <fieldset>
-                <legend>2. Selecciona un cliente</legend>
+                <legend>2. Selecciona un client</legend>
                 <select id="client" name="client.dni" required disabled>
                     <option value="" disabled selected>Seleccione un cliente</option>
                     <option th:each="client : ${clients}"
@@ -200,21 +211,42 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </fieldset>
 
             <fieldset>
-                <legend>3. Selecciona un vehículo</legend>
+                <legend>3. Selecciona un vehicle</legend>
                 <select id="vehicle" name="vehicle.matricula" required disabled>
                     <option value="" disabled selected>Seleccione un vehículo</option>
                     <option th:each="vehicle : ${vehicles}" 
                             th:value="${vehicle.matricula}" 
                             th:text="${vehicle.nomVehicle + ' (' + vehicle.combustio + ')'}" 
                             th:data-preuperhoralloguer="${vehicle.preuPerHoraLloguer}" 
-                            th:data-fiancastandard="${vehicle.fiancaStandard}"></option>
+                            th:data-fiancastandard="${vehicle.fiancaStandard}"
+                             th:data-limitquilm="${vehicle.limitQuilometratge}"
+                            ></option>
                 </select>
             </fieldset>
 
+            <!-- Tabla para mostrar los detalles del vehículo -->
+            <fieldset id="vehicleDetails" style="display: none;">
+                <legend>Detalls del vehicle seleccionat</legend>
+                <table>
+                    <tr>
+                        <td>Preu per hora:</td>
+                        <td id="vehiclePrice">--</td>
+                    </tr>
+                    <tr>
+                        <td>Fiança estándar:</td>
+                        <td id="vehicleFianca">--</td>
+                    </tr>
+                    <tr>
+                        <td>Límite de kilometraje:</td>
+                        <td id="vehicleLimitQuilm">--</td>
+                    </tr>
+                </table>
+            </fieldset>
+
             <fieldset>
-                <legend>Desglose de costos</legend>
+                <legend>Detalls del preu</legend>
                 <p>Hores: <span id="totalHoras">--</span></p>
-                <p>Preu per hora: €<span id="costHoras">--</span></p>
+                <p>Preu total per hores: €<span id="costHoras">--</span></p>
                 <p>Fiança: €<span id="fiancaCalculada">--</span></p>
                 <p>Cost tota de reserva:  €<span id="costTotal">--</span></p>
             </fieldset>
