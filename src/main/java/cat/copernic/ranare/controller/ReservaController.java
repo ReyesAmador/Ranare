@@ -11,6 +11,10 @@ import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +27,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
+ * Classe que gestiona les funcionalitats relacionades amb les reserves del
+ * sistema. Aquesta classe és un controlador que combina la gestió del frontend
+ * amb Thymeleaf i els serveis REST necessaris per a comunicació asíncrona amb
+ * el backend.
+ *
+ * Modificacions recents: - Implementació de càlcul de la fiança i desglòs de
+ * costos. - Gestió de vehicles disponibles segons el període de reserva. -
+ * Optimització del procés de reserva per evitar conflictes en les dates.
  *
  * @author Raú
  */
@@ -42,8 +54,11 @@ public class ReservaController {
     /**
      * Mostra el formulari per crear una nova reserva.
      *
-     * @param model
-     * @return
+     * Aquest mètode inicialitza el formulari per la creació d'una reserva.
+     * Carrega la llista de clients i vehicles disponibles per ser seleccionats.
+     *
+     * @param model Objecte del model utilitzat per passar dades a la vista.
+     * @return El nom de la plantilla Thymeleaf "crear_reserva".
      */
     @GetMapping("/nova")
     public String mostrarFormulariNovaReserva(Model model) {
@@ -56,42 +71,54 @@ public class ReservaController {
     /**
      * Gestiona l'enviament del formulari per crear una nova reserva.
      *
-     * @param reserva
-     * @param result
-     * @param redirectAttributes
-     * @return
+     * Aquest mètode valida les dades del formulari, calcula la fiança i el cost
+     * total de la reserva segons les dades seleccionades i guarda la reserva al
+     * sistema.
+     *
+     * @param reserva L'objecte Reserva amb les dades del formulari.
+     * @param result Resultat de la validació del formulari.
+     * @param redirectAttributes Objecte per afegir missatges d'estat a les
+     * redireccions.
+     * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
     public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "formulari_reserva";
+            return "crear_reserva";
         }
 
-        // Recuperar cliente y vehículo seleccionados
+        // Validar cliente y vehículo
         Client client = clientService.getClientById(reserva.getClient().getDni())
-                .orElseThrow(() -> new IllegalArgumentException("Client no trobat amb DNI: " + reserva.getClient().getDni()));
-
+                .orElseThrow(() -> new IllegalArgumentException("Client no trobat."));
         Vehicle vehicle = vehicleService.getVehicleByMatricula(reserva.getVehicle().getMatricula());
 
-        // Calcular fiança
-        double fianca = reservaService.calcularFianca(client, vehicle);
-        reserva.setFianca(fianca);
+        // Validar fechas
+        if (reserva.getDataInici().isAfter(reserva.getDataFin()) || reserva.getDataInici().isEqual(reserva.getDataFin())) {
+            redirectAttributes.addFlashAttribute("error", "La data de inici ha de ser abans que la data de finalització.");
+            return "crear_reserva";
+        }
 
-        // Calcular costReserva
-        double costReserva = reservaService.calcularCostReserva(reserva.getDataInici(), reserva.getDataFin(), vehicle.getPreuPerHoraLloguer());
+        // Calcular fiança y coste total
+        double fianca = reservaService.calcularFianca(client, vehicle);
+        double costReserva = reservaService.calcularCostReserva(reserva.getDataInici(), reserva.getDataFin(), vehicle.getPreuPerHoraLloguer(), fianca);
+
+        reserva.setFianca(fianca);
         reserva.setCostReserva(costReserva);
 
-        // Guardar la reserva
+        // Guardar reserva
         reservaService.crearReserva(reserva);
         redirectAttributes.addFlashAttribute("missatge", "Reserva creada correctament.");
         return "redirect:/reserves";
     }
 
     /**
-     * Mostra la llista de reserves.
+     * Mostra la llista de totes les reserves.
      *
-     * @param model
-     * @return
+     * Aquest mètode carrega totes les reserves del sistema i les passa a la
+     * vista.
+     *
+     * @param model Objecte del model utilitzat per passar dades a la vista.
+     * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
     @GetMapping
     public String llistarReserves(Model model) {
@@ -100,11 +127,14 @@ public class ReservaController {
     }
 
     /**
-     * Gestiona la sol·licitud per anul·lar una reserva.
+     * Gestiona la sol·licitud per anul·lar una reserva existent.
      *
-     * @param id
-     * @param redirectAttributes
-     * @return
+     * Aquest mètode actualitza l'estat de la reserva a "anul·lada".
+     *
+     * @param id Identificador de la reserva que s'ha d'anul·lar.
+     * @param redirectAttributes Objecte per afegir missatges d'estat a les
+     * redireccions.
+     * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/anular")
     public String anularReserva(@RequestParam Long id, RedirectAttributes redirectAttributes) {
@@ -112,4 +142,5 @@ public class ReservaController {
         redirectAttributes.addFlashAttribute("missatge", "Reserva anul·lada correctament.");
         return "redirect:/reserves";
     }
+
 }

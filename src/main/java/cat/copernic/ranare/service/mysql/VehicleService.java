@@ -17,40 +17,42 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class VehicleService {
-    
+
     @Autowired
     private VehicleRepository vehicleRepository;
-    
-    public Vehicle saveVehicle(Vehicle vehicle){
-        if(vehicle.getMinimHoresLloguer() > vehicle.getMaximHoresLloguer()){
+
+    public Vehicle saveVehicle(Vehicle vehicle) {
+        if (vehicle.getMinimHoresLloguer() > vehicle.getMaximHoresLloguer()) {
             throw new IllegalArgumentException("El mínim d'hores de lloguer no pot ser superior al màxim.");
         }
-        if(vehicle.getPreuPerHoraLloguer() <= 0){
+        if (vehicle.getPreuPerHoraLloguer() <= 0) {
             throw new IllegalArgumentException("El preu per hora de lloguer ha de ser un valor positiu.");
         }
-        if(vehicle.getTransmissio() == null){
+        if (vehicle.getTransmissio() == null) {
             throw new IllegalArgumentException("El tipus de transmissió ha de ser especificat.");
         }
-        
+
         return vehicleRepository.save(vehicle);
     }
-    
-    public Vehicle getVehicleByMatricula(String matricula){
+
+    public Vehicle getVehicleByMatricula(String matricula) {
         Optional<Vehicle> vehicle = vehicleRepository.findById(matricula);
         return vehicle.orElse(null);
     }
-    
-    public List<Vehicle> getAllVehicles(){
+
+    public List<Vehicle> getAllVehicles() {
         return vehicleRepository.findAll();
     }
-    
-    public void deleteVehicle(String matricula){
+
+    public void deleteVehicle(String matricula) {
         Optional<Vehicle> vehicle = vehicleRepository.findById(matricula);
-        
-        if(vehicle.isPresent()){
+
+        if (vehicle.isPresent()) {
             vehicleRepository.deleteById(matricula);
-        }else{
+        } else {
             throw new IllegalArgumentException("No es pot eliminar un vehicle que no existeix.");
         }
     }
+
+
 }
