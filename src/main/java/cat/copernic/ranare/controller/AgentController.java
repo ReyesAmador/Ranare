@@ -10,6 +10,7 @@ import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,5 +127,19 @@ public class AgentController {
             model.addAttribute("errorMissatge", e.getMessage());
             return "error";
         }
+    }
+    
+    @GetMapping("/buscar-agent")
+    public String trobarAgent(@RequestParam("dni") String dni, Model model){
+        Optional<Agent> agent = agentService.findAgentByDni(dni);
+        
+        if(agent.isPresent()){
+            model.addAttribute("agents", List.of(agent.get()));
+        }else{
+            model.addAttribute("error", "Agent no trobat amb el DNI " + dni);
+            model.addAttribute("agents", List.of());
+        }
+        
+        return "llista-agents";
     }
 }
