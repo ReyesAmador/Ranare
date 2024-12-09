@@ -5,23 +5,18 @@
  */
 package cat.copernic.ranare.service.mysql;
 
-import cat.copernic.ranare.entity.mysql.Client;
-import cat.copernic.ranare.exceptions.ClientNotFoundException;
+import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-
 import java.util.List;
-
-import java.util.List;
-
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
-
 import cat.copernic.ranare.entity.mysql.Client;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  *
@@ -50,21 +45,25 @@ public class ClientService {
         // Verificación de duplicados sin interrumpir el flujo
         List<String> errorMessages = new ArrayList<>();
 
+        // Asegurarnos de que el DNI esté en mayúsculas
         if (client.getDni() != null) {
             client.setDni(client.getDni().toUpperCase());
+        }
+
+        // **Validación del DNI** (comprobamos formato y letra)
+        if (client.getDni() != null && !esDniValido(client.getDni())) {
+            bindingResult.rejectValue("dni", "invalid.dni", "El DNI no és vàlid.");
         }
 
         // Verificación de duplicado para DNI
         if (isUpdate) {
             Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
             if (existingClientByDni.isPresent() && !existingClientByDni.get().getDni().equals(client.getDni())) {
-                // Si ya existe un cliente con ese DNI, se agrega un error específico para el DNI
                 bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
             }
         } else {
             Optional<Client> existingClientByDni = clientRepository.findById(client.getDni());
             if (existingClientByDni.isPresent()) {
-                // Si ya existe un cliente con ese DNI, se agrega un error específico para el DNI
                 bindingResult.rejectValue("dni", "duplicate.dni", "El DNI ja està registrat.");
             }
         }
@@ -72,8 +71,13 @@ public class ClientService {
         // Verificación de duplicado para email
         Optional<Client> existingClientByEmail = clientRepository.findByEmail(client.getEmail());
         if (existingClientByEmail.isPresent()) {
-            // Si ya existe un cliente con ese correo electrónico, se agrega un error específico para el correo
             bindingResult.rejectValue("email", "duplicate.email", "El correu electrònic ja està registrat.");
+        }
+
+        // **Verificación de duplicado para username**
+        Optional<Client> existingClientByUsername = clientRepository.findByUsername(client.getUsername());
+        if (existingClientByUsername.isPresent()) {
+            bindingResult.rejectValue("username", "duplicate.username", "El nom d'usuari ja està registrat.");
         }
 
         // Si se encontraron errores, no procedemos a guardar el cliente
@@ -120,24 +124,58 @@ public class ClientService {
     }
 
     /**
- * Retorna una llista de clients que exclou els agents.
- *
- * @return Una llista de clients (sense incloure els agents).
- */
-public List<Client> getOnlyClients() {
-    return clientRepository.findAllClientsExcludingAgents();
-}
+     * Retorna una llista de clients que exclou els agents.
+     *
+     * @return Una llista de clients (sense incloure els agents).
+     */
+    public List<Client> getOnlyClients() {
+        return clientRepository.findAllClientsExcludingAgents();
+    }
 
-/**
- * Cerca clients en funció d'un filtre proporcionat. El filtre pot ser parcial i 
- * buscarà coincidències en els camps rellevants (com ara nom, cognoms, correu electrònic, etc.).
- *
- * @param query El filtre de cerca, es convertirà a minúscules per realitzar una cerca insensible a majúscules/minúscules.
- * @return Una llista de clients que coincideixen amb el filtre especificat.
- */
-public List<Client> searchClients(String query) {
-    return clientRepository.searchByFilters(query.toLowerCase());
-}
+    /**
+     * Cerca clients en funció d'un filtre proporcionat. El filtre pot ser
+     * parcial i buscarà coincidències en els camps rellevants (com ara nom,
+     * cognoms, correu electrònic, etc.).
+     *
+     * @param query El filtre de cerca, es convertirà a minúscules per realitzar
+     * una cerca insensible a majúscules/minúscules.
+     * @return Una llista de clients que coincideixen amb el filtre especificat.
+     */
+    public List<Client> searchClients(String query) {
+        return clientRepository.searchByFilters(query.toLowerCase());
 
-   
+    }
+
+    // Método para validar el DNI
+    public boolean esDniValido(String dni) {
+        // Verificar si el DNI sigue el formato correcto
+        String regex = "^[0-9]{8}[A-Za-z]$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(dni);
+
+        // Si el formato no es correcto, devolver falso
+        if (!matcher.matches()) {
+            return false;
+        }
+
+        // Si el formato es correcto, comprobar si la letra es válida
+        char letraCalculada = calcularLetraDni(dni.substring(0, 8)); // Obtenemos la letra
+        char letraDni = dni.charAt(8); // Letra que aparece en el DNI
+
+        return letraCalculada == letraDni; // Comprobamos si la letra calculada es igual a la del DNI
+    }
+
+    // Método para calcular la letra del DNI
+    private char calcularLetraDni(String numeroDni) {
+        // El número del DNI como entero
+        int numero = Integer.parseInt(numeroDni);
+
+        // El array con las letras posibles para el DNI
+        String letras = "TRWAGMYFPDXBNJZSQVHLCKE";
+
+        // El cálculo de la letra según el algoritmo oficial
+        int resto = numero % 23;
+        return letras.charAt(resto);
+    }
+
 }
