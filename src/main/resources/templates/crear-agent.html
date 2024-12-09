@@ -81,13 +81,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <input type="text" id="codiPostal" th:field="*{codiPostal}" placeholder="Codi postal" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('codiPostal')}" th:errors="*{codiPostal}"></span><br/>
 
-            <!-- Campo de Nacionalidad -->
             <label for="nacionalitat">Nacionalitat:</label>
             <input type="text" id="nacionalitat" th:field="*{nacionalitat}" placeholder="Nacionalitat" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('nacionalitat')}" th:errors="*{nacionalitat}"></span>
             <br/>
 
-            <!-- Campo de Teléfono -->
             <label for="telefon">Telèfon:</label>
             <input type="text" id="telefon" th:field="*{telefon}" placeholder="Telèfon (9 dígits)" pattern="\d{9}" title="El telèfon ha de tenir exactament 9 dígits" required /><br/>
             <span class="error" th:if="${#fields.hasErrors('telefon')}" th:errors="*{telefon}"></span>
