@@ -34,6 +34,7 @@ public class AgentService {
         return agentRepository.findAll(); // Retorna una llista d'agents
     }
     
+    //Aquesta anotació es per si alguna operació amb la BBDD falla, fa un rollback
     @Transactional
     public Agent crearAgent(Client client, Rol rol) {
         // Verificar si ja existeix un agent amb el mateix DNI
@@ -120,5 +121,8 @@ public class AgentService {
         }
     }
     
-    
+    public Agent getAgentPerDni(String dni){
+        return agentRepository.findById(dni)
+                .orElseThrow(() -> new AgentNotFoundException("Agent amb DNI  " + dni +" no trobat"));
+    }
 }
