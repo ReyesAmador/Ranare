@@ -69,7 +69,7 @@ public class Localitzacio {
      * Agent assignat a aquesta localització. Relació un a un amb la classe {@link Agent}.
      * El camp `dni_agent` es refereix a la clau primària de l'entitat {@link Agent} (el camp `dni`).
      */
-    @OneToOne(optional = true, cascade = CascadeType.ALL) //quitar optional cuando creemos agente
+    @OneToOne(cascade = CascadeType.ALL) //quitar optional cuando creemos agente
     @JoinColumn(name = "dni_agent", referencedColumnName = "dni")
     private Agent agent;
     
