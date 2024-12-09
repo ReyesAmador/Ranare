@@ -37,6 +37,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <td th:text="${agent.email}"></td>
                 <td th:text="${agent.rol}"></td>
                 <td>
+                    <a th:href="@{/agents/{dni}/modificar(dni=${agent.dni})}" 
+                            class="btn btn-warning btn-sm">Modificar</a>
                     <form th:action="@{/agents/eliminar-agent}" method="post">
                         <input type="hidden" name="dni" th:value="${agent.dni}" />
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Estàs segur que vols eliminar aquest agent?');">Eliminar</button>
