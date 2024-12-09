@@ -11,6 +11,8 @@ import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import jakarta.validation.Valid;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +38,8 @@ public class AgentController {
     
     @Autowired
     private LocalitzacioService localitzacioService;
+    
+    private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
     
     @GetMapping
     public String llistarAgents(Model model){
@@ -88,6 +92,7 @@ public class AgentController {
         Optional<Agent> agentExisteix = agentService.findAgentByDni(dni);
         if(agentExisteix.isPresent()){
             Agent agent = agentExisteix.get();
+            logger.info("Fecha de nacimiento del agente: {}", agent.getDataNaixement());
             model.addAttribute("agent", agent);
             model.addAttribute("localitzacions", localitzacioService.getallLocalitzacio());
             model.addAttribute("modificar", true);

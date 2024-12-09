@@ -12,6 +12,8 @@ import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.repository.mysql.AgentRepository;
 import java.util.List;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +27,8 @@ public class AgentService {
     
     @Autowired
     private AgentRepository agentRepository;
+    
+    private static final Logger logger = LoggerFactory.getLogger(AgentService.class);
     
     public List<Agent> getAllAgents() {
         return agentRepository.findAll(); // Retorna una llista d'agents
@@ -83,6 +87,13 @@ public class AgentService {
         if(agentExisteix.isPresent()){
             Agent agentExistent = agentExisteix.get();
             
+            logger.info("Datos actuales del agente antes de modificar: {}", agentExistent);
+            
+            // Si es proporciona una nova contrasenya, l'actualitzem
+        if (agent.getPwd() != null && !agent.getPwd().isEmpty()) {
+            logger.info("Actualizando la contraseña del agente.");
+            agentExistent.setPwd(agent.getPwd());
+        }
             //actualitzar els camps
             agentExistent.setNom(agent.getNom());
             agentExistent.setCognoms(agent.getCognoms());
@@ -96,11 +107,12 @@ public class AgentService {
             agentExistent.setNacionalitat(agent.getNacionalitat());
             agentExistent.setNumeroTarjetaCredit(agent.getNumeroTarjetaCredit());
             agentExistent.setPais(agent.getPais());
-            agentExistent.setPwd(agent.getPwd());
             agentExistent.setTelefon(agent.getTelefon());
             agentExistent.setReputacio(agent.getReputacio());
             agentExistent.setRol(agent.getRol());
             agentExistent.setUsername(agent.getUsername());
+            
+            logger.info("Datos del agente después de modificar: {}", agentExistent);
             
             agentRepository.save(agentExistent);
         }else{
