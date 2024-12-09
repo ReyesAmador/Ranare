@@ -114,4 +114,17 @@ public class AgentController {
         
         return "redirect:/agents";
     }
+    
+    @GetMapping("/{dni}")
+    public String detallAgent (@PathVariable String dni, Model model){
+        try{
+            Agent agent = agentService.getAgentPerDni(dni);
+            model.addAttribute("agent",agent);
+            
+            return "detall-agent";
+        }catch(AgentNotFoundException e){
+            model.addAttribute("errorMissatge", e.getMessage());
+            return "error";
+        }
+    }
 }
