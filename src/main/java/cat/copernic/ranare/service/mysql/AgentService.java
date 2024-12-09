@@ -119,4 +119,9 @@ public class AgentService {
             throw new AgentNotFoundException("Agent amb DNI " + agent.getDni() + " no trobat");
         }
     }
+    
+    public Agent getAgentPerDni(String dni){
+        return agentRepository.findById(dni)
+                .orElseThrow(() -> new AgentNotFoundException("Agent amb DNI  " + dni +" no trobat"));
+    }
 }

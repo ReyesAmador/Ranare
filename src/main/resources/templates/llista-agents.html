@@ -32,7 +32,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </thead>
         <tbody>
             <tr th:each="agent : ${agents}">
-                <td th:text="${agent.dni}"></td>
+                <td>
+                    <a th:href="@{/agents/{dni}(dni=${agent.dni})}" th:text="${agent.dni}" </a>
+                </td>
                 <td th:text="${agent.nom}"></td>
                 <td th:text="${agent.email}"></td>
                 <td th:text="${agent.rol}"></td>
