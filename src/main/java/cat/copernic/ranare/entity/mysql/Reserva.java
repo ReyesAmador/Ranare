@@ -4,7 +4,7 @@
  */
 package cat.copernic.ranare.entity.mysql;
 
-import cat.copernic.ranare.enums.Estat;
+import cat.copernic.ranare.enums.EstatReserva;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -74,7 +74,7 @@ public class Reserva {
      */
     @Enumerated(EnumType.STRING) // Garantir valors consistents
     @Column(nullable = false)
-    private Estat estat;
+    private EstatReserva estat;
 
     /**
      * Client que realitza la reserva.
@@ -85,13 +85,6 @@ public class Reserva {
     @JoinColumn(name = "client_dni", nullable = false)
     private Client client;
 
-    /**
-     * Agent que gestiona la reserva.
-     * Relació Molts a Un amb l'entitat Agent.
-     */
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "agent_dni", nullable = false)
-    private Agent agent;
 
     /**
      * Vehicle associat a la reserva.

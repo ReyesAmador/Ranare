@@ -4,7 +4,7 @@
  */
 package cat.copernic.ranare.entity.mongodb;
 
-import cat.copernic.ranare.enums.Estat;
+import cat.copernic.ranare.enums.EstatReserva;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;

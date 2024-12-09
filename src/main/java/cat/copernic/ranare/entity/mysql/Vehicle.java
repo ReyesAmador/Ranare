@@ -133,4 +133,8 @@ public class Vehicle {
     @ManyToOne
     @JoinColumn(name = "localitzacio", referencedColumnName = "codi_postal")
     private Localitzacio localitzacio;
+    
+    
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL)
+    private List<Reserva> reserves;
 }
