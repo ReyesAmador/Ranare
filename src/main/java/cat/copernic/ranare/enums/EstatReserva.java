@@ -8,6 +8,6 @@ package cat.copernic.ranare.enums;
  *
  * @author reyes
  */
-public enum Estat {
+public enum EstatReserva {
     ACTIVA,ANULADA,FINALITZADA
 }
