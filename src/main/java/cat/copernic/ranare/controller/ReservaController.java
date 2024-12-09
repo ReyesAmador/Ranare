@@ -12,10 +12,12 @@ import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -57,6 +59,8 @@ public class ReservaController {
      * Aquest mètode inicialitza el formulari per la creació d'una reserva.
      * Carrega la llista de clients i vehicles disponibles per ser seleccionats.
      *
+     * @param dataInici
+     * @param dataFin
      * @param model Objecte del model utilitzat per passar dades a la vista.
      * @return El nom de la plantilla Thymeleaf "crear_reserva".
      */
@@ -67,6 +71,8 @@ public class ReservaController {
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
         return "crear_reserva";
     }
+
+
 
     /**
      * Gestiona l'enviament del formulari per crear una nova reserva.
@@ -142,5 +148,6 @@ public class ReservaController {
         redirectAttributes.addFlashAttribute("missatge", "Reserva anul·lada correctament.");
         return "redirect:/reserves";
     }
+
 
 }

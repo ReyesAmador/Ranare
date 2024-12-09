@@ -104,7 +104,7 @@ public class Client  {
     /**
      * Correu electrònic de l'usuari.
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Email(message = "{email.Email}")
     @NotNull(message = "{email.NotNull}")
     private String email;

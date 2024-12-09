@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,22 +92,20 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
- 
-
     public double calcularFianca(Client client, Vehicle vehicle) {
         double fiancaStandard = vehicle.getFiancaStandard();
         return client.getReputacio() == Reputacio.PREMIUM ? fiancaStandard * 0.75 : fiancaStandard;
     }
 
-   public double calcularCostReserva(LocalDateTime dataInici, LocalDateTime dataFin, double preuPerHoraLloguer, double fianca) {
-    long hores = ChronoUnit.HOURS.between(dataInici, dataFin);
-    if (hores <= 0) {
-        throw new IllegalArgumentException("La data de finalització ha de ser com a mínim 1 hora posterior a la data d'inici.");
+    public double calcularCostReserva(LocalDateTime dataInici, LocalDateTime dataFin, double preuPerHoraLloguer, double fianca) {
+        long hores = ChronoUnit.HOURS.between(dataInici, dataFin);
+        if (hores <= 0) {
+            throw new IllegalArgumentException("La data de finalització ha de ser com a mínim 1 hora posterior a la data d'inici.");
+        }
+        return (hores * preuPerHoraLloguer) + fianca;
     }
-    return (hores * preuPerHoraLloguer) + fianca;
-}
 
-    
+
 
 
 }

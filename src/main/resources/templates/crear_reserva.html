@@ -158,32 +158,32 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 calcularReserva();
             }
 
-           // Configuración de eventos al cargar la página
-document.addEventListener('DOMContentLoaded', function () {
-    const dataIniciElem = document.getElementById('dataInici');
-    const dataFinElem = document.getElementById('dataFin');
-    const clienteSelect = document.getElementById('client');
-    const vehiculoSelect = document.getElementById('vehicle');
+            // Configuración de eventos al cargar la página
+            document.addEventListener('DOMContentLoaded', function () {
+                const dataIniciElem = document.getElementById('dataInici');
+                const dataFinElem = document.getElementById('dataFin');
+                const clienteSelect = document.getElementById('client');
+                const vehiculoSelect = document.getElementById('vehicle');
 
-    // Verificamos que los elementos estén disponibles en el DOM
-    if (dataIniciElem && dataFinElem && clienteSelect && vehiculoSelect) {
-        dataIniciElem.addEventListener('change', habilitarOpciones);
-        dataFinElem.addEventListener('change', habilitarOpciones);
-        clienteSelect.addEventListener('change', habilitarVehiculos);
-        vehiculoSelect.addEventListener('change', calcularReserva);  // Recalcular al cambiar el vehículo
-        vehiculoSelect.addEventListener('change', actualizarVehiculo); // Agregar este listener para actualizar los detalles del vehículo
-    } else {
-        console.error("Elementos necesarios no disponibles en el DOM.");
-    }
+                // Verificamos que los elementos estén disponibles en el DOM
+                if (dataIniciElem && dataFinElem && clienteSelect && vehiculoSelect) {
+                    dataIniciElem.addEventListener('change', habilitarOpciones);
+                    dataFinElem.addEventListener('change', habilitarOpciones);
+                    clienteSelect.addEventListener('change', habilitarVehiculos);
+                    vehiculoSelect.addEventListener('change', calcularReserva);  // Recalcular al cambiar el vehículo
+                    vehiculoSelect.addEventListener('change', actualizarVehiculo); // Agregar este listener para actualizar los detalles del vehículo
+                } else {
+                    console.error("Elementos necesarios no disponibles en el DOM.");
+                }
 
-    // Actualizar el campo de reputación según el cliente seleccionado
-    clienteSelect.addEventListener('change', function () {
-        const selectedClient = clienteSelect.selectedOptions[0];
-        const reputacio = selectedClient ? selectedClient.dataset.reputacio : 'NORMAL';
-        document.getElementById('reputacio').value = reputacio; // Actualiza el campo de reputación
-        calcularReserva();  // Recalcular al cambiar el cliente
-    });
-});
+                // Actualizar el campo de reputación según el cliente seleccionado
+                clienteSelect.addEventListener('change', function () {
+                    const selectedClient = clienteSelect.selectedOptions[0];
+                    const reputacio = selectedClient ? selectedClient.dataset.reputacio : 'NORMAL';
+                    document.getElementById('reputacio').value = reputacio; // Actualiza el campo de reputación
+                    calcularReserva();  // Recalcular al cambiar el cliente
+                });
+            });
         </script>
     </head>
     <body>
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', function () {
             <fieldset>
                 <legend>2. Selecciona un client</legend>
                 <select id="client" name="client.dni" required disabled>
-                    <option value="" disabled selected>Seleccione un cliente</option>
+                    <option value="" disabled selected>Selecciona un client</option>
                     <option th:each="client : ${clients}"
                             th:value="${client.dni}" 
                             th:text="${client.nom + ' ' + client.cognoms + ' ' + client.reputacio}" 
@@ -213,13 +213,14 @@ document.addEventListener('DOMContentLoaded', function () {
             <fieldset>
                 <legend>3. Selecciona un vehicle</legend>
                 <select id="vehicle" name="vehicle.matricula" required disabled>
-                    <option value="" disabled selected>Seleccione un vehículo</option>
+                    <option value="" disabled selected>Selecciona
+                        un vehícle</option>
                     <option th:each="vehicle : ${vehicles}" 
                             th:value="${vehicle.matricula}" 
                             th:text="${vehicle.nomVehicle + ' (' + vehicle.combustio + ')'}" 
                             th:data-preuperhoralloguer="${vehicle.preuPerHoraLloguer}" 
                             th:data-fiancastandard="${vehicle.fiancaStandard}"
-                             th:data-limitquilm="${vehicle.limitQuilometratge}"
+                            th:data-limitquilm="${vehicle.limitQuilometratge}"
                             ></option>
                 </select>
             </fieldset>

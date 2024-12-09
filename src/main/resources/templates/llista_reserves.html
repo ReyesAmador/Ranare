@@ -28,7 +28,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <tbody>
                 <tr th:each="reserva : ${reserves}">
                     <td th:text="${reserva.client.nom}"></td>
-                    <td th:text="${reserva.vehicle}"></td>
+                    <td th:text="${reserva.vehicle.nomVehicle}"></td>
                     <!-- Aquí ya se muestra la fecha formateada directamente desde el backend -->
                     <td th:text="${reserva.costReserva}"></td>
                     <td th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'yyyy-MM-dd HH:mm')}"></td>
