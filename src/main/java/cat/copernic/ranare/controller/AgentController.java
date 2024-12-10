@@ -5,19 +5,28 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Agent;
+import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
+import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.service.mysql.AgentService;
+import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 /**
  *
@@ -30,6 +39,10 @@ public class AgentController {
     @Autowired
     private AgentService agentService;
     
+    @Autowired
+    private LocalitzacioService localitzacioService;
+    
+    private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
     
     @GetMapping
     public String llistarAgents(Model model){
@@ -47,18 +60,36 @@ public class AgentController {
     @GetMapping("/crear-agent")
     public String showForm(Model model) {
         model.addAttribute("agent", new Agent()); // Modelo para el formulario
+        model.addAttribute("modificar", false);
         return "crear-agent";
     }
 
     // Crear un  agente con un rol
     @PostMapping("/crear-agent")
-    public String crearAgent(@ModelAttribute @Valid Agent agent, BindingResult bindingResult, RedirectAttributes redirectAttributes){
-        if (bindingResult.hasErrors()) {
-            return "crear_agent"; // Volver al formulario si hay errores
+    public String crearAgent(@ModelAttribute @Valid Agent agent,BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model){
+        try{
+            //validar que el username està o no en ús
+            if(agentService.existeixUsername(agent.getUsername())){
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            //validar que el email està o no en ús
+            if(agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+            //si hi ha un error de validació et retorna a crear agent
+            if(bindingResult.hasErrors()){
+                model.addAttribute("agent", agent);
+                model.addAttribute("modificar", false);
+                return "crear-agent";
+            }
+            agentService.crearAgent(agent, agent.getRol()); // Guardar el nuevo agente
+            redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
+        }catch(DuplicateResourceException e){
+            model.addAttribute("agent", agent);
+            model.addAttribute("modificar", false);
+            model.addAttribute("error", "Error al crear l'agent: " + e.getMessage());
+            return "crear-agent";
         }
-        
-        agentService.guardarAgent(agent); // Guardar el nuevo agente
-        redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
         return "redirect:/agents"; // Redirigir a la lista de agentes
     }
     
@@ -73,5 +104,75 @@ public class AgentController {
         }
         
         return "redirect:/agents";
+    }
+    
+    //Modificar agent
+    @GetMapping("/{dni}/modificar")
+    public String showFormulariModificarAgent(@PathVariable String dni, Model model){
+        Optional<Agent> agentExisteix = agentService.findAgentByDni(dni);
+        if(agentExisteix.isPresent()){
+            Agent agent = agentExisteix.get();
+            logger.info("Fecha de nacimiento del agente: {}", agent.getDataNaixement());
+            model.addAttribute("agent", agent);
+            model.addAttribute("localitzacions", localitzacioService.getallLocalitzacio());
+            model.addAttribute("modificar", true);
+            
+            return "crear-agent";
+        }else{
+            throw new AgentNotFoundException("Agent amb DNI " + dni + " no trobat");
+        }
+    }
+    
+    @PostMapping("{dni}/modificar")
+    public String modificarAgent(@ModelAttribute("agent") Agent agent,BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model){
+        try{
+            //validar que el username està o no en ús
+            if(agentService.existeixUsername(agent.getUsername())){
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            //validar que el email està o no en ús
+            if(agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+            //si hi ha un error de validació et retorna a crear agent
+            if(bindingResult.hasErrors()){
+                model.addAttribute("agent", agent);
+                model.addAttribute("modificar", true);
+                return "crear-agent";
+            }
+            agentService.modificarAgent(agent);
+            redirectAttributes.addFlashAttribute("success", "Agent modificat correctament.");
+        }catch(AgentNotFoundException e){
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        
+        return "redirect:/agents";
+    }
+    
+    @GetMapping("/{dni}")
+    public String detallAgent (@PathVariable String dni, Model model){
+        try{
+            Agent agent = agentService.getAgentPerDni(dni);
+            model.addAttribute("agent",agent);
+            
+            return "detall-agent";
+        }catch(AgentNotFoundException e){
+            model.addAttribute("errorMissatge", e.getMessage());
+            return "error";
+        }
+    }
+    
+    @GetMapping("/buscar-agent")
+    public String trobarAgent(@RequestParam("dni") String dni, Model model){
+        Optional<Agent> agent = agentService.findAgentByDni(dni);
+        
+        if(agent.isPresent()){
+            model.addAttribute("agents", List.of(agent.get()));
+        }else{
+            model.addAttribute("error", "Agent no trobat amb el DNI " + dni);
+            model.addAttribute("agents", List.of());
+        }
+        
+        return "llista-agents";
     }
 }

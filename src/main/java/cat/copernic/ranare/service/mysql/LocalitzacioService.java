@@ -6,13 +6,15 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,10 +87,69 @@ public class LocalitzacioService {
      * 
      * @param codiPostal El codi postal de la localització.
      * @return La localització corresponent al codi postal.
-     * @throws EntityNotFoundException Si no es troba cap localització amb el codi postal.
+     * @throws InvalidCodiPostalException Si no es troba cap localització amb el codi postal.
      */
     public Localitzacio getLocalitzacioPerCodiPostal(String codiPostal){
         return localitzacioRepository.findById(codiPostal)
                 .orElseThrow(() -> new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada"));
+    }
+    
+    public void updateLocalitzacio(Localitzacio localitzacio){
+        Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(localitzacio.getCodiPostal());
+        if(localitzacioExisteix.isPresent()){
+            //recuperem dades d'aquesta localitzacio
+            Localitzacio localitzacioExistent = localitzacioExisteix.get();
+            
+            //actualitzem les dades
+            localitzacioExistent.setAdreca(localitzacio.getAdreca());
+            localitzacioExistent.setAgent(localitzacio.getAgent());
+            localitzacioExistent.setCiutat(localitzacio.getCiutat());
+            localitzacioExistent.setHorariApertura(localitzacio.getHorariApertura());
+            localitzacioExistent.setHorariTancament(localitzacio.getHorariTancament());
+            localitzacioExistent.setPais(localitzacio.getPais());
+            localitzacioExistent.setTipus(localitzacio.getTipus());
+            
+            localitzacioRepository.save(localitzacioExistent);
+        }else{
+            throw new InvalidCodiPostalException("Localització amb el codi postal " + localitzacio.getCodiPostal() +" no trobada");
+        }
+    }
+    
+    public String horariAperturaFormategat (Localitzacio localitzacio){
+        //Possar les hores i minuts en format correcte per al HTML
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        String formatHora = localitzacio.getHorariApertura().format(format);
+        
+        return formatHora;
+    }
+    
+    public String horariTancamentFormategat (Localitzacio localitzacio){
+        //Possar les hores i minuts en format correcte per al HTML
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm");
+        String formatHora = localitzacio.getHorariTancament().format(format);
+        
+        return formatHora;
+    }
+    
+    public void eliminarLocalitzacio(String codiPostal){
+        Optional<Localitzacio> localitzacioExisteix = localitzacioRepository.findById(codiPostal);
+        if(localitzacioExisteix.isPresent()){
+            Localitzacio localitzacio = localitzacioExisteix.get();
+            
+            boolean vehiclesAsociats = !localitzacio.getVehicles().isEmpty();
+            boolean agentsAsociats = localitzacio.getAgent() != null;
+            
+            if(vehiclesAsociats || agentsAsociats){
+                String missatge = "No es pot eliminar la localització amb codi postal " + codiPostal + " perquè";
+                if(vehiclesAsociats) missatge += " té vehicles asociats";
+                if(vehiclesAsociats && agentsAsociats) missatge += " i";
+                if(agentsAsociats) missatge += " té un agent asociat";
+                throw new EntitatRelacionadaException(missatge);
+            }
+            
+            localitzacioRepository.delete(localitzacio);
+        }else{
+            throw new InvalidCodiPostalException("Localització amb el codi postal " + codiPostal +" no trobada");
+        }
     }
 }

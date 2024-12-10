@@ -7,6 +7,7 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.service.mysql.AgentService;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -32,7 +34,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * i processar el formulari per afegir una localització.
  *
  * @author reyes
- * @version 22/11/2024 v2
+ * @version 03/12/2024 v7
  */
 
 @Controller
@@ -47,6 +49,8 @@ public class LocalitzacioController {
     
     @Autowired
     private AgentService agentService;
+    
+    Logger logger = LoggerFactory.getLogger(ClientController.class);
     
     /**
      * Mostra una llista amb totes les localitzacions disponibles.
@@ -70,8 +74,6 @@ public class LocalitzacioController {
     @GetMapping("/crear-localitzacio")
     public String showCrearLocalitzacioPage(Model model){
         
-        Logger logger = LoggerFactory.getLogger(ClientController.class);
-
         List<Agent> agents = agentService.getAllAgents();
 
         // Depuración: registra la lista de agentes en el log
@@ -79,6 +81,7 @@ public class LocalitzacioController {
         
         model.addAttribute("localitzacio", new Localitzacio());
         model.addAttribute("agents", agentService.getAllAgents());
+        model.addAttribute("crear", true);//passem aquesta variable per indivar al HTML que es per crear i mostri "crear"
         
         return "crear-localitzacio";
     }
@@ -142,5 +145,49 @@ public class LocalitzacioController {
             model.addAttribute("errorMissatge", e.getMessage());
             return "error";
         }
+    }
+    
+    @GetMapping("/{codiPostal}/modificar")
+    public String mostrarModificarLocalitzacio(@PathVariable String codiPostal, Model model){
+        Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
+        logger.info("Valor de horariApertura antes de procesar: " + localitzacio.getHorariApertura());
+        model.addAttribute("localitzacio",localitzacio);
+        model.addAttribute("agents", agentService.getAllAgents());
+        model.addAttribute("crear", false);
+      
+        return "crear-localitzacio";
+    }
+    
+    @PostMapping("/{codiPostal}/modificar")
+    public String modificarLocalitzacio(@PathVariable String codiPostal,@ModelAttribute Localitzacio localitzacio, RedirectAttributes redirectAttributes, Model model){
+        try{
+            localitzacioService.validarHorari(localitzacio.getHorariApertura(), localitzacio.getHorariTancament());
+            localitzacioService.updateLocalitzacio(localitzacio);
+            redirectAttributes.addFlashAttribute("success", "Localització modificada correctament!");
+            return "redirect:/localitzacio";
+        }catch(InvalidCodiPostalException e){
+           model.addAttribute("error_codi", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
+            return "crear-localitzacio";
+        }catch(InvalidHorariException e){
+            model.addAttribute("error_horari", e.getMessage());
+            model.addAttribute("error", "Hi ha un error");
+            return "crear-localitzacio";
+        }
+    }
+    
+    //eliminar localitzacio
+    @PostMapping("/{codiPostal}/eliminar")
+    public String eliminarLocalitzacio(@RequestParam("codiPostal") String codiPostal, RedirectAttributes redirectAttributes){
+        try{
+            localitzacioService.eliminarLocalitzacio(codiPostal);
+            redirectAttributes.addFlashAttribute("success", "Localització amb codi postal: " + codiPostal +" eliminada correctament");
+        }catch(InvalidCodiPostalException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
+        }catch(EntitatRelacionadaException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
+        }
+        
+        return "redirect:/localitzacio";
     }
 }

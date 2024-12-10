@@ -12,6 +12,7 @@ import cat.copernic.ranare.service.mysql.VehicleService;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,58 +37,58 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Controller
 @RequestMapping("/admin/vehicles")
 public class ControladorCrearVehicle {
-    
+
     @Autowired
     VehicleService vehicleService;
-    
+
     @Autowired
     LocalitzacioService localitzacioService;
-    
+
     @Autowired
     LocalitzacioRepository localitzacioRepository;
-    
+
     @Autowired
     GridFsTemplate gridFsTemplate;
-    
+
     @GetMapping("/crear-vehicle")
     public String mostrarFormulari(@RequestParam(name = "matricula", required = false) String matricula, Model model) {
         List<Localitzacio> localitzacions = localitzacioRepository.findAll();
         model.addAttribute("localitzacions", localitzacions);
-        if(matricula != null && !matricula.isEmpty()){
+        if (matricula != null && !matricula.isEmpty()) {
             Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
-            if(vehicle != null){
+            if (vehicle != null) {
                 model.addAttribute("vehicle", vehicle);
-                
-            }else{
+
+            } else {
                 model.addAttribute("errorMessage", "Vehicle no trobat.");
             }
-        }else{
+        } else {
             model.addAttribute("vehicle", new Vehicle());
         }
-        
+
         return "crear-vehicle";
     }
-    
-    
+
     @PostMapping("/crear-vehicle")
-    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes){
-        if(result.hasErrors()){
+    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
             return "crear-vehicle";
         }
-        
+
         vehicleService.saveVehicle(vehicle);
-        
+
         redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat o modificat correctament.");
         return "redirect:/admin/vehicles/crear-vehicle";
     }
-    
+
     @PostMapping("/pujarImatge")
-    public String pujarImatge(@RequestParam("image") MultipartFile file, Model model) throws IOException{
+    public String pujarImatge(@RequestParam("image") MultipartFile file, Model model) throws IOException {
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-       
+
         ObjectId fileId = gridFsTemplate.store(file.getInputStream(), fileName, file.getContentType());
-        
+
         model.addAttribute("message", "Imatge penjada correctament!");
         return "crear-vehicle";
     }
+
 }

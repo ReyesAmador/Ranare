@@ -38,7 +38,56 @@ import org.bson.types.Binary;
  * classe està mapejada a una base de dades relacional utilitzant JPA.
  *
  * Nota: Hereta atributs comuns de la classe Usuari (si s'aplica herència en un
- * futur) i afegeix atributs específics per als clients.
+ * futur) i afegeix atributs específics per als clie @PostMapping("/crear_client")
+    public String createClient(@ModelAttribute @Valid Client client,
+            BindingResult bindingResult,
+            RedirectAttributes redirectAttributes,
+            @RequestParam(required = false) Rol rol,
+            @AuthenticationPrincipal User loggedUser) {
+
+        // Si hay errores de validación, regresa al formulario
+        if (bindingResult.hasErrors()) {
+            return "crear_client";  // Vuelve al formulario de cliente si hay errores
+        }
+
+        // Convertir el DNI a mayúsculas
+        if (client.getDni() != null) {
+            client.setDni(client.getDni().toUpperCase());
+        }
+
+        try {
+            // Guardar el cliente
+            Client savedClient = clientService.saveClient(client, false, bindingResult);
+
+            if (savedClient == null || bindingResult.hasErrors()) {
+                return "crear_client";  // Si hay errores de duplicados, vuelve al formulario
+            }
+
+            // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
+            if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
+                // Crear un agente con los datos del cliente y redirigir al formulario de agente
+                redirectAttributes.addFlashAttribute("success", "Agent creat correctament.");
+                return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
+            } else {
+                // Si es un cliente normal
+                redirectAttributes.addFlashAttribute("missatge", "Cliente creat correctament.");
+                return "redirect:/clients";  // Redirige a la lista de clientes
+            }
+
+        } catch (DuplicateResourceException e) {
+            // Manejar errores de duplicados
+            if (e.getMessage().contains("DNI")) {
+                bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
+            }
+            if (e.getMessage().contains("email")) {
+                bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
+            }
+            if (e.getMessage().contains("username)")){
+                bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
+            }
+            return "crear_client";  // Vuelve al formulario si hay errores
+        }
+    }nts.
  */
 @Data
 @NoArgsConstructor
@@ -69,11 +118,42 @@ public class Client  {
     @NotNull(message = "cognoms.NotNull")
     @Size(min = 2, max = 200, message = "{cognoms.Size}")
     private String cognoms;
+    
+    
+    /**
+     * Nacionalitat del client. Obligatori.
+     */
+    @Column(nullable = false)
+    @NotNull(message = "{nacionalitat.NotNull}")
+    private String nacionalitat;
+
+    /**
+     * Telèfon de contacte del client. Obligatori i ha de tenir 9 dígits.
+     */
+    @Column(nullable = false, length = 9)
+    @NotNull(message = "{telefon.NotNull}")
+    @Pattern(regexp = "^[0-9]{9}$", message = "{telefon.Pattern}")
+    private String telefon;
+    
+    
+    /**
+     * Nom d'usuari per a l'autenticació del client.
+     */
+    @Column(nullable = false, unique = true)
+    @NotNull(message = "{username.NotNull}")
+    private String username;
+
+    /**
+     * Contrasenya del client. No es visible en detalles ni se expone.
+     */
+    @Column(nullable = false)
+    @NotNull(message = "{pwd.NotNull}")
+    private String pwd;
 
     /**
      * Correu electrònic de l'usuari.
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     @Email(message = "{email.Email}")
     @NotNull(message = "{email.NotNull}")
     private String email;
@@ -131,7 +211,7 @@ public class Client  {
      * Data de naixement del client.
      */
     @Past (message = "{dataNaixement.Past}")
-    @Column(nullable = false, unique = true) // Puedes cambiar a false si es obligatorio
+    @Column(nullable = false)
     private LocalDate dataNaixement;
 
     /**

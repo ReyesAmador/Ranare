@@ -5,6 +5,7 @@
 package cat.copernic.ranare.repository.mysql;
 
 import cat.copernic.ranare.entity.mysql.Agent;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AgentRepository extends JpaRepository<Agent, String>{
     
+    Optional<Agent> findByUsername(String username);
+    
+    Optional<Agent> findByEmail(String email);
 }

@@ -19,15 +19,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     </head>
     <body>
         <div class="container mt-5">
-            <h2>Crear Localització</h2>
-            <form th:action="@{/localitzacio/crear-localitzacio}" th:object="${localitzacio}" method="post">
+            <h2 th:text="${crear ? 'Crear Localització' : 'Modificar Localització'}">Crear Localització</h2>
+            <form th:action="${crear} ? @{/localitzacio/crear-localitzacio} : @{/localitzacio/{codiPostal}/modificar(codiPostal=${localitzacio.codiPostal})}"
+                  th:object="${localitzacio}" method="post">
                 <div th:if="${error}" class="alert alert-danger" role="alert">
                     [[${error}]]
                 </div>
                 <div class="mb-3">
                     <label for="codi_postal" class="form-label">Codi postal:</label>
                     <input type="text" id="codi_postal" th:field="*{codiPostal}" class="form-control"
-                           pattern="\d+" title="El codi postal ha de contenir només números" required />
+                           pattern="\d+" title="El codi postal ha de contenir només números" required 
+                           th:disabled="${!crear}"/>
                 </div>
                 <div class="mb-3" th:if="${error_codi}">
                     <p class="text-danger">[[${error_codi}]]</p>
@@ -68,7 +70,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         </th:block>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Crear localització</button>
+                <button type="submit" class="btn btn-primary"
+                        th:text="${crear ? 'Crear localització' : 'Guardar canvis'}"></button>
                 <a th:href="@{/localitzacio}" class="btn btn-secondary">Tornar enrere</a>
             </form>
         </div>

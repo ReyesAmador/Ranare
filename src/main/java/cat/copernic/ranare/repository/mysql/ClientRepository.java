@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -22,6 +23,8 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     
     Optional<Client> findByEmail(String email); // Para buscar por email
     
+    Optional<Client> findByUsername(String username);
+    
     /**
      *
      * @return
@@ -29,4 +32,12 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     @Query("SELECT c FROM Client c WHERE c.dni NOT IN (SELECT a.dni FROM Agent a)")
     List<Client> findAllClientsExcludingAgents();
     
+    @Query("SELECT c FROM Client c WHERE " +
+           "Lower(c.dni) LIKE %:query% OR " +
+           "LOWER(c.email) LIKE %:query% OR " +
+           "LOWER(c.telefon) LIKE %:query% OR " +
+           "LOWER(c.cognoms) LIKE %:query% OR " +
+           "LOWER(c.nacionalitat) LIKE %:query%")
+    List<Client> searchByFilters(@Param("query") String query);
+     
 }

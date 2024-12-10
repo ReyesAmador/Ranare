@@ -109,16 +109,29 @@ public class ClientController {
     /**
      * Mostrar la llista de clients en una vista HTML.
      *
+     * @param filtro
      * @param model El model per passar la llista de clients a la vista.
      * @return El nom de la plantilla Thymeleaf per mostrar la llista de
      * clients.
-     */
-    @GetMapping
-    public String showClientList(Model model) {
-        List<Client> clients = clientService.getOnlyClients();
+     */    
+     @GetMapping
+    public String showClientList(
+            @RequestParam(value = "filtro", required = false) String filtro,
+            Model model) {
+
+        List<Client> clients;
+        if (filtro != null && !filtro.isEmpty()) {
+            clients = clientService.searchClients(filtro);
+        } else {
+            clients = clientService.getOnlyClients();
+        }
+
         model.addAttribute("clients", clients);
-        return "llista_de_clients"; // Plantilla Thymeleaf per mostrar la llista de clients
+        model.addAttribute("filtro", filtro);
+        return "llista_de_clients";
     }
+    
+    
 
     /**
      * Mostra el formulari per crear un nou client.
@@ -185,11 +198,11 @@ public class ClientController {
             // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
             if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
                 // Crear un agente con los datos del cliente y redirigir al formulario de agente
-                redirectAttributes.addFlashAttribute("success", "Agente creado correctamente.");
+                redirectAttributes.addFlashAttribute("success", "Agent creat correctament.");
                 return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
             } else {
                 // Si es un cliente normal
-                redirectAttributes.addFlashAttribute("missatge", "Cliente creado correctamente.");
+                redirectAttributes.addFlashAttribute("missatge", "Cliente creat correctament.");
                 return "redirect:/clients";  // Redirige a la lista de clientes
             }
 
@@ -200,6 +213,9 @@ public class ClientController {
             }
             if (e.getMessage().contains("email")) {
                 bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
+            }
+            if (e.getMessage().contains("username)")){
+                bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
             }
             return "crear_client";  // Vuelve al formulario si hay errores
         }
@@ -277,18 +293,11 @@ public class ClientController {
      * @return Una redirecció a la llista de clients després d'eliminar el
      * client.
      */
-    /*
-    @DeleteMapping("/{dni}")
-    public String deleteClient(@PathVariable String dni, RedirectAttributes redirectAttributes) {
-        clientService.deleteClient(dni);
-        redirectAttributes.addFlashAttribute("missatge", "El client s'ha eliminat correctament.");
-        return "redirect:/clients";
-    }*/
-    //Eliminar agent
+
     @PostMapping("/eliminar_client")
     public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes) {
         try {
-            clientService.eliminarClient(dni);
+            clientService.deleteClient(dni);
             redirectAttributes.addFlashAttribute("success", "Client amb dni: " + dni + " eliminat correctament");
         } catch (ClientNotFoundException e) {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
@@ -310,5 +319,8 @@ public class ClientController {
     }
     
     
-
+   
 }
+    
+
+

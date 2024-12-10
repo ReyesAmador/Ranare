@@ -5,16 +5,18 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 -->
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Llista de Clientes</title>
+    <title>Llista de Clients</title>
 </head>
 <body>
-    <h1>Llista de Clientes</h1>
+    <h1>Llista de Clients</h1>
 
-    <!-- Mostrar mensajes de éxito -->
-    <div th:if="${missatge}" style="color: green; font-weight: bold;">
-        <p th:text="${missatge}"></p>
-    </div>
+    <!-- Formulario de Búsqueda -->
+    <form th:action="@{/clients}" method="get">
+        <input type="text" name="filtro" th:value="${filtro}" placeholder="Busca por correo, DNI, apellidos o nacionalidad" />
+        <button type="submit">Buscar</button>
+    </form>
 
+    <!-- Tabla de Resultados -->
     <table>
         <thead>
             <tr>
@@ -22,6 +24,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <th>Nom</th>
                 <th>Cognoms</th>
                 <th>Email</th>
+                <th>Nacionalitat</th>
+                <th>Telèfon</th>
                 <th>Accions</th>
             </tr>
         </thead>
@@ -31,13 +35,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <td th:text="${client.nom}"></td>
                 <td th:text="${client.cognoms}"></td>
                 <td th:text="${client.email}"></td>
+                <td th:text="${client.nacionalitat}"></td>
+                <td th:text="${client.telefon}"></td>
                 <td>
-                    <a th:href="@{/clients/detall/{dni}(dni=${client.dni})}" class="btn btn-primary btn-sm">Ver más</a>
+                    <a th:href="@{/clients/detall/{dni}(dni=${client.dni})}" class="btn btn-primary btn-sm">Mostrar més</a>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="/clients/crear_client">Crear Cliente</a>
+    <a href="/clients/crear_client">Crear Client</a>
 </body>
 </html>
