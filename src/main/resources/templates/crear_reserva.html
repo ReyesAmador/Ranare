@@ -2,206 +2,149 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
-
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Crear Reserva</title>
-        <script>
-            // Función para calcular el costo de la reserva
-            function calcularReserva() {
-                const dataIniciElem = document.getElementById('dataInici');
-                const dataFinElem = document.getElementById('dataFin');
-                const reputacioElem = document.getElementById('reputacio');
-                const vehiculoSelect = document.getElementById('vehicle');
-
-                // Obtener las fechas seleccionadas
-                const dataInici = dataIniciElem.value;
-                const dataFin = dataFinElem.value;
-
-                // Verificar si las fechas son válidas
-                if (dataInici && dataFin) {
-                    const inicio = new Date(dataInici);
-                    const fin = new Date(dataFin);
-
-                    // Verificar si la fecha de inicio es antes que la de fin
-                    if (inicio >= fin) {
-                        alert("La fecha de inicio debe ser anterior a la fecha de finalización.");
-                        return;
-                    }
-
-                    // Calcular la diferencia en horas
-                    const diferenciaHoras = Math.max(0, Math.round((fin - inicio) / (1000 * 3600)));
-
-                    // Asegurarse de que el vehículo ha sido seleccionado y que los datos necesarios están disponibles
-                    const selectedOption = vehiculoSelect.selectedOptions[0];
-                    if (!selectedOption) {
-                        alert("Por favor, selecciona un vehículo.");
-                        return;
-                    }
-
-                    // Acceder correctamente a los valores del dataset
-                    const preuPerHoraLloguer = parseFloat(selectedOption.dataset.preuperhoralloguer);
-                    const fiancaStandard = parseFloat(selectedOption.dataset.fiancastandard);
-
-                    // Verificar si los valores son válidos
-                    if (isNaN(preuPerHoraLloguer) || isNaN(fiancaStandard)) {
-                        console.error("Los valores de precio por hora o fianza estándar no son válidos.");
-                        return;
-                    }
-
-                    // Obtener la reputación del cliente
-                    const reputacio = reputacioElem.value;
-
-                    // Calcular la fianza según la reputación
-                    let fianca;
-                    if (reputacio === 'PREMIUM') {
-                        fianca = (fiancaStandard * 0.75).toFixed(2);  // 25% de descuento si es PREMIUM
-                    } else {
-                        fianca = fiancaStandard.toFixed(2);  // Si no es PREMIUM, fianza estándar
-                    }
-
-
-                    const costHoras = (diferenciaHoras * preuPerHoraLloguer).toFixed(2);
-                    // Calcular el coste total
-                    const costTotal = (diferenciaHoras * preuPerHoraLloguer + parseFloat(fianca)).toFixed(2);
-
-                    // Actualizar los valores en el DOM
-                    document.getElementById('totalHoras').textContent = diferenciaHoras;
-                    document.getElementById('costHoras').textContent = costHoras;
-                    document.getElementById('fiancaCalculada').textContent = fianca;
-                    document.getElementById('costTotal').textContent = costTotal;
-
-                    // Habilitar el botón de reserva si todo está correcto
-                    habilitarBotonReserva();
-                } else {
-                    console.error("Las fechas no son válidas.");
-                }
-            }
-
-            // Función para habilitar el botón de reserva
-            function habilitarBotonReserva() {
-                const botonReserva = document.querySelector('button[type="submit"]');
-                const dataIniciElem = document.getElementById('dataInici');
-                const dataFinElem = document.getElementById('dataFin');
-                const vehiculoSelect = document.getElementById('vehicle');
-
-                // Solo habilitar el botón si las fechas y el vehículo están seleccionados
-                if (dataIniciElem.value && dataFinElem.value && vehiculoSelect.value) {
-                    botonReserva.disabled = false;
-                } else {
-                    botonReserva.disabled = true;
-                }
-            }
-
-            // Función para habilitar las opciones de cliente y vehículo
-            function habilitarOpciones() {
-                const dataIniciElem = document.getElementById('dataInici');
-                const dataFinElem = document.getElementById('dataFin');
-                const clienteSelect = document.getElementById('client');
-
-                if (!dataIniciElem || !dataFinElem) {
-                    console.error("No se pueden encontrar los elementos de fecha.");
-                    return;
-                }
-
-                // Habilitar o deshabilitar el cliente dependiendo de si las fechas están seleccionadas
-                clienteSelect.disabled = !(dataIniciElem.value && dataFinElem.value);
-
-                // Recalcular los costos si las fechas cambian
-                calcularReserva();
-                habilitarBotonReserva();
-            }
-
-            // Función para habilitar el vehículo
-            function habilitarVehiculos() {
-                const cliente = document.getElementById('client').value;
-                const vehiculoSelect = document.getElementById('vehicle');
-
-                if (!vehiculoSelect) {
-                    console.error("No se puede encontrar el selector de vehículos.");
-                    return;
-                }
-
-                // Habilitar el selector de vehículos solo si hay un cliente seleccionado
-                vehiculoSelect.disabled = !cliente;
-
-                // Recalcular los costos si el cliente cambia
-                calcularReserva();
-                habilitarBotonReserva();
-            }
-
-            // Función para actualizar los detalles del vehículo (precio por hora y fianza)
-            function actualizarVehiculo() {
-                const vehiculoSelect = document.getElementById('vehicle');
-                const selectedOption = vehiculoSelect.selectedOptions[0];
-
-                // Verificamos que hay un vehículo seleccionado
-                if (!selectedOption) {
-                    console.error("No hay un vehículo seleccionado.");
-                    return;
-                }
-
-                // Obtener los detalles del vehículo desde el atributo 'data-*'
-                const nombreVehiculo = selectedOption.text;
-                const preuPerHoraLloguer = selectedOption.dataset.preuperhoralloguer || '0';
-                const fiancaStandard = selectedOption.dataset.fiancastandard || '0';
-                const limitQuilm = selectedOption.dataset.limitquilm || '0';
-
-                // Actualizar los campos de la tabla con los detalles del vehículo
-                document.getElementById('vehiclePrice').textContent = preuPerHoraLloguer + ' €';
-                document.getElementById('vehicleFianca').textContent = fiancaStandard + ' €';
-                document.getElementById('vehicleLimitQuilm').textContent = limitQuilm + ' km';
-                // Mostrar la tabla con los detalles del vehículo
-                document.getElementById('vehicleDetails').style.display = 'block';
-
-                // Recalcular los costos
-                calcularReserva();
-            }
-
-            // Configuración de eventos al cargar la página
+         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const dataIniciElem = document.getElementById('dataInici');
                 const dataFinElem = document.getElementById('dataFin');
+                const checkAvailabilityButton = document.getElementById('checkAvailability');
+                const vehicleSelect = document.getElementById('vehicle');
                 const clienteSelect = document.getElementById('client');
-                const vehiculoSelect = document.getElementById('vehicle');
+                const submitButton = document.querySelector('button[type="submit"]'); // Botón Crear Reserva
 
-                // Verificamos que los elementos estén disponibles en el DOM
-                if (dataIniciElem && dataFinElem && clienteSelect && vehiculoSelect) {
-                    dataIniciElem.addEventListener('change', habilitarOpciones);
-                    dataFinElem.addEventListener('change', habilitarOpciones);
-                    clienteSelect.addEventListener('change', habilitarVehiculos);
-                    vehiculoSelect.addEventListener('change', calcularReserva);  // Recalcular al cambiar el vehículo
-                    vehiculoSelect.addEventListener('change', actualizarVehiculo); // Agregar este listener para actualizar los detalles del vehículo
-                } else {
-                    console.error("Elementos necesarios no disponibles en el DOM.");
+                // Habilitar el botón de "Comprobar disponibilidad"
+                function habilitarBotonComprobar() {
+                    checkAvailabilityButton.disabled = !(dataIniciElem.value && dataFinElem.value);
                 }
 
-                // Actualizar el campo de reputación según el cliente seleccionado
-                clienteSelect.addEventListener('change', function () {
-                    const selectedClient = clienteSelect.selectedOptions[0];
-                    const reputacio = selectedClient ? selectedClient.dataset.reputacio : 'NORMAL';
-                    document.getElementById('reputacio').value = reputacio; // Actualiza el campo de reputación
-                    calcularReserva();  // Recalcular al cambiar el cliente
+                // Habilitar el selector de cliente cuando las fechas estén seleccionadas
+                function habilitarCliente() {
+                    clienteSelect.disabled = !(dataIniciElem.value && dataFinElem.value);
+                }
+
+                // Habilitar el botón de "Crear Reserva" cuando las fechas y el vehículo estén seleccionados
+                function habilitarBotonReserva() {
+                    submitButton.disabled = !(dataIniciElem.value && dataFinElem.value && vehicleSelect.value);
+                }
+
+                // Comprobar disponibilidad de vehículos
+                async function comprobarDisponibilidad() {
+                    const dataInici = document.getElementById('dataInici').value;
+                    const dataFin = document.getElementById('dataFin').value;
+
+                    if (!dataInici || !dataFin) {
+                        alert("Selecciona les dates abans de comprovar la disponibilitat.");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/reserves/filtrar-vehiculos?dataInici=${dataInici}&dataFin=${dataFin}`);
+                        if (!response.ok)
+                            throw new Error("Error al consultar la disponibilitat.");
+                        const vehicles = await response.json();
+
+                        // Limpiar y actualizar el select de vehículos
+                        vehicleSelect.innerHTML = '<option value="" disabled selected>Selecciona un vehicle</option>';
+                        vehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.matricula;
+                            option.textContent = `${vehicle.nomVehicle} (${vehicle.combustio})`;
+                            option.dataset.preuperhoralloguer = vehicle.preuPerHoraLloguer;
+                            option.dataset.fiancastandard = vehicle.fiancaStandard;
+                            vehicleSelect.appendChild(option);
+                        });
+
+                        // Habilitar el selector de vehículos
+                        vehicleSelect.disabled = false;
+                    } catch (error) {
+                        console.error(error);
+                        alert("Hi ha hagut un problema al comprovar la disponibilitat.");
+                    }
+                }
+
+                // Actualizar los detalles del vehículo y recalcular costos
+                function actualizarVehiculo() {
+                    const selectedOption = vehicleSelect.selectedOptions[0];
+
+                    if (!selectedOption) {
+                        console.error("No hay un vehículo seleccionado.");
+                        return;
+                    }
+
+                    // Actualizar la tabla con los detalles del vehículo
+                    document.getElementById('vehiclePrice').textContent = `${selectedOption.dataset.preuperhoralloguer} €`;
+                    document.getElementById('vehicleFianca').textContent = `${selectedOption.dataset.fiancastandard} €`;
+                    
+                    
+
+                    // Mostrar los detalles del vehículo
+                    document.getElementById('vehicleDetails').style.display = 'block';
+
+                    // Calcular el costo de la reserva
+                    calcularReserva();
+
+                    // Habilitar el botón de "Crear Reserva"
+                    habilitarBotonReserva();
+                }
+
+                // Calcular el costo de la reserva
+                function calcularReserva() {
+                    const dataInici = new Date(dataIniciElem.value);
+                    const dataFin = new Date(dataFinElem.value);
+                    const selectedOption = vehicleSelect.selectedOptions[0];
+                    const reputacio = document.getElementById('reputacio').value;
+
+                    if (!dataInici || !dataFin || !selectedOption)
+                        return;
+
+                    const horas = Math.max(0, (dataFin - dataInici) / (1000 * 3600));
+                    const precioHora = parseFloat(selectedOption.dataset.preuperhoralloguer || 0);
+                    const fiancaStandard = parseFloat(selectedOption.dataset.fiancastandard || 0);
+
+                    let fianca = reputacio === 'PREMIUM' ? (fiancaStandard * 0.75).toFixed(2) : fiancaStandard.toFixed(2);
+                    let costeHoras = (horas * precioHora).toFixed(2);
+                    let costeTotal = (parseFloat(costeHoras) + parseFloat(fianca)).toFixed(2);
+
+                    document.getElementById('totalHoras').textContent = horas;
+                    document.getElementById('costHoras').textContent = costeHoras;
+                    document.getElementById('fiancaCalculada').textContent = fianca;
+                    document.getElementById('costTotal').textContent = costeTotal;
+                }
+
+                // Eventos
+                dataIniciElem.addEventListener('input', () => {
+                    habilitarBotonComprobar();
+                    habilitarCliente();
                 });
+                dataFinElem.addEventListener('input', () => {
+                    habilitarBotonComprobar();
+                    habilitarCliente();
+                });
+                checkAvailabilityButton.addEventListener('click', comprobarDisponibilidad);
+                vehicleSelect.addEventListener('change', actualizarVehiculo);
+                vehicleSelect.addEventListener('change', habilitarBotonReserva); // Habilitar el botón al seleccionar un vehículo
             });
         </script>
     </head>
     <body>
         <h1>Crear Reserva</h1>
-
         <form th:action="@{/reserves/crear}" th:object="${reserva}" method="post">
             <!-- Fechas -->
             <fieldset>
                 <legend>1. Selecciona les dates</legend>
-                <input type="datetime-local" id="dataInici"  name="dataInici" required />
+                <input type="datetime-local" id="dataInici" name="dataInici" required />
                 <input type="datetime-local" id="dataFin" name="dataFin" required />
+                <button type="button" id="checkAvailability" disabled>Comprovar disponibilitat</button>
             </fieldset>
 
+            <!-- Cliente -->
             <fieldset>
                 <legend>2. Selecciona un client</legend>
                 <select id="client" name="client.dni" required disabled>
                     <option value="" disabled selected>Selecciona un client</option>
-                    <option th:each="client : ${clients}"
+                    <option th:each="client : ${clients}" 
                             th:value="${client.dni}" 
                             th:text="${client.nom + ' ' + client.cognoms + ' ' + client.reputacio}" 
                             th:data-reputacio="${client.reputacio}">
@@ -210,46 +153,30 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <input type="hidden" id="reputacio" value="NORMAL" />
             </fieldset>
 
+            <!-- Vehículos -->
             <fieldset>
                 <legend>3. Selecciona un vehicle</legend>
                 <select id="vehicle" name="vehicle.matricula" required disabled>
-                    <option value="" disabled selected>Selecciona
-                        un vehícle</option>
-                    <option th:each="vehicle : ${vehicles}" 
-                            th:value="${vehicle.matricula}" 
-                            th:text="${vehicle.nomVehicle + ' (' + vehicle.combustio + ')'}" 
-                            th:data-preuperhoralloguer="${vehicle.preuPerHoraLloguer}" 
-                            th:data-fiancastandard="${vehicle.fiancaStandard}"
-                            th:data-limitquilm="${vehicle.limitQuilometratge}"
-                            ></option>
+                    <option value="" disabled selected>Selecciona un vehícle</option>
                 </select>
             </fieldset>
 
-            <!-- Tabla para mostrar los detalles del vehículo -->
+            <!-- Detalles -->
             <fieldset id="vehicleDetails" style="display: none;">
                 <legend>Detalls del vehicle seleccionat</legend>
                 <table>
-                    <tr>
-                        <td>Preu per hora:</td>
-                        <td id="vehiclePrice">--</td>
-                    </tr>
-                    <tr>
-                        <td>Fiança estándar:</td>
-                        <td id="vehicleFianca">--</td>
-                    </tr>
-                    <tr>
-                        <td>Límite de kilometraje:</td>
-                        <td id="vehicleLimitQuilm">--</td>
-                    </tr>
+                    <tr><td>Preu per hora:</td><td id="vehiclePrice">--</td></tr>
+                    <tr><td>Fiança estándar:</td><td id="vehicleFianca">--</td></tr>
                 </table>
             </fieldset>
 
+            <!-- Precio total -->
             <fieldset>
                 <legend>Detalls del preu</legend>
                 <p>Hores: <span id="totalHoras">--</span></p>
                 <p>Preu total per hores: €<span id="costHoras">--</span></p>
                 <p>Fiança: €<span id="fiancaCalculada">--</span></p>
-                <p>Cost tota de reserva:  €<span id="costTotal">--</span></p>
+                <p>Cost total de reserva: €<span id="costTotal">--</span></p>
             </fieldset>
 
             <button type="submit" disabled>Crear Reserva</button>
