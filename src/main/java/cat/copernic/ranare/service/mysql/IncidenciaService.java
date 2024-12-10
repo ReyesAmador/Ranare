@@ -28,6 +28,10 @@ public class IncidenciaService {
         return incidenciaRepository.findById(id).orElse(null);
     }
     
+    public List<Incidencia> findByVehicleMatricula(String matricula){
+        return incidenciaRepository.findByVehicle_Matricula(matricula);
+    }
+    
     public Incidencia save(Incidencia incidencia){
         return incidenciaRepository.save(incidencia);
     }

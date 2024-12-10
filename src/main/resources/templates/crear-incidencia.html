@@ -19,6 +19,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div class="header d-flex justify-content-between align-items-center p-3">
             <h1>RANARE</h1>
             <div class="nav-links">
+                <a href="/admin/vehicles" class="btn btn-secondary">Administrar Vehicles</a>
                 <a href="/admin/incidencies" class="btn btn-secondary">Administrar Incidències</a>
             </div>
             <div>
@@ -33,7 +34,20 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         </div>
         <form th:action="@{/crear-incidencia}" th:object="${incidencia}" method="post">
             <div class="form-row">
-                <div class="from-group col-md-6">
+                <div class="form-group col-md-6">
+                    <label>Culpabilitat</label>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="culpabilitatTrue" name="culpabilitat" th:field="*{culpabilitat}" value="true" required>
+                        <label class="form-check-label" for="culpabilitatTrue">Culpa de l'Usuari</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="radio" class="form-check-input" id="culpabilitatFalse" name="culpabilitat" th:field="*{culpabilitat}" value="false" required>
+                        <label class="form-check-label" for="culpabilitatFalse">Culpa del Vehicle</label>
+                    </div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-md-6">
                     <label for="estat">Estat <span class="text-danger">*</span></label>
                     <select class="form-control" id="estat" th:field="*{estat}" required>
                         <option value="">Selecciona un estat</option>
@@ -43,12 +57,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </div>
                 <div class="form-group col-md-6">
                     <label for="vehicle">Vehicle <span class="text-danger">*</span></label>
-                    <select class="form-control" id="vehicle" th:field="*{vehicle}" required>
-                        <option value="">Selecciona un vehicle</option>
-                        <th:block th:each="vehicle : ${vehicles}">
-                            <option th:value="${vehicle.matricula}" th:text="${vehicle.nomVehicle + ' (' + vehicle.matricula + ')'}"></option>
-                        </th:block>
-                    </select>
+                    <input type="text" class="form-control" id="vehicle" th:field="*{vehicle.matricula}" readonly>
                 </div>
             </div>
             <div class="form-row">
@@ -81,15 +90,5 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>   
         </form>
-        
-        <script>
-            $(document).ready(function () {
-                $('#vehicle').select2({
-                    placeholder: "Selecciona un vehicle",
-                    allowClear: true,
-                    width: '100%'
-                });
-            });
-        </script>
     </body>
 </html>

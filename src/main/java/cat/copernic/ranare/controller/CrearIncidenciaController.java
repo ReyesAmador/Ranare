@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -24,6 +25,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author ngall
  */
 @Controller
+@RequestMapping("/admin/vehicles")
 public class CrearIncidenciaController {
     
     @Autowired
@@ -34,11 +36,14 @@ public class CrearIncidenciaController {
 
     // Método para mostrar el formulario de crear incidencia
     @GetMapping("/crear-incidencia")
-    public String mostrarFormulari(Model model) {
-        List<Vehicle> vehicles = vehicleService.getAllVehicles(); // Obtener lista de vehículos disponibles
+    public String mostrarFormulari(@RequestParam(name = "matricula", required = false)String matricula, Model model) {
+        Incidencia incidencia = new Incidencia();
         
-        model.addAttribute("vehicles", vehicles); // Añadir vehículos al modelo
-        model.addAttribute("incidencia", new Incidencia()); // Crear un objeto vacío de incidencia para el formulario
+        if(matricula != null && !matricula.isEmpty()){
+            Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
+            incidencia.setVehicle(vehicle);
+        }
+        model.addAttribute("incidencia", incidencia); // Crear un objeto vacío de incidencia para el formulario
         
         return "crear-incidencia"; // Retorna la plantilla HTML
     }
@@ -52,10 +57,10 @@ public class CrearIncidenciaController {
             model.addAttribute("vehicles", vehicles);
             return "crear-incidencia";
         }
-        incidenciaService.save(incidencia);
+        incidenciaService.save(incidencia);     
         
         redirectAttributes.addFlashAttribute("message", "La incidència s'ha creat correctament.");
-        return "redirect:/crear-incidencia";
+        return "redirect:/admin/vehicles/crear-incidencia";
         
     }
 }

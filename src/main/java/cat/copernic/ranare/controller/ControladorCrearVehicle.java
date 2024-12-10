@@ -22,6 +22,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -32,6 +33,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  * @author ngall
  */
 @Controller
+@RequestMapping("/admin/vehicles")
 public class ControladorCrearVehicle {
     
     @Autowired
@@ -75,7 +77,7 @@ public class ControladorCrearVehicle {
         vehicleService.saveVehicle(vehicle);
         
         redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat o modificat correctament.");
-        return "redirect:/crear-vehicle";
+        return "redirect:/admin/vehicles/crear-vehicle";
     }
     
     @PostMapping("/pujarImatge")

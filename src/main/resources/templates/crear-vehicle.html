@@ -39,7 +39,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <form th:action="@{/crear-vehicle}" th:object="${vehicle}" method="post">
+        <form th:action="@{/admin/vehicles/crear-vehicle}" th:object="${vehicle}" method="post">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="nomVehicle">Nom vehicle <span class="text-danger">*</span></label>

@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author ngall
  */
 @Controller
-@RequestMapping("/vehicles/incidencies")
+@RequestMapping("/admin/vehicles/incidencies")
 public class IncidenciaController {
     
     @Autowired
@@ -35,8 +35,15 @@ public class IncidenciaController {
     private DocumentService documentService;
     
     @GetMapping
-    public String listIncidencies(Model model){
-        List<Incidencia> incidencies = incidenciaService.findAll();
+    public String listIncidencies(@RequestParam(value = "matricula", required = false) String matricula, Model model){
+        List<Incidencia> incidencies;
+        
+        if(matricula != null && !matricula.isEmpty()){
+            incidencies = incidenciaService.findByVehicleMatricula(matricula);
+        }else{
+            incidencies = incidenciaService.findAll();
+        }
+        
         model.addAttribute("incidencies", incidencies);
         return "incidencies/llista-incidencies";
     }
@@ -65,9 +72,4 @@ public class IncidenciaController {
         return "incidencies/crear-incidencia";
     }
     
-    @GetMapping("/eliminar/{id}")
-    public String eliminarIncidencia(@PathVariable Long id){
-        incidenciaService.deleteById(id);
-        return "redirect:/incidencies";
-    }
 }

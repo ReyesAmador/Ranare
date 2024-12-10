@@ -5,6 +5,7 @@
 package cat.copernic.ranare.repository.mysql;
 
 import cat.copernic.ranare.entity.mysql.Incidencia;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -12,4 +13,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @author ngall
  */
 public interface IncidenciaRepository extends JpaRepository<Incidencia, Long>{
+    List<Incidencia> findByVehicle_Matricula(String matricula);
 }
