@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Controller
 @RequestMapping("/admin/vehicles/incidencies")
-public class IncidenciaController {
+public class LlistaIncidenciesController {
     
     @Autowired
     private IncidenciaService incidenciaService;
@@ -45,13 +45,13 @@ public class IncidenciaController {
         }
         
         model.addAttribute("incidencies", incidencies);
-        return "incidencies/llista-incidencies";
+        return "llista-incidencies";
     }
     
     @GetMapping("/nou")
     public String novaIncidencia(Model model){
         model.addAttribute("incidencia", new Incidencia());
-        return "incidencies/crear-incidencia";
+        return "crear-incidencia";
     }
     
     @PostMapping
@@ -63,13 +63,13 @@ public class IncidenciaController {
             incidencia.setDocumentsIncidenciaId(documentId);
         }
         incidenciaService.save(incidencia);
-        return "redirect:/incidencies";
+        return "redirect:/admin/vehicles/incidencies";
     }
     
     @GetMapping("/modificar/{id}")
     public String modificarIncidencia(@PathVariable Long id, Model model){
         model.addAttribute("incidencia", incidenciaService.findById(id));
-        return "incidencies/crear-incidencia";
+        return "crear-incidencia";
     }
     
 }

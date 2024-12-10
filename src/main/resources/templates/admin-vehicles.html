@@ -40,6 +40,17 @@
                 }
             }
             
+            function setListIncidentsLink(){
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('list-incidents-link');
+                
+                if(checkboxes.length === 1){
+                const matricula = checkboxes[0].value;
+                incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
+                } else {
+                    incidentLink.href = '/admin/vehicles/incidencies';
+                }
+            }
             
             function toggleDetails(matricula) {
                 console.log("toggleDetails ejecutado para matrícula:", matricula);
@@ -104,7 +115,7 @@
                         <a href="/admin/vehicles/crear-vehicle" class="btn btn-custom btn-modify">Crear</a>
                         <a href="#" id="modify-link" class="btn btn-custom btn-modify" onclick="setModifyLink()">Modificar</a>
                         <a href="#" id="create-incident-link" class="btn btn-custom btn-incident" onclick="setCreateIncidentLink()">Crear Incidència</a>
-                        <a href="/vehicles/incidencies" class="btn btn-custom btn-info">Llistar Incidències</a>
+                        <a href="#" id="list-incidents-link" class="btn btn-custom btn-info" onclick="setListIncidentsLink()">Llistar Incidències</a>
                     </div>
 
                     <!-- Formulario para eliminar vehículos -->
