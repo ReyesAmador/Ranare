@@ -137,7 +137,7 @@ public class AgentController {
             //si hi ha un error de validació et retorna a crear agent
             if(bindingResult.hasErrors()){
                 model.addAttribute("agent", agent);
-                model.addAttribute("modificar", false);
+                model.addAttribute("modificar", true);
                 return "crear-agent";
             }
             agentService.modificarAgent(agent);
