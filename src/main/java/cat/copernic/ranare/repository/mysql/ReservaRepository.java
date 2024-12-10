@@ -46,5 +46,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
      */
     List<Reserva> findByEstat(EstatReserva estat);
 
-  
+    @Query("SELECT r FROM Reserva r WHERE r.dataInici <= :dataFin AND r.dataFin >= :dataInici")
+    List<Reserva> findOverlappingReservations(@Param("dataInici") LocalDateTime dataInici, @Param("dataFin") LocalDateTime dataFin);
+
 }

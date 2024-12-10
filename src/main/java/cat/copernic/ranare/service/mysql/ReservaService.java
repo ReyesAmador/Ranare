@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,7 +104,11 @@ public class ReservaService {
         return (hores * preuPerHoraLloguer) + fianca;
     }
 
+    // Método para obtener reservas que se solapan con el rango de fechas
+    public List<Reserva> findOverlappingReservations(LocalDateTime dataInici, LocalDateTime dataFin) {
+        return reservaRepository.findOverlappingReservations(dataFin, dataInici);
 
+    }
 
 
 }

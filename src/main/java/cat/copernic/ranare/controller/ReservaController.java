@@ -7,15 +7,13 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.entity.mysql.VehicleDTO;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -26,6 +24,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -71,8 +70,6 @@ public class ReservaController {
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
         return "crear_reserva";
     }
-
-
 
     /**
      * Gestiona l'enviament del formulari per crear una nova reserva.
@@ -149,5 +146,13 @@ public class ReservaController {
         return "redirect:/reserves";
     }
 
+    @GetMapping("/filtrar-vehiculos")
+    @ResponseBody
+    public List<VehicleDTO> filtrarVehiculosDisponibles(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFin) {
+        // Filtrar vehículos disponibles en las fechas seleccionadas
+        List<VehicleDTO> vehiclesDTO = vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin);
+        return vehiclesDTO;
+    }
 
 }
