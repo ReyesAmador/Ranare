@@ -5,6 +5,7 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Agent;
+import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.service.mysql.AgentService;
@@ -17,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,12 +66,29 @@ public class AgentController {
 
     // Crear un  agente con un rol
     @PostMapping("/crear-agent")
-    public String crearAgent(@ModelAttribute @Valid Agent agent, RedirectAttributes redirectAttributes){
+    public String crearAgent(@ModelAttribute @Valid Agent agent,BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model){
         try{
-        agentService.guardarAgent(agent); // Guardar el nuevo agente
-        redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
+            //validar que el username està o no en ús
+            if(agentService.existeixUsername(agent.getUsername())){
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            //validar que el email està o no en ús
+            if(agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+            //si hi ha un error de validació et retorna a crear agent
+            if(bindingResult.hasErrors()){
+                model.addAttribute("agent", agent);
+                model.addAttribute("modificar", false);
+                return "crear-agent";
+            }
+            agentService.crearAgent(agent, agent.getRol()); // Guardar el nuevo agente
+            redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
         }catch(DuplicateResourceException e){
-            redirectAttributes.addFlashAttribute("error", "Error al crear l'agent: " + e.getMessage());
+            model.addAttribute("agent", agent);
+            model.addAttribute("modificar", false);
+            model.addAttribute("error", "Error al crear l'agent: " + e.getMessage());
+            return "crear-agent";
         }
         return "redirect:/agents"; // Redirigir a la lista de agentes
     }
@@ -105,8 +124,22 @@ public class AgentController {
     }
     
     @PostMapping("{dni}/modificar")
-    public String modificarAgent(@ModelAttribute("agent") Agent agent, RedirectAttributes redirectAttributes){
+    public String modificarAgent(@ModelAttribute("agent") Agent agent,BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model){
         try{
+            //validar que el username està o no en ús
+            if(agentService.existeixUsername(agent.getUsername())){
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            //validar que el email està o no en ús
+            if(agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+            //si hi ha un error de validació et retorna a crear agent
+            if(bindingResult.hasErrors()){
+                model.addAttribute("agent", agent);
+                model.addAttribute("modificar", true);
+                return "crear-agent";
+            }
             agentService.modificarAgent(agent);
             redirectAttributes.addFlashAttribute("success", "Agent modificat correctament.");
         }catch(AgentNotFoundException e){
