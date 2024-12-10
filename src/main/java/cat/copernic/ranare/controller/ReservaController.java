@@ -66,7 +66,7 @@ public class ReservaController {
     @GetMapping("/nova")
     public String mostrarFormulariNovaReserva(Model model) {
         model.addAttribute("reserva", new Reserva());
-        model.addAttribute("clients", clientService.getAllClients());
+        model.addAttribute("clients", clientService.getOnlyClients());
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
         return "crear_reserva";
     }

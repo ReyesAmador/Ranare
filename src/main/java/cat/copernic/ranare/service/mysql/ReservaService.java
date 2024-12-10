@@ -104,11 +104,8 @@ public class ReservaService {
         return (hores * preuPerHoraLloguer) + fianca;
     }
 
-    // Método para obtener reservas que se solapan con el rango de fechas
     public List<Reserva> findOverlappingReservations(LocalDateTime dataInici, LocalDateTime dataFin) {
-        return reservaRepository.findOverlappingReservations(dataFin, dataInici);
-
+        EstatReserva estat = EstatReserva.ACTIVA; // Filtrar solo reservas activas
+        return reservaRepository.findOverlappingReservations(dataInici, dataFin, estat);
     }
-
-
 }
