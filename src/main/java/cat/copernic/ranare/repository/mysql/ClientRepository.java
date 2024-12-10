@@ -23,6 +23,8 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     
     Optional<Client> findByEmail(String email); // Para buscar por email
     
+    Optional<Client> findByUsername(String username);
+    
     /**
      *
      * @return
@@ -37,5 +39,5 @@ public interface ClientRepository extends JpaRepository<Client, String> {
            "LOWER(c.cognoms) LIKE %:query% OR " +
            "LOWER(c.nacionalitat) LIKE %:query%")
     List<Client> searchByFilters(@Param("query") String query);
-    
+     
 }

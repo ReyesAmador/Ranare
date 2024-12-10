@@ -198,11 +198,11 @@ public class ClientController {
             // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
             if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
                 // Crear un agente con los datos del cliente y redirigir al formulario de agente
-                redirectAttributes.addFlashAttribute("success", "Agente creado correctamente.");
+                redirectAttributes.addFlashAttribute("success", "Agent creat correctament.");
                 return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
             } else {
                 // Si es un cliente normal
-                redirectAttributes.addFlashAttribute("missatge", "Cliente creado correctamente.");
+                redirectAttributes.addFlashAttribute("missatge", "Cliente creat correctament.");
                 return "redirect:/clients";  // Redirige a la lista de clientes
             }
 
@@ -213,6 +213,9 @@ public class ClientController {
             }
             if (e.getMessage().contains("email")) {
                 bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
+            }
+            if (e.getMessage().contains("username)")){
+                bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
             }
             return "crear_client";  // Vuelve al formulario si hay errores
         }
