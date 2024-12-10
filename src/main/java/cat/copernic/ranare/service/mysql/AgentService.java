@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
 /**
  *
@@ -28,6 +29,9 @@ public class AgentService {
     @Autowired
     private AgentRepository agentRepository;
     
+    @Autowired
+    private ClientService clientService;
+    
     private static final Logger logger = LoggerFactory.getLogger(AgentService.class);
     
     public List<Agent> getAllAgents() {
@@ -37,11 +41,15 @@ public class AgentService {
     //Aquesta anotació es per si alguna operació amb la BBDD falla, fa un rollback
     @Transactional
     public Agent crearAgent(Client client, Rol rol) {
+        
+        if(client.getDni() != null && !clientService.esDniValido(client.getDni())){
+            throw new DuplicateResourceException("DNI no vàlid");
+        }
         // Verificar si ja existeix un agent amb el mateix DNI
         Optional<Agent> existingAgent = agentRepository.findById(client.getDni());
         if (existingAgent.isPresent()) {
             // Si ja existeix llança una excepció
-            throw new DuplicateResourceException("El DNI ya está asignado a otro agente.");
+            throw new DuplicateResourceException("El DNI ja està assignat a un altre agent.");
         }
 
         // Buidar la sessió per evitar la duplicació del objecte en la sessió d'Hibernate 
