@@ -72,6 +72,11 @@ public class Incidencia {
     private LocalDateTime dataFinal;
     
     /**
+     * Culpabilitat de l'incidència, False = Culpa del vehicle, True = Culpa de Usuari.
+     */
+    private boolean culpabilitat;
+    
+    /**
      * Identificador dels documents relacionats amb la incidència.
      * Aquest camp és Transient, això evita que sigui persistit a la base de dades SQL
      */

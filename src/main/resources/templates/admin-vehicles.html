@@ -20,11 +20,26 @@
                 // Si hay exactamente un vehículo seleccionado
                 if (checkboxes.length === 1) {
                     const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
-                    modifyLink.href = '/crear-vehicle?matricula=' + matricula; // Actualizar el enlace de "Modificar"
+                    modifyLink.href = '/admin/vehicles/crear-vehicle?matricula=' + matricula; // Actualizar el enlace de "Modificar"
                 } else {
                     modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
                 }
             }
+            
+            function setCreateIncidentLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('create-incident-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    incidentLink.href = '/admin/vehicles/crear-incidencia?matricula=' + matricula; // Actualizar el enlace de "Crear Incidencia"
+                } else {
+                    incidentLink.href = '#'; // Si no hay uno seleccionado, desactiva el enlace
+                }
+            }
+            
             
             function toggleDetails(matricula) {
                 console.log("toggleDetails ejecutado para matrícula:", matricula);
@@ -86,8 +101,10 @@
                     
                     <!-- Botones de acción -->
                     <div class="mt-3">
-                        <a href="/crear-vehicle" class="btn btn-custom btn-modify">Crear</a>
+                        <a href="/admin/vehicles/crear-vehicle" class="btn btn-custom btn-modify">Crear</a>
                         <a href="#" id="modify-link" class="btn btn-custom btn-modify" onclick="setModifyLink()">Modificar</a>
+                        <a href="#" id="create-incident-link" class="btn btn-custom btn-incident" onclick="setCreateIncidentLink()">Crear Incidència</a>
+                        <a href="/vehicles/incidencies" class="btn btn-custom btn-info">Llistar Incidències</a>
                     </div>
 
                     <!-- Formulario para eliminar vehículos -->

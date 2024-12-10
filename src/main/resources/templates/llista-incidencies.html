@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <title>RANARE - Llista d'Incidències</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+        <!-- Select2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+    <body>
+        <div class="header d-flex justify-content-between align-items-center p-3">
+            <h1>RANARE</h1>
+            <div class="nav-links">
+                <a href="/admin/vehicles" class="btn btn-secondary">Tornar a Vehicles</a>
+            </div>
+            <div>
+                <span class="text-white">Hola Admin!</span>
+            </div>
+        </div>
+
+        <div class="container my-5">
+            <h2 class="text-primary">Llista d'Incidències</h2>
+        
+            <form th:action="@{/vehicles/incidencies" method="get" class="form-inline mb-4">
+                <label for="matricula" class="mr-2">Filtrar per matrícula:</label>
+                <input type="text" name="matricula" id="matricula" class="form-control mr-2" placeholder="Matrícula del vehicle">
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+                <a th:ref="@{/vehicles/incidencies}" class="btn btn-secondary ml-2">Restableix</a>
+            </form>
+            
+            <table class="table table-striped table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Matrícula del Vehicle</th>
+                        <th>Estat</th>
+                        <th>Motiu</th>
+                        <th>Cost</th>
+                        <th>Data Inici</th>
+                        <th>Data Final</th>
+                        <th>Culpabilitat</th>
+                        <th>Accions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="incidencia : ${incidencies}">
+                        <td th:text="${incidencia.idIncidencia}"></td>
+                        <td th:text="${incidencia.vehicle.matricula}"></td>
+                        <td th:text="${incidencia.estat}"></td>
+                        <td th:text="${incidencia.motiu}"></td>
+                        <td th:text="${incidencia.cost}"></td>
+                        <td th:text="${incidencia.dataInici}"></td>
+                        <td th:text="${incidencia.dataFinal}"></td>
+                        <td th:text="${incidencia.culpabilitat ? 'Culpa de l\'Usuari' : 'Culpa del Vehicle'}"></td>
+                        <td>
+                            <a th:href="@{/vehicles/incidencies/modificar/{id}(id=${incidencia.idIncidencia})}" class="btn btn-sm btn-warning">Modificar</a>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(incidencies)}">
+                        <td colspan="9" class="text-center">No s'han trobat incidències.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
