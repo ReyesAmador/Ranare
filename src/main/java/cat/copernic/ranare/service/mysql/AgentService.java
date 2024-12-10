@@ -61,6 +61,7 @@ public class AgentService {
                 .ciutat(client.getCiutat())
                 .codiPostal(client.getCodiPostal())
                 .reputacio(client.getReputacio())
+                .telefon(client.getTelefon())
                 .rol(rol)
                 .build();
 
@@ -124,5 +125,13 @@ public class AgentService {
     public Agent getAgentPerDni(String dni){
         return agentRepository.findById(dni)
                 .orElseThrow(() -> new AgentNotFoundException("Agent amb DNI  " + dni +" no trobat"));
+    }
+    
+    public boolean existeixUsername(String username){
+        return agentRepository.findByUsername(username).isPresent();
+    }
+    
+    public boolean existeixEmail(String email){
+        return agentRepository.findByEmail(email).isPresent();
     }
 }
