@@ -6,8 +6,12 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.entity.mysql.VehicleDTO;
+import cat.copernic.ranare.repository.mysql.ReservaRepository;
+
 import cat.copernic.ranare.repository.mysql.VehicleRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,9 +27,9 @@ public class VehicleService {
 
     @Autowired
     private VehicleRepository vehicleRepository;
-    
+
     @Autowired
-    private ReservaService reservaService;
+    private ReservaService reservaRepository;
 
     public Vehicle saveVehicle(Vehicle vehicle) {
         if (vehicle.getMinimHoresLloguer() > vehicle.getMaximHoresLloguer()) {
@@ -59,6 +63,27 @@ public class VehicleService {
             throw new IllegalArgumentException("No es pot eliminar un vehicle que no existeix.");
         }
     }
-    
+
+    public List<VehicleDTO> filtrarVehiculosDisponiblesDTO(LocalDateTime dataInici, LocalDateTime dataFin) {
+        // Obtener reservas solapadas
+        List<Reserva> overlappingReservations = reservaRepository.findOverlappingReservations(dataInici, dataFin);
+
+        // Obtener vehículos reservados
+        List<Vehicle> reservedVehicles = overlappingReservations.stream()
+                .map(Reserva::getVehicle)
+                .distinct()
+                .collect(Collectors.toList());
+
+        // Filtrar vehículos no reservados
+        List<Vehicle> allVehicles = getAllVehicles();
+        List<Vehicle> availableVehicles = allVehicles.stream()
+                .filter(vehicle -> !reservedVehicles.contains(vehicle))
+                .collect(Collectors.toList());
+
+        // Convertir a DTO
+        return availableVehicles.stream()
+                .map(vehicle -> new VehicleDTO(vehicle))
+                .collect(Collectors.toList());
+    }
 
 }

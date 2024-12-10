@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -105,7 +104,8 @@ public class ReservaService {
         return (hores * preuPerHoraLloguer) + fianca;
     }
 
-
-
-
+    public List<Reserva> findOverlappingReservations(LocalDateTime dataInici, LocalDateTime dataFin) {
+        EstatReserva estat = EstatReserva.ACTIVA; // Filtrar solo reservas activas
+        return reservaRepository.findOverlappingReservations(dataInici, dataFin, estat);
+    }
 }

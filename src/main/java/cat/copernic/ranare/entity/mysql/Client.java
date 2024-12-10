@@ -204,7 +204,7 @@ public class Client  {
     @Column(nullable = false)
     private Reputacio reputacio;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reserva> reserves;
     
     /**
