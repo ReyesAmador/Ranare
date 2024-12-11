@@ -33,7 +33,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author reyes
  */
 @Controller
-@RequestMapping("/agents")
+@RequestMapping("/admin/agents")
 public class AgentController {
     
     @Autowired
@@ -46,9 +46,11 @@ public class AgentController {
     
     @GetMapping
     public String llistarAgents(Model model){
+        model.addAttribute("content", "llista-agents :: llistaAgentsContent");
+        model.addAttribute("title", "Llistar agents");
         model.addAttribute("agents", agentService.getAllAgents());
         
-        return "llista-agents";
+        return "admin";
     }
     
     /**
@@ -59,9 +61,11 @@ public class AgentController {
      */
     @GetMapping("/crear-agent")
     public String showForm(Model model) {
+        model.addAttribute("title", "Crear agent");
         model.addAttribute("agent", new Agent()); // Modelo para el formulario
         model.addAttribute("modificar", false);
-        return "crear-agent";
+        model.addAttribute("content", "crear-agent :: crearAgentContent");
+        return "admin";
     }
 
     // Crear un  agente con un rol
@@ -80,7 +84,7 @@ public class AgentController {
             if(bindingResult.hasErrors()){
                 model.addAttribute("agent", agent);
                 model.addAttribute("modificar", false);
-                return "crear-agent";
+                return "admin";
             }
             agentService.crearAgent(agent, agent.getRol()); // Guardar el nuevo agente
             redirectAttributes.addFlashAttribute("success", "Agent creat correctament!");
@@ -88,9 +92,9 @@ public class AgentController {
             model.addAttribute("agent", agent);
             model.addAttribute("modificar", false);
             model.addAttribute("error", "Error al crear l'agent: " + e.getMessage());
-            return "crear-agent";
+            return "admin";
         }
-        return "redirect:/agents"; // Redirigir a la lista de agentes
+        return "redirect:/admin/agents"; // Redirigir a la lista de agentes
     }
     
     //Eliminar agent
@@ -103,7 +107,7 @@ public class AgentController {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
         }
         
-        return "redirect:/agents";
+        return "redirect:/admin/agents";
     }
     
     //Modificar agent
@@ -116,8 +120,10 @@ public class AgentController {
             model.addAttribute("agent", agent);
             model.addAttribute("localitzacions", localitzacioService.getallLocalitzacio());
             model.addAttribute("modificar", true);
+            model.addAttribute("title", "Modificar agent");
+            model.addAttribute("content", "crear-agent :: crearAgentContent");
             
-            return "crear-agent";
+            return "admin";
         }else{
             throw new AgentNotFoundException("Agent amb DNI " + dni + " no trobat");
         }
@@ -138,7 +144,9 @@ public class AgentController {
             if(bindingResult.hasErrors()){
                 model.addAttribute("agent", agent);
                 model.addAttribute("modificar", true);
-                return "crear-agent";
+                model.addAttribute("title", "Modificar agent");
+                model.addAttribute("content", "crear-agent :: crearAgentContent");
+                return "admin";
             }
             agentService.modificarAgent(agent);
             redirectAttributes.addFlashAttribute("success", "Agent modificat correctament.");
@@ -146,7 +154,7 @@ public class AgentController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         
-        return "redirect:/agents";
+        return "redirect:/admin/agents";
     }
     
     @GetMapping("/{dni}")
@@ -154,8 +162,10 @@ public class AgentController {
         try{
             Agent agent = agentService.getAgentPerDni(dni);
             model.addAttribute("agent",agent);
+            model.addAttribute("content", "detall-agent :: detallAgentContent");
+            model.addAttribute("title", "Detall agent");
             
-            return "detall-agent";
+            return "admin";
         }catch(AgentNotFoundException e){
             model.addAttribute("errorMissatge", e.getMessage());
             return "error";
@@ -168,11 +178,15 @@ public class AgentController {
         
         if(agent.isPresent()){
             model.addAttribute("agents", List.of(agent.get()));
+            model.addAttribute("content", "llista-agents :: llistaAgentsContent");
+            model.addAttribute("title", "Llistar agents");
         }else{
             model.addAttribute("error", "Agent no trobat amb el DNI " + dni);
             model.addAttribute("agents", List.of());
+            model.addAttribute("content", "llista-agents :: llistaAgentsContent");
+            model.addAttribute("title", "Llistar agents");
         }
         
-        return "llista-agents";
+        return "admin";
     }
 }
