@@ -14,6 +14,7 @@ import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -155,4 +157,20 @@ public class ReservaController {
         return vehiclesDTO;
     }
 
+    @GetMapping("/detall/{id}")
+    public String detallsReserva(@PathVariable Long id, Model model) {
+        Optional<Reserva> reservaOpt = reservaService.obtenirReservaPerId(id);
+        if (reservaOpt.isEmpty()) {
+            return "error"; // Redirige a una página de error si la reserva no existe
+        }
+        Reserva reserva = reservaOpt.get();
+
+        // Comprueba si client y vehicle no son nulos
+        if (reserva.getClient() == null || reserva.getVehicle() == null) {
+            System.out.println("Cliente esta vacio  o el vehiculo máquina");
+        }
+
+        model.addAttribute("reserva", reserva);
+        return "detalls_reserva";
+    }
 }

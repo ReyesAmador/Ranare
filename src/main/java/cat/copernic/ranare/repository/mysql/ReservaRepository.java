@@ -10,6 +10,7 @@ import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.enums.EstatReserva;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +23,12 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
 
+    
+    @Override
+    Optional<Reserva> findById(Long id);
+    
+    
+    
     /**
      * Troba totes les reserves associades a un client específic.
      *
