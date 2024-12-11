@@ -177,5 +177,12 @@ public class ClientService {
         int resto = numero % 23;
         return letras.charAt(resto);
     }
+    
+    public boolean existeixUsername(String username) {
+        return clientRepository.findByUsername(username).isPresent();
+    }
+    public boolean existeixEmail(String email) {
+        return clientRepository.findByEmail(email).isPresent();
+    }
 
 }
