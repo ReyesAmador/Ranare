@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 
 /**
  *
@@ -45,6 +44,11 @@ public class AgentService {
         if(client.getDni() != null && !clientService.esDniValido(client.getDni())){
             throw new DuplicateResourceException("DNI no vàlid");
         }
+        Optional<Client> existeixClient = clientService.getClientById(client.getDni());
+        if(existeixClient.isPresent()){
+            throw new DuplicateResourceException("El DNI ja està assignat a un client.");
+        }
+        
         // Verificar si ja existeix un agent amb el mateix DNI
         Optional<Agent> existingAgent = agentRepository.findById(client.getDni());
         if (existingAgent.isPresent()) {
