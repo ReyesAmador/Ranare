@@ -9,6 +9,7 @@ import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.service.mysql.AgentService;
+import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -42,6 +43,9 @@ public class AgentController {
     @Autowired
     private LocalitzacioService localitzacioService;
     
+    @Autowired
+    private ClientService clientService;
+    
     private static final Logger logger = LoggerFactory.getLogger(AgentController.class);
     
     @GetMapping
@@ -74,6 +78,14 @@ public class AgentController {
             }
             //validar que el email està o no en ús
             if(agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+                        
+            if (clientService.existeixUsername(agent.getUsername())) {
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            
+            if (clientService.existeixEmail(agent.getEmail())) {
                 bindingResult.rejectValue("email", "duplicate.email");
             }
             //si hi ha un error de validació et retorna a crear agent
@@ -126,12 +138,21 @@ public class AgentController {
     @PostMapping("{dni}/modificar")
     public String modificarAgent(@ModelAttribute("agent") Agent agent,BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model){
         try{
-            //validar que el username està o no en ús
-            if(agentService.existeixUsername(agent.getUsername())){
+            Agent agentExistent = agentService.getAgentPerDni(agent.getDni());
+            //validar que el username està o no en ús tan sols si ha canviat el valor
+            if(!agent.getUsername().equals(agentExistent.getUsername()) && agentService.existeixUsername(agent.getUsername())){
                 bindingResult.rejectValue("username", "duplicate.username");
             }
-            //validar que el email està o no en ús
-            if(agentService.existeixEmail(agent.getEmail())){
+            //validar que el email està o no en ús tan sols si ha canviat el valor
+            if(!agent.getEmail().equals(agentExistent.getEmail()) && agentService.existeixEmail(agent.getEmail())){
+                bindingResult.rejectValue("email", "duplicate.email");
+            }
+            
+            if (!agent.getUsername().equals(agentExistent.getUsername()) && clientService.existeixUsername(agent.getUsername())) {
+                bindingResult.rejectValue("username", "duplicate.username");
+            }
+            
+            if (!agent.getEmail().equals(agentExistent.getEmail()) && clientService.existeixEmail(agent.getEmail())) {
                 bindingResult.rejectValue("email", "duplicate.email");
             }
             //si hi ha un error de validació et retorna a crear agent
