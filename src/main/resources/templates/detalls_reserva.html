@@ -41,8 +41,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <p><strong>Transmissió:</strong> <span th:text="${reserva.vehicle.transmissio}"></span></p>
             <p><strong>Comentaris d'Agent:</strong> <span th:text="${reserva.vehicle.comentarisAgent}"></span></p>
         </fieldset>
+        <form th:action="@{/reserves/anular}" method="post" style="margin-top: 20px;">
+            <input type="hidden" name="id" th:value="${reserva.id}" />
+            <button type="submit" onclick="return confirm('Estàs segur que vols anul·lar aquesta reserva?')" style="background-color: red; color: white;">
+                Anul·lar Reserva
+            </button>
+        </form>
         <!-- Botón para volver -->
-        <form th:action="@{/reserves}" method="get">
+        <form th:action="@{/reserves}" method="get" style="margin-top: 10px;">
             <button type="submit">Tornar a la Llista</button>
         </form>
     </body>

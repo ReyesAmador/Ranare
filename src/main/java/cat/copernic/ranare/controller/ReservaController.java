@@ -13,8 +13,10 @@ import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -127,7 +129,13 @@ public class ReservaController {
      */
     @GetMapping
     public String llistarReserves(Model model) {
-        model.addAttribute("reserves", reservaService.getAllReserves());
+        // Obtener todas las reservas y ordenarlas por fecha de inicio
+        List<Reserva> reserves = reservaService.getAllReserves()
+                .stream()
+                .sorted(Comparator.comparing(Reserva::getDataInici)) // Ordenar por fecha de inicio
+                .collect(Collectors.toList());
+
+        model.addAttribute("reserves", reserves);
         return "llista_reserves";
     }
 
