@@ -6,6 +6,7 @@ package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.TipusCombustio;
 import cat.copernic.ranare.enums.TipusTransmissio;
+import cat.copernic.ranare.enums.TipusVehicle;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -117,6 +119,21 @@ public class Vehicle {
     @Size(max = 2000, message = "Els comentaris no poden superar els 2000 caràcters.")
     private String comentarisAgent;
     
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "El tipus de vehicle és obligatori.")
+    private TipusVehicle tipus;
+    
+    @NotNull(message = "El nombre de passatgers és obligatori.")
+    @Positive(message = "El nombre de passatgers ha de ser positiu.")
+    private int passatgers;
+    
+    @NotNull(message = "És obligatori posar la disponibilitat del vehicle.")
+    private boolean disponibilitat;
+    
+    @NotNull(message = "És obligatori posar la potència del vehicle.")
+    @Positive(message = "La potència ha de ser un valor positiu.")
+    private int potencia;
+    
     /**
      * Relació entre Vehicle i Incidència.
      * Aquesta relació es defineix com un "OneToMany" ja que un vehicle pot tenir diverses incidències associades.
@@ -135,5 +152,5 @@ public class Vehicle {
     
     
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Reserva> reserves;
+    private List<Reserva> reserves = new ArrayList<>();
 }

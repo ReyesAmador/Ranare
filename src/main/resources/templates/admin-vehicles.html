@@ -40,6 +40,17 @@
                 }
             }
             
+            function setListIncidentsLink(){
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('list-incidents-link');
+                
+                if(checkboxes.length === 1){
+                const matricula = checkboxes[0].value;
+                incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
+                } else {
+                    incidentLink.href = '/admin/vehicles/incidencies';
+                }
+            }
             
             function toggleDetails(matricula) {
                 console.log("toggleDetails ejecutado para matrícula:", matricula);
@@ -104,7 +115,7 @@
                         <a href="/admin/vehicles/crear-vehicle" class="btn btn-custom btn-modify">Crear</a>
                         <a href="#" id="modify-link" class="btn btn-custom btn-modify" onclick="setModifyLink()">Modificar</a>
                         <a href="#" id="create-incident-link" class="btn btn-custom btn-incident" onclick="setCreateIncidentLink()">Crear Incidència</a>
-                        <a href="/vehicles/incidencies" class="btn btn-custom btn-info">Llistar Incidències</a>
+                        <a href="#" id="list-incidents-link" class="btn btn-custom btn-info" onclick="setListIncidentsLink()">Llistar Incidències</a>
                     </div>
 
                     <!-- Formulario para eliminar vehículos -->
@@ -128,6 +139,7 @@
                                         <th>Matrícula</th>
                                         <th>Nom del Vehicle</th>
                                         <th>Localització</th>
+                                        <th>Disponibilitat</th>
                                         <th>Accions</th>
                                     </tr>
                                 </thead>
@@ -139,6 +151,7 @@
                                         <td th:text="${vehicle.matricula}">Matrícula</td>
                                         <td th:text="${vehicle.nomVehicle}">Nom del Vehicle</td>
                                         <td th:text="${vehicle.localitzacio?.codiPostal}">Localització</td>
+                                        <td th:text="${vehicle.disponibilitat} ? 'Disponible' : 'Ocupat'"></td><br>
                                         <td>
                                             <button type="button" class="btn btn-info btn-sm" 
                                                     th:attr="onclick=|toggleDetails('${vehicle.matricula}')|">
@@ -151,6 +164,9 @@
                                         <td colspan="5">
                                             <strong>Combustió:</strong> <span th:text="${vehicle.combustio}"></span><br>
                                             <strong>Transmissió:</strong> <span th:text="${vehicle.transmissio}"></span><br>
+                                            <strong>Tipus de Vehivle:</strong> <span th:text="${vehicle.tipus}"></span><br>
+                                            <strong>Nombre de passatgers:</strong> <span th:text="${vehicle.passatgers}"></span><br>
+                                            <strong>Potència del vehicle:</strong> <span th:text="${vehicle.potencia}"></span><br>
                                             <strong>Límit Quilometratge:</strong> <span th:text="${vehicle.limitQuilometratge}"></span><br>
                                             <strong>Preu per Hora de Lloguer:</strong> <span th:text="${vehicle.preuPerHoraLloguer}"></span><br>
                                             <strong>Mínim Hores Lloguer:</strong> <span th:text="${vehicle.minimHoresLloguer}"></span><br>
