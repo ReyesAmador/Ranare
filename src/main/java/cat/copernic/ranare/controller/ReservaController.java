@@ -13,10 +13,8 @@ import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -128,14 +126,20 @@ public class ReservaController {
      * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
     @GetMapping
-    public String llistarReserves(Model model) {
-        // Obtener todas las reservas y ordenarlas por fecha de inicio
-        List<Reserva> reserves = reservaService.getAllReserves()
-                .stream()
-                .sorted(Comparator.comparing(Reserva::getDataInici)) // Ordenar por fecha de inicio
-                .collect(Collectors.toList());
+    public String llistarReserves(
+            @RequestParam(value = "query", required = false) String query,
+            Model model) {
+
+        List<Reserva> reserves;
+
+        if (query != null && !query.isEmpty()) {
+            reserves = reservaService.buscarReservas(query);
+        } else {
+            reserves = reservaService.getAllReserves();
+        }
 
         model.addAttribute("reserves", reserves);
+        model.addAttribute("totalReserves", reserves.size());
         return "llista_reserves";
     }
 
@@ -180,5 +184,18 @@ public class ReservaController {
 
         model.addAttribute("reserva", reserva);
         return "detalls_reserva";
+    }
+
+    @GetMapping("/buscar")
+    public String buscarReservas(@RequestParam(value = "query", required = false) String query, Model model) {
+        List<Reserva> reservasFiltradas;
+        if (query != null && !query.isEmpty()) {
+            reservasFiltradas = reservaService.buscarReservas(query);
+        } else {
+            reservasFiltradas = reservaService.getAllReserves(); // Si no hay búsqueda, muestra todas
+        }
+        model.addAttribute("reserves", reservasFiltradas);
+        model.addAttribute("totalReserves", reservasFiltradas.size());
+        return "llista_reserves"; // Devuelve a la plantilla con los resultados
     }
 }

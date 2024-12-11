@@ -10,6 +10,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <body>
         <h1>Llista de Reserves</h1>
 
+        <!-- Formulario de Búsqueda -->
+        <form th:action="@{/reserves/buscar}" method="get" style="margin-bottom: 20px;">
+            <input type="text" name="query" placeholder="Buscar per matrícula, email, DNI o ID" />
+            <button type="submit">Buscar</button>
+        </form>
+
+        <!-- Contador de reservas -->
+        <p>Total de Reserves: <span th:text="${totalReserves}">0</span></p>
+
         <table>
             <thead>
                 <tr>
@@ -24,7 +33,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="reserva : ${#lists.sort(reserves, 'dataInici')}">
+                <tr th:each="reserva : ${reserves}">
                     <td th:text="${reserva.client.nom}"></td>
                     <td th:text="${reserva.vehicle.nomVehicle}"></td>
                     <td th:text="${reserva.costReserva}"></td>
