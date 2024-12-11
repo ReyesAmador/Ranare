@@ -36,7 +36,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <td th:text="${reserva.fianca}"></td>
                     <td th:text="${reserva.estat}"></td>
                     <td>
-                        <form th:action="@{/reserves/anul·lar}" method="post">
+                        <form th:action="@{/reserves/anular}" method="post">
                             <input type="hidden" name="id" th:value="${reserva.id}" />
                             <button type="submit">Anul·lar</button>
                         </form>
