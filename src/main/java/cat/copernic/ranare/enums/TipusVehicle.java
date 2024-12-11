@@ -8,6 +8,6 @@ package cat.copernic.ranare.enums;
  *
  * @author ngall
  */
-public enum TipusCombustio {
-    ELECTRIC, HIBRID, GASOIL, BENZINA
+public enum TipusVehicle {
+    SUV, BERLINA, FURGONETA, CAMIONETA, UTILITARI, COMPACTE
 }
