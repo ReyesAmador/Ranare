@@ -9,10 +9,8 @@ import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import cat.copernic.ranare.service.mysql.VehicleService;
-import com.mongodb.client.gridfs.model.GridFSFile;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +20,11 @@ import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  *
@@ -58,21 +54,24 @@ public class ControladorCrearVehicle {
             Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
             if (vehicle != null) {
                 model.addAttribute("vehicle", vehicle);
-
+                model.addAttribute("title", "Modificar Vehicle");
             } else {
                 model.addAttribute("errorMessage", "Vehicle no trobat.");
             }
         } else {
             model.addAttribute("vehicle", new Vehicle());
+            model.addAttribute("title", "Crear Vehicle");
         }
+        model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
 
-        return "crear-vehicle";
+        return "admin";
     }
 
     @PostMapping("/crear-vehicle")
-    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
-            return "crear-vehicle";
+            model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
+            return "admin";
         }
 
         vehicleService.saveVehicle(vehicle);
@@ -88,7 +87,8 @@ public class ControladorCrearVehicle {
         ObjectId fileId = gridFsTemplate.store(file.getInputStream(), fileName, file.getContentType());
 
         model.addAttribute("message", "Imatge penjada correctament!");
-        return "crear-vehicle";
+        model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
+        return "admin";
     }
 
 }

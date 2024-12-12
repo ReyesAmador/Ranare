@@ -8,29 +8,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>RANARE - Lloguer de Cotxes</title>
-        <!-- Bootstrap CSS -->
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
         <!-- Enlace a CSS personalizado -->
         <link rel="stylesheet" href="/CSS/crearVehicleStyle.css">
-        <!-- CSS de Select2 -->
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <!-- jQuery -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!-- JS de Select2 -->
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     </head>
     <body>
-        <!-- Encabezado -->
-        <div class="header d-flex justify-content-between align-items-center p-3">
-            <h1>RANARE</h1>
-            <div class="nav-links">
-                <a href="/admin/vehicles" class="btn btn-secondary">Administrar Vehicles</a>
-            </div>
-            <div>
-                <span class="text-white">Hola Admin!</span>
-            </div>
-        </div>
-
+        <div th:fragment="crearVehicleContent">
         <!-- Formulari Crear/Modificar Vehicles -->
         <div class="container my-5">
             <h2 class="text-primary">CREAR / MODIFICAR VEHICLES</h2>
@@ -60,7 +42,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </div>
                     <div class="form-check">
                         <input type="radio" class="form-check-input" id="disponibilitatFalse" name="disponibilitat" th:field="*{disponibilitat}" value="false" required>
-                        <label class="form-check-label" for="disponibilitatFalse">Ocupat</label>
+                        <label class="form-check-label" for="disponibilitatFalse">No disponible</label>
                     </div>
                 </div>
                 <div class="form-group col-md-6">
@@ -166,15 +148,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </div>
             <button type="submit" class="btn btn-primary">Insertar Imatge</button>
         </form>
+        </div>
         
-        <script>
-            $(document).ready(function () {
-                $('#localitzacioDropdown').select2({
-                    placeholder: "Buscar per Codi Postal",
-                    allowClear: true,
-                    width: '100%'
-                });
-            });
-        </script>
     </body>
 </html>

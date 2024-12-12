@@ -8,6 +8,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <title>Detalls de Reserva</title>
     </head>
     <body>
+        <div th:fragment="detallReservaContent">
         <h1>Detalls de Reserva</h1>
 
         <fieldset>
@@ -61,8 +62,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             </button>
         </form>
         <!-- Botón para volver -->
-        <form th:action="@{/reserves}" method="get" style="margin-top: 10px;">
+        <form th:action="@{/admin/reserves}" method="get" style="margin-top: 10px;">
             <button type="submit">Tornar a la Llista</button>
         </form>
+        </div>
     </body>
 </html>
