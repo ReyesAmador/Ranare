@@ -5,6 +5,7 @@
 package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.TipusCombustio;
+import cat.copernic.ranare.enums.TipusVehicle;
 import lombok.Data;
 
 /**
@@ -23,6 +24,10 @@ public class VehicleDTO {
     private double limitQuilometratge; // Límite de kilometraje
     private int minimHoresLloguer;    // Mínimo de horas de alquiler
     private int maximHoresLloguer;    // Máximo de horas de alquiler
+    private TipusVehicle tipus;
+    private int passatgers;
+    private boolean disponibilitat;
+    private int potencia;
 
     public VehicleDTO() {
     }
@@ -36,6 +41,10 @@ public class VehicleDTO {
         this.limitQuilometratge = vehicle.getLimitQuilometratge();
         this.minimHoresLloguer = vehicle.getMinimHoresLloguer();
         this.maximHoresLloguer = vehicle.getMaximHoresLloguer();
+        this.tipus = vehicle.getTipus();
+        this.passatgers = vehicle.getPassatgers();
+        this.disponibilitat = vehicle.isDisponibilitat();
+        this.potencia = vehicle.getPotencia();
     }
 
 }
