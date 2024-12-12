@@ -40,6 +40,15 @@
         });
         </script>
                 <script>
+            $(document).ready(function () {
+                $('#localitzacioDropdown').select2({
+                    placeholder: "Buscar per Codi Postal",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        </script>
+                <script>
             function setModifyLink() {
                 // Obtener todos los checkboxes seleccionados
                 const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
@@ -93,6 +102,12 @@
     </head>
     <body>
         <div class="container-fluid">
+            <!-- Encabezado -->
+        <header class="row bg-primary text-white py-3 px-4">
+            <div class="col">
+                <h1 class="mb-0" style="font-size: 24px;">RANARE</h1>
+            </div>
+        </header>
             <div class="row">
                 <!-- Menú lateral -->
                 <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100" th:fragment="sidebar">
