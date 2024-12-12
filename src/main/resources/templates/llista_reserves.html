@@ -40,7 +40,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <td th:text="${reserva.vehicle.nomVehicle}"></td>
                     <td th:text="${reserva.costReserva}"></td>
                     <td th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'dd-MM-yyyy HH:mm')}"></td>
-                    <td th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'dd-MM-yyyy HH:mm')}"></td>
                     <td th:text="${reserva.fianca}"></td>
                     <td th:text="${reserva.estat}"></td>
                     <td>

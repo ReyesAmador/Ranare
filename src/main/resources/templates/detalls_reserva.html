@@ -16,8 +16,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <p><strong>ID de Reserva:</strong> <span th:text="${reserva.id}"></span></p>
             <p><strong>Estat:</strong> <span th:text="${reserva.estat}"></span></p>
             <p><strong>Cost Total:</strong> <span th:text="${reserva.costReserva}"></span></p>
-            <p><strong>Data Inici:</strong> <span th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'yyyy-MM-dd HH:mm')}"></span></p>
-            <p><strong>Data Fin:</strong> <span th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'yyyy-MM-dd HH:mm')}"></span></p>
+            <p><strong>Data Inici:</strong> <span th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'dd-MM-yyyy HH:mm')}"></span></p>
+            <p><strong>Data Fin:</strong> <span th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'dd-MM-yyyy HH:mm')}"></span></p>
             <p><strong>Fiança:</strong> <span th:text="${reserva.fianca}"></span></p>
         </fieldset>
 
