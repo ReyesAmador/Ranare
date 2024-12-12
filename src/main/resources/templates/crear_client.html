@@ -7,27 +7,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <html xmlns:th="http://www.thymeleaf.org">
     <head>
         <title>Crear Client</title>
-        <script>
-            // Función para mostrar/ocultar contraseña
-            function togglePasswordVisibility() {
-                const pwdField = document.getElementById("pwd");
-                const toggleButton = document.getElementById("togglePwdVisibility");
-
-                if (pwdField.type === "password") {
-                    pwdField.type = "text";
-                    toggleButton.textContent = "Ocultar";
-                } else {
-                    pwdField.type = "password";
-                    toggleButton.textContent = "Mostrar";
-                }
-            }
-        </script>
     </head>
     <body>
+        <div th:fragment="crearClientsContent">
         <h1>Formulari per crear un client</h1>
 
         <!-- Mostrar errores globales -->
-        <form th:action="@{/clients/crear_client}" th:object="${client}" method="post">
+        <form th:action="@{/admin/clients/crear_client}" th:object="${client}" method="post">
             <!-- Mostrar errores globales -->
             <div th:if="${#fields.hasGlobalErrors()}">
                 <p class="error" th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
@@ -132,5 +118,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             <button type="submit">Crear Client</button>
         </form>
+        </div>
     </body>
 </html>
