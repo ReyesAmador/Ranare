@@ -17,6 +17,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <p th:text="${message}"></p>
         </div>
         <form th:action="@{/admin/vehicles/crear-incidencia}" th:object="${incidencia}" method="post">
+            <input type="hidden" th:field="*{idIncidencia}"/>
+            
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label>Culpabilitat</label>

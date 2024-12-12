@@ -72,7 +72,10 @@ public class LlistaIncidenciesController {
     
     @GetMapping("/modificar/{id}")
     public String modificarIncidencia(@PathVariable Long id, Model model){
-        model.addAttribute("incidencia", incidenciaService.findById(id));
+        Incidencia incidencia = incidenciaService.findById(id);
+        if(incidencia != null){
+            model.addAttribute("incidencia", incidencia);
+        }
         model.addAttribute("title", "Modificar indicència");
         model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
         return "admin";
