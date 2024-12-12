@@ -10,6 +10,7 @@ import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.enums.EstatReserva;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,6 +22,9 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ReservaRepository extends JpaRepository<Reserva, Long> {
+
+    @Override
+    Optional<Reserva> findById(Long id);
 
     /**
      * Troba totes les reserves associades a un client específic.
@@ -50,5 +54,14 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findOverlappingReservations(@Param("dataInici") LocalDateTime dataInici,
             @Param("dataFin") LocalDateTime dataFin,
             @Param("estat") EstatReserva estat);
+
+    @Query("SELECT r FROM Reserva r WHERE "
+     + "CAST(r.id AS string) LIKE %:query% OR "
+     + "r.client.dni LIKE %:query% OR "
+     + "r.client.email LIKE %:query% OR "
+     + "r.client.nom LIKE %:query% OR "
+     + "r.client.cognoms LIKE %:query% OR "
+     + "r.vehicle.matricula LIKE %:query%")
+List<Reserva> findReservasByQuery(@Param("query") String query);
 
 }

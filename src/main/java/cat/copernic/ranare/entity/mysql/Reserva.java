@@ -9,6 +9,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -81,7 +82,7 @@ public class Reserva {
      * Relació Molts a Un amb l'entitat Client.
      * Un client pot realitzar moltes reserves.
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "client_dni", nullable = false)
     private Client client;
 
@@ -91,7 +92,7 @@ public class Reserva {
      * Relació Molts a Un amb l'entitat Vehicle.
      * Un vehicle pot ser reservat diverses vegades.
      */
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "vehiculo_id", nullable = false)
     private Vehicle vehicle;
 
