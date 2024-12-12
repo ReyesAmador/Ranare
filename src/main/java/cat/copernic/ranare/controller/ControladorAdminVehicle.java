@@ -30,7 +30,9 @@ public class ControladorAdminVehicle {
     public String mostrarVehicles(Model model){
         List<Vehicle> vehicles = adminVehicleService.getAllVehicles();
         model.addAttribute("vehicles", vehicles);
-        return "admin-vehicles";
+        model.addAttribute("title", "Vehicles");
+        model.addAttribute("content", "admin-vehicles :: vehicleContent");
+        return "admin";
     }
     
     @GetMapping("/admin/seleccionarVehicle")

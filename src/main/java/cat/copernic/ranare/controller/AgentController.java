@@ -96,6 +96,8 @@ public class AgentController {
             if(bindingResult.hasErrors()){
                 model.addAttribute("agent", agent);
                 model.addAttribute("modificar", false);
+                model.addAttribute("title", "Crear agent");
+                model.addAttribute("content", "crear-agent :: crearAgentContent");
                 return "admin";
             }
             agentService.crearAgent(agent, agent.getRol()); // Guardar el nuevo agente
@@ -104,6 +106,8 @@ public class AgentController {
             model.addAttribute("agent", agent);
             model.addAttribute("modificar", false);
             model.addAttribute("error", "Error al crear l'agent: " + e.getMessage());
+            model.addAttribute("title", "Crear agent");
+            model.addAttribute("content", "crear-agent :: crearAgentContent");
             return "admin";
         }
         return "redirect:/admin/agents"; // Redirigir a la lista de agentes

@@ -28,6 +28,7 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- JS de Select2 -->
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 
         <script>
         $(document).ready(function () {
@@ -38,12 +39,63 @@
             });
         });
         </script>
+                <script>
+            function setModifyLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const modifyLink = document.getElementById('modify-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    modifyLink.href = '/admin/vehicles/crear-vehicle?matricula=' + matricula; // Actualizar el enlace de "Modificar"
+                } else {
+                    modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
+                }
+            }
+            
+            function setCreateIncidentLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('create-incident-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    incidentLink.href = '/admin/vehicles/crear-incidencia?matricula=' + matricula; // Actualizar el enlace de "Crear Incidencia"
+                } else {
+                    incidentLink.href = '#'; // Si no hay uno seleccionado, desactiva el enlace
+                }
+            }
+            
+            function setListIncidentsLink(){
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('list-incidents-link');
+                
+                if(checkboxes.length === 1){
+                const matricula = checkboxes[0].value;
+                incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
+                } else {
+                    incidentLink.href = '/admin/vehicles/incidencies';
+                }
+            }
+            
+            function toggleDetails(matricula) {
+                console.log("toggleDetails ejecutado para matrícula:", matricula);
+                const detailsRow = document.getElementById(`details-${matricula}`);
+                if (detailsRow) {
+                    detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+                } else {
+                    console.error(`No se encontró la fila con ID details-${matricula}`);
+                }
+            }
+        </script>
     </head>
     <body>
         <div class="container-fluid">
             <div class="row">
                 <!-- Menú lateral -->
-                <nav class="col-md-2 d-none d-md-block bg-light sidebar" th:fragment="sidebar">
+                <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100" th:fragment="sidebar">
                     <div class="position-sticky pt-3">
                         <h4 class="text-center">Menú Admin</h4>
                         <ul class="nav flex-column">
