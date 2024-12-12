@@ -36,13 +36,18 @@ public class CrearIncidenciaController {
 
     // Método para mostrar el formulario de crear incidencia
     @GetMapping("/crear-incidencia")
-    public String mostrarFormulari(@RequestParam(name = "matricula", required = false)String matricula, Model model) {
+    public String mostrarFormulari(@RequestParam(name = "matricula", required = false)String matricula,
+                                   @RequestParam(name = "idIncidencia", required = false) Long idIncidencia,
+                                   Model model) {
         Incidencia incidencia = new Incidencia();
         
-        if(matricula != null && !matricula.isEmpty()){
+        if(idIncidencia != null){
+            incidencia = incidenciaService.findById(idIncidencia);
+        }else if(matricula != null && !matricula.isEmpty()){
             Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
             incidencia.setVehicle(vehicle);
         }
+        
         model.addAttribute("incidencia", incidencia); // Crear un objeto vacío de incidencia para el formulario
         
         return "crear-incidencia"; // Retorna la plantilla HTML
@@ -50,16 +55,35 @@ public class CrearIncidenciaController {
     
     // Método para manejar el formulario de creación de incidencia
     @PostMapping("/crear-incidencia")
-    public String createIncidencia(@Valid Incidencia incidencia,BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createOrUpdateIncidencia(@Valid Incidencia incidencia,BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         
         if(result.hasErrors()) {
             List<Vehicle> vehicles = vehicleService.getAllVehicles();
             model.addAttribute("vehicles", vehicles);
             return "crear-incidencia";
         }
-        incidenciaService.save(incidencia);     
         
-        redirectAttributes.addFlashAttribute("message", "La incidència s'ha creat correctament.");
+        if(incidencia.getIdIncidencia() != null){
+            Incidencia existingIncidencia = incidenciaService.findById(incidencia.getIdIncidencia());
+            if(existingIncidencia != null){
+                existingIncidencia.setCulpabilitat(incidencia.isCulpabilitat());
+                existingIncidencia.setEstat(incidencia.getEstat());
+                existingIncidencia.setMotiu(incidencia.getMotiu());
+                existingIncidencia.setDataInici(incidencia.getDataInici());
+                existingIncidencia.setDataFinal(incidencia.getDataFinal());
+                existingIncidencia.setCost(incidencia.getCost());
+                existingIncidencia.setDocumentsIncidenciaId(incidencia.getDocumentsIncidenciaId());
+                existingIncidencia.setVehicle(incidencia.getVehicle());
+                
+                incidenciaService.save(existingIncidencia);
+                redirectAttributes.addFlashAttribute("message","La incidència s'ha actualitzat correctament.");          
+            }else{
+                redirectAttributes.addFlashAttribute("error","Error: La incidència no existeix.");
+            }
+        }else{
+            incidenciaService.save(incidencia); 
+            redirectAttributes.addFlashAttribute("message", "La incidència s'ha creat correctament.");
+        }
         return "redirect:/admin/vehicles/crear-incidencia";
         
     }
