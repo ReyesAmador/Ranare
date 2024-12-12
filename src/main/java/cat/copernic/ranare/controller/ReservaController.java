@@ -40,7 +40,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author Raú
  */
 @Controller
-@RequestMapping("/reserves")
+@RequestMapping("/admin/reserves")
 public class ReservaController {
 
     @Autowired
@@ -68,7 +68,9 @@ public class ReservaController {
         model.addAttribute("reserva", new Reserva());
         model.addAttribute("clients", clientService.getOnlyClients());
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
-        return "crear_reserva";
+        model.addAttribute("title", "Crear Reserva");
+        model.addAttribute("content", "crear_reserva :: crearReservaContent");
+        return "admin";
     }
 
     /**
@@ -85,9 +87,11 @@ public class ReservaController {
      * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
-    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
-            return "crear_reserva";
+            model.addAttribute("title", "Crear Reserva");
+            model.addAttribute("content", "crear_reserva :: crearReservaContent");
+            return "admin";
         }
 
         // Validar cliente y vehículo
@@ -98,7 +102,9 @@ public class ReservaController {
         // Validar fechas
         if (reserva.getDataInici().isAfter(reserva.getDataFin()) || reserva.getDataInici().isEqual(reserva.getDataFin())) {
             redirectAttributes.addFlashAttribute("error", "La data de inici ha de ser abans que la data de finalització.");
-            return "crear_reserva";
+            model.addAttribute("title", "Crear Reserva");
+            model.addAttribute("content", "crear_reserva :: crearReservaContent");
+            return "admin";
         }
 
         // Calcular fiança y coste total
@@ -111,7 +117,7 @@ public class ReservaController {
         // Guardar reserva
         reservaService.crearReserva(reserva);
         redirectAttributes.addFlashAttribute("missatge", "Reserva creada correctament.");
-        return "redirect:/reserves";
+        return "redirect:/admin/reserves";
     }
 
     /**
@@ -126,7 +132,9 @@ public class ReservaController {
     @GetMapping
     public String llistarReserves(Model model) {
         model.addAttribute("reserves", reservaService.getAllReserves());
-        return "llista_reserves";
+        model.addAttribute("title", "Llista de reserves");
+        model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+        return "admin";
     }
 
     /**
@@ -143,7 +151,7 @@ public class ReservaController {
     public String anularReserva(@RequestParam Long id, RedirectAttributes redirectAttributes) {
         reservaService.anularReserva(id);
         redirectAttributes.addFlashAttribute("missatge", "Reserva anul·lada correctament.");
-        return "redirect:/reserves";
+        return "redirect:/admin/reserves";
     }
 
     @GetMapping("/filtrar-vehiculos")

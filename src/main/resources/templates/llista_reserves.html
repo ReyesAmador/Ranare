@@ -10,8 +10,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <title>Llista de Reserves</title>
     </head>
     <body>
+        <div th:fragment="llistarReservaContent">
         <h1>Llista de Reserves</h1>
-
+        <div class="d-flex justify-content-end mb-3">
+            <a th:href="@{/admin/reserves/nova}" class="btn btn-primary">Crear Reserva</a>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -36,7 +39,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <td th:text="${reserva.fianca}"></td>
                     <td th:text="${reserva.estat}"></td>
                     <td>
-                        <form th:action="@{/reserves/anular}" method="post">
+                        <form th:action="@{/admin/reserves/anular}" method="post">
                             <input type="hidden" name="id" th:value="${reserva.id}" />
                             <button type="submit">Anul·lar</button>
                         </form>
@@ -44,5 +47,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 </tr>
             </tbody>
         </table>
+        </div>
     </body>
 </html>
