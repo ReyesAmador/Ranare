@@ -14,6 +14,7 @@ import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -130,8 +132,17 @@ public class ReservaController {
      * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
     @GetMapping
-    public String llistarReserves(Model model) {
-        model.addAttribute("reserves", reservaService.getAllReserves());
+    public String llistarReserves(@RequestParam(value = "query", required = false) String query, Model model) {
+        List<Reserva> reserves;
+
+        if (query != null && !query.isEmpty()) {
+            reserves = reservaService.buscarReservas(query);
+        } else {
+            reserves = reservaService.getAllReserves();
+        }
+
+        model.addAttribute("reserves", reserves);
+        model.addAttribute("totalReserves", reserves.size());
         model.addAttribute("title", "Llista de reserves");
         model.addAttribute("content", "llista_reserves :: llistarReservaContent");
         return "admin";
@@ -163,4 +174,37 @@ public class ReservaController {
         return vehiclesDTO;
     }
 
+    @GetMapping("/detall/{id}")
+    public String detallsReserva(@PathVariable Long id, Model model) {
+        Optional<Reserva> reservaOpt = reservaService.obtenirReservaPerId(id);
+        if (reservaOpt.isEmpty()) {
+            return "error"; // Redirige a una página de error si la reserva no existe
+        }
+        Reserva reserva = reservaOpt.get();
+
+        // Comprueba si client y vehicle no son nulos
+        if (reserva.getClient() == null || reserva.getVehicle() == null) {
+            System.out.println("Cliente esta vacio  o el vehiculo máquina");
+        }
+
+        model.addAttribute("reserva", reserva);
+        model.addAttribute("title", "Detall reserva");
+        model.addAttribute("content", "detalls_reserva :: detallReservaContent");
+        return "admin";
+    }
+
+    @GetMapping("/buscar")
+    public String buscarReservas(@RequestParam(value = "query", required = false) String query, Model model) {
+        List<Reserva> reservasFiltradas;
+        if (query != null && !query.isEmpty()) {
+            reservasFiltradas = reservaService.buscarReservas(query);
+        } else {
+            reservasFiltradas = reservaService.getAllReserves(); // Si no hay búsqueda, muestra todas
+        }
+        model.addAttribute("reserves", reservasFiltradas);
+        model.addAttribute("totalReserves", reservasFiltradas.size());
+        model.addAttribute("title", "Llista de reserves");
+        model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+        return "admin"; // Devuelve a la plantilla con los resultados
+    }
 }

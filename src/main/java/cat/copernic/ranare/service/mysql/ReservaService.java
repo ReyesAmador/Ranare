@@ -108,4 +108,9 @@ public class ReservaService {
         EstatReserva estat = EstatReserva.ACTIVA; // Filtrar solo reservas activas
         return reservaRepository.findOverlappingReservations(dataInici, dataFin, estat);
     }
+
+    public List<Reserva> buscarReservas(String query) {
+        return reservaRepository.findReservasByQuery(query);
+    }
+
 }

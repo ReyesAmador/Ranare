@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<!--
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Detalls de Reserva</title>
+    </head>
+    <body>
+        <div th:fragment="detallReservaContent">
+        <h1>Detalls de Reserva</h1>
+
+        <!-- Detalles de la reserva -->
+        <fieldset>
+            <legend>Detalls de la Reserva</legend>
+            <p><strong>ID de Reserva:</strong> <span th:text="${reserva.id}"></span></p>
+            <p><strong>Estat:</strong> <span th:text="${reserva.estat}"></span></p>
+            <p><strong>Cost Total:</strong> <span th:text="${reserva.costReserva}"></span></p>
+            <p><strong>Data Inici:</strong> <span th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'dd-MM-yyyy HH:mm')}"></span></p>
+            <p><strong>Data Fin:</strong> <span th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'dd-MM-yyyy HH:mm')}"></span></p>
+            <p><strong>Fiança:</strong> <span th:text="${reserva.fianca}"></span></p>
+        </fieldset>
+
+<!-- Detalles del cliente -->
+        <fieldset>
+            <legend>Detalls del Client</legend>
+            <p><strong>DNI:</strong> <span th:text="${reserva.client.dni}"></span></p>
+            <p><strong>Nom:</strong> <span th:text="${reserva.client.nom}"></span></p>
+            <p><strong>Cognoms:</strong> <span th:text="${reserva.client.cognoms}"></span></p>
+            <p><strong>Telèfon:</strong> <span th:text="${reserva.client.telefon}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${reserva.client.email}"></span></p>
+        </fieldset>
+
+        <!-- Detalles del vehículo -->
+        <fieldset>
+            <legend>Detalls del Vehicle</legend>
+            <p><strong>Nom:</strong> <span th:text="${reserva.vehicle.nomVehicle}"></span></p>
+            <p><strong>Matrícula:</strong> <span th:text="${reserva.vehicle.matricula}"></span></p>
+            <p><strong>Límite de quilòmetres:</strong> <span th:text="${reserva.vehicle.limitQuilometratge}"></span></p>
+            <p><strong>Combustió:</strong> <span th:text="${reserva.vehicle.combustio}"></span></p>
+            <p><strong>Transmissió:</strong> <span th:text="${reserva.vehicle.transmissio}"></span></p>
+            <p><strong>Comentaris d'Agent:</strong> <span th:text="${reserva.vehicle.comentarisAgent}"></span></p>
+        </fieldset>
+        <form th:action="@{/admin/reserves/anular}" method="post" style="margin-top: 20px;">
+            <input type="hidden" name="id" th:value="${reserva.id}" />
+            <button type="submit" onclick="return confirm('Estàs segur que vols anul·lar aquesta reserva?')" style="background-color: red; color: white;">
+                Anul·lar Reserva
+            </button>
+        </form>
+        <!-- Botón para volver -->
+        <form th:action="@{/admin/reserves}" method="get" style="margin-top: 10px;">
+            <button type="submit">Tornar a la Llista</button>
+        </form>
+        </div>
+    </body>
+</html>
