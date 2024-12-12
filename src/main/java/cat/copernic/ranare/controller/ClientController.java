@@ -244,7 +244,9 @@ public class ClientController {
         Optional<Client> clientOpt = clientService.getClientById(dni);
         if (clientOpt.isPresent()) {
             model.addAttribute("client", clientOpt.get());
-            return "modificar_client"; // Plantilla Thymeleaf per editar un client
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Plantilla Thymeleaf per editar un client
         }
         return "redirect:/admin/clients"; // Redirigeix a la llista si no es troba el client
     }
@@ -264,10 +266,12 @@ public class ClientController {
     public String updateClient(@PathVariable String dni,
             @ModelAttribute @Valid Client client,
             BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, Model model) {
 
         if (result.hasErrors()) {
-            return "modificar_client"; // Si hay errores de validación, vuelve al formulario
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Si hay errores de validación, vuelve al formulario
         }
 
         try {
@@ -275,7 +279,9 @@ public class ClientController {
             client.setDni(dni);
             Client updatedClient = clientService.saveClient(client, true, result);
             if (updatedClient == null) {
-                return "modificar_client"; // Si hubo errores de duplicado, vuelve al formulario
+                model.addAttribute("title", "Modificar client");
+                model.addAttribute("content", "modificar_client :: modificarClientsContent");
+                return "admin"; // Si hubo errores de duplicado, vuelve al formulario
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "El client s'ha modificat correctament.");
@@ -289,10 +295,12 @@ public class ClientController {
             }
 
             // Retorna al formulario con los errores
-            return "modificar_client"; // Vuelve al formulario con los errores
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Vuelve al formulario con los errores
         }
 
-        return "redirect:/clients"; // Redirige a la lista de clientes si no hay errores
+        return "redirect:/admin/clients"; // Redirige a la lista de clientes si no hay errores
     }
 
     /**
@@ -313,7 +321,7 @@ public class ClientController {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
         }
 
-        return "redirect:/clients";
+        return "redirect:/admin/clients";
     }
     
      @GetMapping("/detall/{dni}")
@@ -321,10 +329,12 @@ public class ClientController {
         Optional<Client> clientOpt = clientService.getClientById(dni);
         if (clientOpt.isPresent()) {
             model.addAttribute("client", clientOpt.get());
-            return "detalls_client";
+            model.addAttribute("title", "Detall client");
+            model.addAttribute("content", "detalls_client :: detallClientsContent");
+            return "admin";
         } else {
             model.addAttribute("missatge", "Client no trobat.");
-            return "redirect:/clients";
+            return "redirect:/admin/clients";
         }
     }
     
