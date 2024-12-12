@@ -45,13 +45,17 @@ public class LlistaIncidenciesController {
         }
         
         model.addAttribute("incidencies", incidencies);
-        return "llista-incidencies";
+        model.addAttribute("title", "Indicències");
+        model.addAttribute("content", "llista-incidencies :: llistarIncidenciaContent");
+        return "admin";
     }
     
     @GetMapping("/nou")
     public String novaIncidencia(Model model){
         model.addAttribute("incidencia", new Incidencia());
-        return "crear-incidencia";
+        model.addAttribute("title", "Crear indicència");
+        model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
+        return "admin";
     }
     
     @PostMapping
@@ -72,7 +76,9 @@ public class LlistaIncidenciesController {
         if(incidencia != null){
             model.addAttribute("incidencia", incidencia);
         }
-        return "crear-incidencia";
+        model.addAttribute("title", "Modificar indicència");
+        model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
+        return "admin";
     }
     
 }

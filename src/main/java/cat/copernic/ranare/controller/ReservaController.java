@@ -42,7 +42,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author Raú
  */
 @Controller
-@RequestMapping("/reserves")
+@RequestMapping("/admin/reserves")
 public class ReservaController {
 
     @Autowired
@@ -70,7 +70,9 @@ public class ReservaController {
         model.addAttribute("reserva", new Reserva());
         model.addAttribute("clients", clientService.getOnlyClients());
         model.addAttribute("vehicles", vehicleService.getAllVehicles());
-        return "crear_reserva";
+        model.addAttribute("title", "Crear Reserva");
+        model.addAttribute("content", "crear_reserva :: crearReservaContent");
+        return "admin";
     }
 
     /**
@@ -87,11 +89,13 @@ public class ReservaController {
      * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
-    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes) {
+    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
         if (result.hasErrors()) {
-            return "crear_reserva";
+            model.addAttribute("title", "Crear Reserva");
+            model.addAttribute("content", "crear_reserva :: crearReservaContent");
+            return "admin";
         }
-
+        
         // Validar cliente y vehículo
         Client client = clientService.getClientById(reserva.getClient().getDni())
                 .orElseThrow(() -> new IllegalArgumentException("Client no trobat."));
@@ -100,7 +104,9 @@ public class ReservaController {
         // Validar fechas
         if (reserva.getDataInici().isAfter(reserva.getDataFin()) || reserva.getDataInici().isEqual(reserva.getDataFin())) {
             redirectAttributes.addFlashAttribute("error", "La data de inici ha de ser abans que la data de finalització.");
-            return "crear_reserva";
+            model.addAttribute("title", "Crear Reserva");
+            model.addAttribute("content", "crear_reserva :: crearReservaContent");
+            return "admin";
         }
 
         // Calcular fiança y coste total
@@ -113,7 +119,7 @@ public class ReservaController {
         // Guardar reserva
         reservaService.crearReserva(reserva);
         redirectAttributes.addFlashAttribute("missatge", "Reserva creada correctament.");
-        return "redirect:/reserves";
+        return "redirect:/admin/reserves";
     }
 
     /**
@@ -126,10 +132,7 @@ public class ReservaController {
      * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
     @GetMapping
-    public String llistarReserves(
-            @RequestParam(value = "query", required = false) String query,
-            Model model) {
-
+    public String llistarReserves(@RequestParam(value = "query", required = false) String query, Model model) {
         List<Reserva> reserves;
 
         if (query != null && !query.isEmpty()) {
@@ -140,7 +143,9 @@ public class ReservaController {
 
         model.addAttribute("reserves", reserves);
         model.addAttribute("totalReserves", reserves.size());
-        return "llista_reserves";
+        model.addAttribute("title", "Llista de reserves");
+        model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+        return "admin";
     }
 
     /**
@@ -157,7 +162,7 @@ public class ReservaController {
     public String anularReserva(@RequestParam Long id, RedirectAttributes redirectAttributes) {
         reservaService.anularReserva(id);
         redirectAttributes.addFlashAttribute("missatge", "Reserva anul·lada correctament.");
-        return "redirect:/reserves";
+        return "redirect:/admin/reserves";
     }
 
     @GetMapping("/filtrar-vehiculos")
@@ -183,7 +188,9 @@ public class ReservaController {
         }
 
         model.addAttribute("reserva", reserva);
-        return "detalls_reserva";
+        model.addAttribute("title", "Detall reserva");
+        model.addAttribute("content", "detalls_reserva :: detallReservaContent");
+        return "admin";
     }
 
     @GetMapping("/buscar")
@@ -196,6 +203,8 @@ public class ReservaController {
         }
         model.addAttribute("reserves", reservasFiltradas);
         model.addAttribute("totalReserves", reservasFiltradas.size());
-        return "llista_reserves"; // Devuelve a la plantilla con los resultados
+        model.addAttribute("title", "Llista de reserves");
+        model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+        return "admin"; // Devuelve a la plantilla con los resultados
     }
 }

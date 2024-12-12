@@ -8,10 +8,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <title>Llista de Clients</title>
 </head>
 <body>
+    <div th:fragment="llistaClientsContent">
     <h1>Llista de Clients</h1>
 
     <!-- Formulario de Búsqueda -->
-    <form th:action="@{/clients}" method="get">
+    <form th:action="@{/admin/clients}" method="get">
         <input type="text" name="filtro" th:value="${filtro}" placeholder="Busca por correo, DNI, apellidos o nacionalidad" />
         <button type="submit">Buscar</button>
     </form>
@@ -38,12 +39,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                 <td th:text="${client.nacionalitat}"></td>
                 <td th:text="${client.telefon}"></td>
                 <td>
-                    <a th:href="@{/clients/detall/{dni}(dni=${client.dni})}" class="btn btn-primary btn-sm">Mostrar més</a>
+                    <a th:href="@{/admin/clients/detall/{dni}(dni=${client.dni})}" class="btn btn-primary btn-sm">Mostrar més</a>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="/clients/crear_client">Crear Client</a>
+    <a href="/admin/clients/crear_client">Crear Client</a>
+    </div>
 </body>
 </html>

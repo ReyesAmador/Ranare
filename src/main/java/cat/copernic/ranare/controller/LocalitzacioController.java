@@ -38,7 +38,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  */
 
 @Controller
-@RequestMapping("/localitzacio")
+@RequestMapping("/admin/localitzacio")
 public class LocalitzacioController {
     
     /**
@@ -62,7 +62,9 @@ public class LocalitzacioController {
     public String mostrarLocalitzacions(Model model) {
         List<Localitzacio> localitzacions = localitzacioService.getallLocalitzacio();
         model.addAttribute("localitzacions", localitzacions);
-        return "localitzacio"; 
+        model.addAttribute("title", "Localitzacions");
+        model.addAttribute("content", "localitzacio :: localitzacioContent");
+        return "admin"; 
     }
     
     /**
@@ -82,8 +84,10 @@ public class LocalitzacioController {
         model.addAttribute("localitzacio", new Localitzacio());
         model.addAttribute("agents", agentService.getAllAgents());
         model.addAttribute("crear", true);//passem aquesta variable per indivar al HTML que es per crear i mostri "crear"
+        model.addAttribute("title", "Crear localitzacio");
+        model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
         
-        return "crear-localitzacio";
+        return "admin";
     }
     
     /**
@@ -107,17 +111,21 @@ public class LocalitzacioController {
             // Afegeix un missatge de confirmació utilitzant flash attributes.
             redirectAttributes.addFlashAttribute("success", "Localització afegida correctament!");
 
-            return "redirect:/localitzacio";
+            return "redirect:/admin/localitzacio";
         
         }catch(InvalidCodiPostalException e){
             // Afegeix un missatge d'error al model en cas d'excepció.
             model.addAttribute("error_codi", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "crear-localitzacio";
+            model.addAttribute("title", "Crear localitzacio");
+            model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
+            return "admin";
         }catch(InvalidHorariException e){
             model.addAttribute("error_horari", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "crear-localitzacio";
+            model.addAttribute("title", "Crear localitzacio");
+            model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
+            return "admin";
         }
     }
     
@@ -126,7 +134,7 @@ public class LocalitzacioController {
         try{
             Set<Vehicle> vehicles = localitzacioService.getVehiclePerLocalitzacio(codiPostal);
             model.addAttribute("vehicles",vehicles);
-
+            //poner llistar vehicles aquí con el content
             return "admin-vehicles";
         }catch(InvalidCodiPostalException e){
             model.addAttribute("errorMissatge", e.getMessage());
@@ -139,8 +147,10 @@ public class LocalitzacioController {
         try{
             Localitzacio localitzacio = localitzacioService.getLocalitzacioPerCodiPostal(codiPostal);
             model.addAttribute("localitzacio",localitzacio);
+            model.addAttribute("title", "Detall localitzacio");
+            model.addAttribute("content", "detall-localitzacio :: detallLocalitzacioContent");
 
-            return "detall-localitzacio";
+            return "admin";
         }catch(InvalidCodiPostalException e){
             model.addAttribute("errorMissatge", e.getMessage());
             return "error";
@@ -154,8 +164,10 @@ public class LocalitzacioController {
         model.addAttribute("localitzacio",localitzacio);
         model.addAttribute("agents", agentService.getAllAgents());
         model.addAttribute("crear", false);
+        model.addAttribute("title", "Modificar localitzacio");
+        model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
       
-        return "crear-localitzacio";
+        return "admin";
     }
     
     @PostMapping("/{codiPostal}/modificar")
@@ -164,15 +176,19 @@ public class LocalitzacioController {
             localitzacioService.validarHorari(localitzacio.getHorariApertura(), localitzacio.getHorariTancament());
             localitzacioService.updateLocalitzacio(localitzacio);
             redirectAttributes.addFlashAttribute("success", "Localització modificada correctament!");
-            return "redirect:/localitzacio";
+            return "redirect:/admin/localitzacio";
         }catch(InvalidCodiPostalException e){
            model.addAttribute("error_codi", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "crear-localitzacio";
+            model.addAttribute("title", "Modificar localitzacio");
+            model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
+            return "admin";
         }catch(InvalidHorariException e){
             model.addAttribute("error_horari", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
-            return "crear-localitzacio";
+            model.addAttribute("title", "Modificar localitzacio");
+            model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
+            return "admin";
         }
     }
     
@@ -188,6 +204,6 @@ public class LocalitzacioController {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar la localització: " + e.getMessage());
         }
         
-        return "redirect:/localitzacio";
+        return "redirect:/admin/localitzacio";
     }
 }

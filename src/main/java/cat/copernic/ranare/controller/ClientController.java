@@ -45,7 +45,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
  * @author Raú
  */
 @Controller
-@RequestMapping("/clients")
+@RequestMapping("/admin/clients")
 public class ClientController {
 
     @Autowired
@@ -128,7 +128,9 @@ public class ClientController {
 
         model.addAttribute("clients", clients);
         model.addAttribute("filtro", filtro);
-        return "llista_de_clients";
+        model.addAttribute("title", "Llista clients");
+        model.addAttribute("content", "llista_de_clients :: llistaClientsContent");
+        return "admin";
     }
     
     
@@ -153,7 +155,9 @@ public class ClientController {
 
         model.addAttribute("client", new Client());
         model.addAttribute("rols", Rol.values()); // Añadir roles disponibles (AGENT, ADMIN)
-        return "crear_client"; // Plantilla Thymeleaf para el formulario de creación
+        model.addAttribute("title", "Crear client");
+        model.addAttribute("content", "crear_client :: crearClientsContent");
+        return "admin"; // Plantilla Thymeleaf para el formulario de creación
     }
 
     /*
@@ -175,11 +179,13 @@ public class ClientController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes,
             @RequestParam(required = false) Rol rol,
-            @AuthenticationPrincipal User loggedUser) {
+            @AuthenticationPrincipal User loggedUser, Model model) {
 
         // Si hay errores de validación, regresa al formulario
         if (bindingResult.hasErrors()) {
-            return "crear_client";  // Vuelve al formulario de cliente si hay errores
+            model.addAttribute("title", "Crear client");
+            model.addAttribute("content", "crear_client :: crearClientsContent");
+            return "admin";  // Vuelve al formulario de cliente si hay errores
         }
 
         // Convertir el DNI a mayúsculas
@@ -192,18 +198,20 @@ public class ClientController {
             Client savedClient = clientService.saveClient(client, false, bindingResult);
 
             if (savedClient == null || bindingResult.hasErrors()) {
-                return "crear_client";  // Si hay errores de duplicados, vuelve al formulario
+                model.addAttribute("title", "Crear client");
+            model.addAttribute("content", "crear_client :: crearClientsContent");
+                return "admin";  // Si hay errores de duplicados, vuelve al formulario
             }
 
             // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
             if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
                 // Crear un agente con los datos del cliente y redirigir al formulario de agente
                 redirectAttributes.addFlashAttribute("success", "Agent creat correctament.");
-                return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
+                return "redirect:/admin/agents/crear-agent";  // Redirige al formulario de agente
             } else {
                 // Si es un cliente normal
                 redirectAttributes.addFlashAttribute("missatge", "Cliente creat correctament.");
-                return "redirect:/clients";  // Redirige a la lista de clientes
+                return "redirect:/admin/clients";  // Redirige a la lista de clientes
             }
 
         } catch (DuplicateResourceException e) {
@@ -217,7 +225,9 @@ public class ClientController {
             if (e.getMessage().contains("username)")){
                 bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
             }
-            return "crear_client";  // Vuelve al formulario si hay errores
+            model.addAttribute("title", "Crear client");
+            model.addAttribute("content", "crear_client :: crearClientsContent");
+            return "admin";  // Vuelve al formulario si hay errores
         }
     }
 
@@ -234,9 +244,11 @@ public class ClientController {
         Optional<Client> clientOpt = clientService.getClientById(dni);
         if (clientOpt.isPresent()) {
             model.addAttribute("client", clientOpt.get());
-            return "modificar_client"; // Plantilla Thymeleaf per editar un client
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Plantilla Thymeleaf per editar un client
         }
-        return "redirect:/clients"; // Redirigeix a la llista si no es troba el client
+        return "redirect:/admin/clients"; // Redirigeix a la llista si no es troba el client
     }
 
     /**
@@ -254,10 +266,12 @@ public class ClientController {
     public String updateClient(@PathVariable String dni,
             @ModelAttribute @Valid Client client,
             BindingResult result,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes, Model model) {
 
         if (result.hasErrors()) {
-            return "modificar_client"; // Si hay errores de validación, vuelve al formulario
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Si hay errores de validación, vuelve al formulario
         }
 
         try {
@@ -265,7 +279,9 @@ public class ClientController {
             client.setDni(dni);
             Client updatedClient = clientService.saveClient(client, true, result);
             if (updatedClient == null) {
-                return "modificar_client"; // Si hubo errores de duplicado, vuelve al formulario
+                model.addAttribute("title", "Modificar client");
+                model.addAttribute("content", "modificar_client :: modificarClientsContent");
+                return "admin"; // Si hubo errores de duplicado, vuelve al formulario
             }
 
             redirectAttributes.addFlashAttribute("successMessage", "El client s'ha modificat correctament.");
@@ -279,10 +295,12 @@ public class ClientController {
             }
 
             // Retorna al formulario con los errores
-            return "modificar_client"; // Vuelve al formulario con los errores
+            model.addAttribute("title", "Modificar client");
+            model.addAttribute("content", "modificar_client :: modificarClientsContent");
+            return "admin"; // Vuelve al formulario con los errores
         }
 
-        return "redirect:/clients"; // Redirige a la lista de clientes si no hay errores
+        return "redirect:/admin/clients"; // Redirige a la lista de clientes si no hay errores
     }
 
     /**
@@ -303,7 +321,7 @@ public class ClientController {
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar el client: " + e.getMessage());
         }
 
-        return "redirect:/clients";
+        return "redirect:/admin/clients";
     }
     
      @GetMapping("/detall/{dni}")
@@ -311,10 +329,12 @@ public class ClientController {
         Optional<Client> clientOpt = clientService.getClientById(dni);
         if (clientOpt.isPresent()) {
             model.addAttribute("client", clientOpt.get());
-            return "detalls_client";
+            model.addAttribute("title", "Detall client");
+            model.addAttribute("content", "detalls_client :: detallClientsContent");
+            return "admin";
         } else {
             model.addAttribute("missatge", "Client no trobat.");
-            return "redirect:/clients";
+            return "redirect:/admin/clients";
         }
     }
     

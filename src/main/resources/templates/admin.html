@@ -1,37 +1,271 @@
 <!DOCTYPE html>
-<!--
-Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
-Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
--->
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <h1>Admin Panel</h1>
-    <!-- Botón para ir a la página de crear localización -->
-    <a href="/admin/localitzacio">
-        <button>Localitzacio</button>
-</body>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title th:text="${title}">Panel Admin</title>
+        <script>
+            // Función para mostrar/ocultar contraseña
+            function togglePasswordVisibility() {
+                const pwdField = document.getElementById("pwd");
+                const toggleButton = document.getElementById("togglePwdVisibility");
+
+                if (pwdField.type === "password") {
+                    pwdField.type = "text";
+                    toggleButton.textContent = "Ocultar";
+                } else {
+                    pwdField.type = "password";
+                    toggleButton.textContent = "Mostrar";
+                }
+            }
+        </script>
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- CSS de Select2 -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <!-- jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- JS de Select2 -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+
+        <script>
+        $(document).ready(function () {
+            $('#agentDropdown').select2({
+                placeholder: "Busca per DNI o per nom",
+                allowClear: true,
+                width: '100%'
+            });
+        });
+        </script>
+                <script>
+            $(document).ready(function () {
+                $('#localitzacioDropdown').select2({
+                    placeholder: "Buscar per Codi Postal",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        </script>
+                <script>
+            function setModifyLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const modifyLink = document.getElementById('modify-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    modifyLink.href = '/admin/vehicles/crear-vehicle?matricula=' + matricula; // Actualizar el enlace de "Modificar"
+                } else {
+                    modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
+                }
+            }
+            
+            function setCreateIncidentLink() {
+                // Obtener todos los checkboxes seleccionados
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('create-incident-link');
+
+                // Si hay exactamente un vehículo seleccionado
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value; // Obtener la matrícula seleccionada
+                    incidentLink.href = '/admin/vehicles/crear-incidencia?matricula=' + matricula; // Actualizar el enlace de "Crear Incidencia"
+                } else {
+                    incidentLink.href = '#'; // Si no hay uno seleccionado, desactiva el enlace
+                }
+            }
+            
+            function setListIncidentsLink(){
+                const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
+                const incidentLink = document.getElementById('list-incidents-link');
+                
+                if(checkboxes.length === 1){
+                const matricula = checkboxes[0].value;
+                incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
+                } else {
+                    incidentLink.href = '/admin/vehicles/incidencies';
+                }
+            }
+            
+            function toggleDetails(matricula) {
+                console.log("toggleDetails ejecutado para matrícula:", matricula);
+                const detailsRow = document.getElementById(`details-${matricula}`);
+                if (detailsRow) {
+                    detailsRow.style.display = detailsRow.style.display === 'none' ? 'table-row' : 'none';
+                } else {
+                    console.error(`No se encontró la fila con ID details-${matricula}`);
+                }
+            }
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const dataIniciElem = document.getElementById('dataInici');
+                const dataFinElem = document.getElementById('dataFin');
+                const checkAvailabilityButton = document.getElementById('checkAvailability');
+                const vehicleSelect = document.getElementById('vehicle');
+                const clienteSelect = document.getElementById('client');
+                const submitButton = document.querySelector('button[type="submit"]'); // Botón Crear Reserva
+
+                // Habilitar el botón de "Comprobar disponibilidad"
+                function habilitarBotonComprobar() {
+                    checkAvailabilityButton.disabled = !(dataIniciElem.value && dataFinElem.value);
+                }
+
+                // Habilitar el selector de cliente cuando las fechas estén seleccionadas
+                function habilitarCliente() {
+                    clienteSelect.disabled = !(dataIniciElem.value && dataFinElem.value);
+                }
+
+                // Habilitar el botón de "Crear Reserva" cuando las fechas y el vehículo estén seleccionados
+                function habilitarBotonReserva() {
+                    submitButton.disabled = !(dataIniciElem.value && dataFinElem.value && vehicleSelect.value);
+                }
+
+                // Comprobar disponibilidad de vehículos
+                async function comprobarDisponibilidad() {
+                    const dataInici = document.getElementById('dataInici').value;
+                    const dataFin = document.getElementById('dataFin').value;
+
+                    if (!dataInici || !dataFin) {
+                        alert("Selecciona les dates abans de comprovar la disponibilitat.");
+                        return;
+                    }
+
+                    try {
+                        const response = await fetch(`/admin/reserves/filtrar-vehiculos?dataInici=${dataInici}&dataFin=${dataFin}`);
+                        if (!response.ok)
+                            throw new Error("Error al consultar la disponibilitat.");
+                        const vehicles = await response.json();
+
+                        // Limpiar y actualizar el select de vehículos
+                        vehicleSelect.innerHTML = '<option value="" disabled selected>Selecciona un vehicle</option>';
+                        vehicles.forEach(vehicle => {
+                            const option = document.createElement('option');
+                            option.value = vehicle.matricula;
+                            option.textContent = `${vehicle.nomVehicle} (${vehicle.combustio})`;
+                            option.dataset.preuperhoralloguer = vehicle.preuPerHoraLloguer;
+                            option.dataset.fiancastandard = vehicle.fiancaStandard;
+                            vehicleSelect.appendChild(option);
+                        });
+
+                        // Habilitar el selector de vehículos
+                        vehicleSelect.disabled = false;
+                    } catch (error) {
+                        console.error(error);
+                        alert("Hi ha hagut un problema al comprovar la disponibilitat.");
+                    }
+                }
+
+                // Actualizar los detalles del vehículo y recalcular costos
+                function actualizarVehiculo() {
+                    const selectedOption = vehicleSelect.selectedOptions[0];
+
+                    if (!selectedOption) {
+                        console.error("No hay un vehículo seleccionado.");
+                        return;
+                    }
+
+                    // Actualizar la tabla con los detalles del vehículo
+                    document.getElementById('vehiclePrice').textContent = `${selectedOption.dataset.preuperhoralloguer} €`;
+                    document.getElementById('vehicleFianca').textContent = `${selectedOption.dataset.fiancastandard} €`;
+                    
+                    
+
+                    // Mostrar los detalles del vehículo
+                    document.getElementById('vehicleDetails').style.display = 'block';
+
+                    // Calcular el costo de la reserva
+                    calcularReserva();
+
+                    // Habilitar el botón de "Crear Reserva"
+                    habilitarBotonReserva();
+                }
+
+                // Calcular el costo de la reserva
+                function calcularReserva() {
+                    const dataInici = new Date(dataIniciElem.value);
+                    const dataFin = new Date(dataFinElem.value);
+                    const selectedOption = vehicleSelect.selectedOptions[0];
+                    const reputacio = document.getElementById('reputacio').value;
+
+                    if (!dataInici || !dataFin || !selectedOption)
+                        return;
+
+                    const horas = Math.max(0, (dataFin - dataInici) / (1000 * 3600));
+                    const precioHora = parseFloat(selectedOption.dataset.preuperhoralloguer || 0);
+                    const fiancaStandard = parseFloat(selectedOption.dataset.fiancastandard || 0);
+
+                    let fianca = reputacio === 'PREMIUM' ? (fiancaStandard * 0.75).toFixed(2) : fiancaStandard.toFixed(2);
+                    let costeHoras = (horas * precioHora).toFixed(2);
+                    let costeTotal = (parseFloat(costeHoras) + parseFloat(fianca)).toFixed(2);
+
+                    document.getElementById('totalHoras').textContent = horas;
+                    document.getElementById('costHoras').textContent = costeHoras;
+                    document.getElementById('fiancaCalculada').textContent = fianca;
+                    document.getElementById('costTotal').textContent = costeTotal;
+                }
+
+                // Eventos
+                dataIniciElem.addEventListener('input', () => {
+                    habilitarBotonComprobar();
+                    habilitarCliente();
+                });
+                dataFinElem.addEventListener('input', () => {
+                    habilitarBotonComprobar();
+                    habilitarCliente();
+                });
+                checkAvailabilityButton.addEventListener('click', comprobarDisponibilidad);
+                vehicleSelect.addEventListener('change', actualizarVehiculo);
+                vehicleSelect.addEventListener('change', habilitarBotonReserva); // Habilitar el botón al seleccionar un vehículo
+            });
+        </script>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <!-- Encabezado -->
+        <header class="row bg-primary text-white py-3 px-4">
+            <div class="col">
+                <h1 class="mb-0" style="font-size: 24px;">RANARE</h1>
+            </div>
+        </header>
+            <div class="row">
+                <!-- Menú lateral -->
+                <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100" th:fragment="sidebar">
+                    <div class="position-sticky pt-3">
+                        <h4 class="text-center">Menú Admin</h4>
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/clients" th:href="@{/admin/clients}">Clients</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/vehicles" th:href="@{/admin/vehicles}">Vehicles</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/agents" th:href="@{/admin/agents}">Agents</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/localitzacio" th:href="@{/admin/localitzacio}">Localitzacions</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/reserves" th:href="@{/admin/reserves}">Reserves</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/admin/vehicles/incidencies" th:href="@{/admin/vehicles/incidencies}">Incidències</a>
+                            </li>
+                        </ul>
+                    </div>
+                </nav>
+
+                <!-- Contingut principal -->
+                <main class="col-md-10 ml-sm-auto col-lg-10 px-4">
+                    <div th:replace="__${content}__"></div>
+                </main>
+            </div>
+        </div>
+
+        <!-- Bootstrap JS (opcional, para funcionalidad adicional como dropdowns) -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
 </html>
