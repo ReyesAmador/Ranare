@@ -28,29 +28,23 @@ public class VehicleDTO {
     private int passatgers;
     private boolean disponibilitat;
     private int potencia;
-    private Localitzacio localitzacio;
-    
-    
 
     public VehicleDTO() {
     }
 
     public VehicleDTO(Vehicle vehicle) {
-        this.matricula = matricula;
-        this.nomVehicle = nomVehicle;
-        this.combustio = combustio;
-        this.preuPerHoraLloguer = preuPerHoraLloguer;
-        this.fiancaStandard = fiancaStandard;
-        this.limitQuilometratge = limitQuilometratge;
-        this.minimHoresLloguer = minimHoresLloguer;
-        this.maximHoresLloguer = maximHoresLloguer;
-        this.tipus = tipus;
-        this.passatgers = passatgers;
-        this.disponibilitat = disponibilitat;
-        this.potencia = potencia;
-        this.localitzacio = localitzacio;
+        this.matricula = vehicle.getMatricula();
+        this.nomVehicle = vehicle.getNomVehicle();
+        this.combustio = vehicle.getCombustio();
+        this.preuPerHoraLloguer = vehicle.getPreuPerHoraLloguer();
+        this.fiancaStandard = vehicle.getFiancaStandard();
+        this.limitQuilometratge = vehicle.getLimitQuilometratge();
+        this.minimHoresLloguer = vehicle.getMinimHoresLloguer();
+        this.maximHoresLloguer = vehicle.getMaximHoresLloguer();
+        this.tipus = vehicle.getTipus();
+        this.passatgers = vehicle.getPassatgers();
+        this.disponibilitat = vehicle.isDisponibilitat();
+        this.potencia = vehicle.getPotencia();
     }
-
-
 
 }

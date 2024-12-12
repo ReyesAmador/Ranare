@@ -93,7 +93,7 @@ public class Reserva {
      * Un vehicle pot ser reservat diverses vegades.
      */
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
-    @JoinColumn(name = "vehiculo_id", nullable = false)
+    @JoinColumn(name = "vehiculo_id", referencedColumnName = "matricula", nullable = false)
     private Vehicle vehicle;
 
 }

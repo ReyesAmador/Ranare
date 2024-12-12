@@ -10,18 +10,17 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <body>
         <h1>Detalls de Reserva</h1>
 
-        <!-- Detalles de la reserva -->
         <fieldset>
             <legend>Detalls de la Reserva</legend>
             <p><strong>ID de Reserva:</strong> <span th:text="${reserva.id}"></span></p>
             <p><strong>Estat:</strong> <span th:text="${reserva.estat}"></span></p>
-            <p><strong>Cost Total:</strong> <span th:text="${reserva.costReserva}"></span></p>
+            <p><strong>Cost Total:</strong> <span th:text="${reserva.costReserva + ' €'}"></span></p>
             <p><strong>Data Inici:</strong> <span th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'dd-MM-yyyy HH:mm')}"></span></p>
             <p><strong>Data Fin:</strong> <span th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'dd-MM-yyyy HH:mm')}"></span></p>
-            <p><strong>Fiança:</strong> <span th:text="${reserva.fianca}"></span></p>
+            <p><strong>Fiança:</strong> <span th:text="${reserva.fianca + ' €'}"></span></p>
         </fieldset>
 
-<!-- Detalles del cliente -->
+        <!-- Detalles del cliente -->
         <fieldset>
             <legend>Detalls del Client</legend>
             <p><strong>DNI:</strong> <span th:text="${reserva.client.dni}"></span></p>
@@ -39,7 +38,21 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <p><strong>Límite de quilòmetres:</strong> <span th:text="${reserva.vehicle.limitQuilometratge}"></span></p>
             <p><strong>Combustió:</strong> <span th:text="${reserva.vehicle.combustio}"></span></p>
             <p><strong>Transmissió:</strong> <span th:text="${reserva.vehicle.transmissio}"></span></p>
+            <p><strong>Potència:</strong> <span th:text="${reserva.vehicle.potencia + ' cv'}"></span></p>
+            <p><strong>Passatgers:</strong> <span th:text="${reserva.vehicle.passatgers}"></span></p>
             <p><strong>Comentaris d'Agent:</strong> <span th:text="${reserva.vehicle.comentarisAgent}"></span></p>
+        </fieldset>
+
+        <!-- Detalles de la recogida -->
+        <fieldset>
+            <legend>Detalls de la Recollida</legend>
+            <p><strong>Codi Postal:</strong> <span th:text="${reserva.vehicle.localitzacio.codiPostal}"></span></p>
+            <p><strong>Adreça:</strong> <span th:text="${reserva.vehicle.localitzacio.adreca}"></span></p>
+            <p><strong>Ciutat:</strong> <span th:text="${reserva.vehicle.localitzacio.ciutat}"></span></p>
+            <p><strong>País:</strong> <span th:text="${reserva.vehicle.localitzacio.pais}"></span></p>
+            <p><strong>Tipus:</strong> <span th:text="${reserva.vehicle.localitzacio.tipus}"></span></p>
+            <p><strong>Horari d'Apertura:</strong> <span th:text="${#temporals.format(reserva.vehicle.localitzacio.horariApertura, 'HH:mm')}"></span></p>
+            <p><strong>Horari de Tancament:</strong> <span th:text="${#temporals.format(reserva.vehicle.localitzacio.horariTancament, 'HH:mm')}"></span></p>
         </fieldset>
         <form th:action="@{/reserves/anular}" method="post" style="margin-top: 20px;">
             <input type="hidden" name="id" th:value="${reserva.id}" />
