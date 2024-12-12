@@ -44,8 +44,10 @@ public class CrearIncidenciaController {
             incidencia.setVehicle(vehicle);
         }
         model.addAttribute("incidencia", incidencia); // Crear un objeto vacío de incidencia para el formulario
+        model.addAttribute("title", "Crear indicència");
+        model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
         
-        return "crear-incidencia"; // Retorna la plantilla HTML
+        return "admin"; // Retorna la plantilla HTML
     }
     
     // Método para manejar el formulario de creación de incidencia
@@ -55,7 +57,9 @@ public class CrearIncidenciaController {
         if(result.hasErrors()) {
             List<Vehicle> vehicles = vehicleService.getAllVehicles();
             model.addAttribute("vehicles", vehicles);
-            return "crear-incidencia";
+            model.addAttribute("title", "Crear indicència");
+            model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
+            return "admin";
         }
         incidenciaService.save(incidencia);     
         

@@ -8,6 +8,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <title>Modificar Client</title>
     </head>
     <body>
+        <div th:fragment="modificarClientsContent">
         <h1>Formulari de modificació de client</h1>
 
         <form th:action="@{/clients/modificar/{dni}(dni=${client.dni})}" th:object="${client}" method="post">
@@ -75,5 +76,6 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 
             <button type="submit">Actualitzar Client</button>
         </form>
+        </div>
     </body>
 </html>

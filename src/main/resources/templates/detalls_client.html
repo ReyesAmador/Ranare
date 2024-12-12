@@ -6,23 +6,9 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Detalls del Client</title>
-    <script>
-        // Función para mostrar/ocultar contraseña
-        function togglePasswordVisibility() {
-            const pwdField = document.getElementById("pwd");
-            const toggleButton = document.getElementById("togglePwdVisibility");
-
-            if (pwdField.type === "password") {
-                pwdField.type = "text";
-                toggleButton.textContent = "Ocultar";
-            } else {
-                pwdField.type = "password";
-                toggleButton.textContent = "Mostrar";
-            }
-        }
-    </script>
 </head>
 <body>
+    <div th:fragment="detallClientsContent">
     <h1>Detalls del Client</h1>
 
     <!-- Mostrar los datos completos -->
@@ -49,13 +35,14 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     </p>
 
     <!-- Botones de Modificar y Eliminar -->
-    <a th:href="@{/clients/modificar/{dni}(dni=${client.dni})}" class="btn btn-warning">Modificar</a>
-    <form th:action="@{/clients/eliminar_client}" method="post" style="display:inline;">
+    <a th:href="@{/admin/clients/modificar/{dni}(dni=${client.dni})}" class="btn btn-warning">Modificar</a>
+    <form th:action="@{/admin/clients/eliminar_client}" method="post" style="display:inline;">
         <input type="hidden" name="dni" th:value="${client.dni}" />
         <button type="submit" class="btn btn-danger" onclick="return confirm('Estàs segur que vols eliminar aquest client?');">Eliminar</button>
     </form>
 
     <br/><br/>
-    <a href="/clients">Tornar a la llista</a>
+    <a href="/admin/clients">Tornar a la llista</a>
+    </div>
 </body>
 </html>
