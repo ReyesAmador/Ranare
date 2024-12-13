@@ -4,12 +4,14 @@
  */
 package cat.copernic.ranare.service.mysql;
 
+import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
+import cat.copernic.ranare.repository.mysql.AgentRepository;
 import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -33,6 +35,9 @@ public class LocalitzacioService {
      */
     @Autowired
     LocalitzacioRepository localitzacioRepository;
+    
+    @Autowired
+    AgentRepository agentRepository;
     
     /**
      * Obté totes les localitzacions emmagatzemades a la base de dades.
@@ -152,14 +157,17 @@ public class LocalitzacioService {
             Localitzacio localitzacio = localitzacioExisteix.get();
             
             boolean vehiclesAsociats = !localitzacio.getVehicles().isEmpty();
-            boolean agentsAsociats = localitzacio.getAgent() != null;
+            Agent agent = localitzacio.getAgent();
             
-            if(vehiclesAsociats || agentsAsociats){
+            if(vehiclesAsociats){
                 String missatge = "No es pot eliminar la localització amb codi postal " + codiPostal + " perquè";
                 if(vehiclesAsociats) missatge += " té vehicles asociats";
-                if(vehiclesAsociats && agentsAsociats) missatge += " i";
-                if(agentsAsociats) missatge += " té un agent asociat";
                 throw new EntitatRelacionadaException(missatge);
+            }
+            
+            if(agent != null){
+                agent.setLocalitzacio(null);
+                agentRepository.save(agent);
             }
             
             localitzacioRepository.delete(localitzacio);

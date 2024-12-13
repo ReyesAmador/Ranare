@@ -8,6 +8,7 @@ import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
@@ -120,6 +121,8 @@ public class AgentController {
             agentService.eliminarAgent(dni);
             redirectAttributes.addFlashAttribute("success", "Agent amb dni: " + dni +" eliminat correctament");
         }catch(AgentNotFoundException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
+        }catch(EntitatRelacionadaException e){
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
         }
         

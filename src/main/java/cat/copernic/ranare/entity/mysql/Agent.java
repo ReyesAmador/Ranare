@@ -53,6 +53,6 @@ public class Agent extends Client{
      * {@link CascadeType.ALL} indica que les operacions de persistència en un agent també 
      * es propagaran a la localització associada.
      */
-    @OneToOne(mappedBy = "agent",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "agent",cascade = CascadeType.MERGE)
     private Localitzacio localitzacio;
 }
