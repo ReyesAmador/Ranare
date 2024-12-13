@@ -48,7 +48,7 @@ public class ControladorCrearVehicle {
 
     @GetMapping("/crear-vehicle")
     public String mostrarFormulari(@RequestParam(name = "matricula", required = false) String matricula, Model model) {
-        List<Localitzacio> localitzacions = localitzacioRepository.findAll();
+        List<Localitzacio> localitzacions = localitzacioService.getallLocalitzacio();
         model.addAttribute("localitzacions", localitzacions);
         if (matricula != null && !matricula.isEmpty()) {
             Vehicle vehicle = vehicleService.getVehicleByMatricula(matricula);
