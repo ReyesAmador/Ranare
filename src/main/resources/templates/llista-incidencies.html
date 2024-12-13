@@ -20,7 +20,7 @@
                 <label for="matricula" class="mr-2">Filtrar per matrícula:</label>
                 <input type="text" name="matricula" id="matricula" class="form-control mr-2" placeholder="Matrícula del vehicle">
                 <button type="submit" class="btn btn-primary">Filtrar</button>
-                <a th:ref="@{/admin/vehicles/incidencies}" class="btn btn-secondary ml-2">Restableix</a>
+                <a th:href="@{/admin/vehicles/incidencies}" class="btn btn-secondary ml-2" role="button">Restableix</a>
             </form>
             
             <table class="table table-striped table-bordered">
