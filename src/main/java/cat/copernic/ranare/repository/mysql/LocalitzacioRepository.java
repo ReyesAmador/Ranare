@@ -24,4 +24,6 @@ public interface LocalitzacioRepository extends JpaRepository <Localitzacio,Stri
     @Query("SELECT l FROM Localitzacio l LEFT JOIN FETCH l.vehicles WHERE l.codiPostal = :codiPostal")
     Optional<Localitzacio> trobarVehiclesPerCodiPostal(@Param("codiPostal") String codiPostal);
     
+    Optional<Localitzacio> findByAgentDni(String agentDni);
+    
 }
