@@ -45,7 +45,10 @@
                         <td th:text="${incidencia.motiu}"></td>
                         <td th:text="${incidencia.cost}"></td>
                         <td th:if="${incidencia.dataInici != null}" th:text="${#temporals.format(incidencia.dataInici, 'yyyy-MM-dd HH:mm')}"></td>
-                        <td th:if="${incidencia.dataFinal != null}" th:text="${#temporals.format(incidencia.dataFinal, 'yyyy-MM-dd HH:mm')}"></td>
+                        <td>
+                            <span th:if="${incidencia.dataFinal != null}" th:text="${#temporals.format(incidencia.dataFinal, 'yyyy-MM-dd HH:mm')}"></span>
+                            <span th:unless="${incidencia.dataFinal != null}"></span>
+                        </td>
                         <td th:text="${incidencia.culpabilitat ? 'Usuari' : 'Vehicle'}"></td>
                         <td>
                             <a th:href="@{/admin/vehicles/incidencies/modificar/{id}(id=${incidencia.idIncidencia})}" class="btn btn-sm btn-warning">Modificar</a>
