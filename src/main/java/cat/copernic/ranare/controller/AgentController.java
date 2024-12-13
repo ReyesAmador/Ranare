@@ -199,10 +199,10 @@ public class AgentController {
     
     @GetMapping("/buscar-agent")
     public String trobarAgent(@RequestParam("dni") String dni, Model model){
-        Optional<Agent> agent = agentService.findAgentByDni(dni);
+        List<Agent> agents = agentService.filtrarAgentByDni(dni);
         
-        if(agent.isPresent()){
-            model.addAttribute("agents", List.of(agent.get()));
+        if(!agents.isEmpty()){
+            model.addAttribute("agents", agents);
             model.addAttribute("content", "llista-agents :: llistaAgentsContent");
             model.addAttribute("title", "Llistar agents");
         }else{

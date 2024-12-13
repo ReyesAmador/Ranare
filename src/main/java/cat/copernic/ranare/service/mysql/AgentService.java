@@ -84,7 +84,11 @@ public class AgentService {
     public void guardarAgent(Agent agent){
         agentRepository.save(agent);
     }
-     public Optional<Agent> findAgentByDni(String dni) {
+    public List<Agent> filtrarAgentByDni(String dni) {
+        return agentRepository.buscarDni(dni); // Busca un agent per el seu DNI
+    }
+    
+    public Optional<Agent> findAgentByDni(String dni) {
         return agentRepository.findById(dni); // Busca un agent per el seu DNI
     }
     
