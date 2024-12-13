@@ -7,6 +7,7 @@ package cat.copernic.ranare.controller;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
@@ -123,6 +124,11 @@ public class LocalitzacioController {
         }catch(InvalidHorariException e){
             model.addAttribute("error_horari", e.getMessage());
             model.addAttribute("error", "Hi ha un error");
+            model.addAttribute("title", "Crear localitzacio");
+            model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
+            return "admin";
+        }catch(DuplicateResourceException e){
+            model.addAttribute("error", e.getMessage());
             model.addAttribute("title", "Crear localitzacio");
             model.addAttribute("content", "crear-localitzacio :: crearLocalitzacioContent");
             return "admin";

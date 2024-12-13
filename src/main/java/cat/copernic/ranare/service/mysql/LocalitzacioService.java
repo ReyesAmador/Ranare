@@ -6,6 +6,7 @@ package cat.copernic.ranare.service.mysql;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.exceptions.DuplicateResourceException;
 import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.exceptions.InvalidCodiPostalException;
 import cat.copernic.ranare.exceptions.InvalidHorariException;
@@ -54,6 +55,12 @@ public class LocalitzacioService {
         
         if(!validarCodiPostal(local.getCodiPostal()))
             throw new InvalidCodiPostalException("El codi postal ha de contenir només números.");
+        
+        Optional<Localitzacio> existeixLocal = localitzacioRepository.findById(local.getCodiPostal());
+        if (existeixLocal.isPresent()) {
+            // Si ja existeix llança una excepció
+            throw new DuplicateResourceException("El codi postal ja està assignat a una altre localització.");
+        }
         return localitzacioRepository.save(local);
     }
     
