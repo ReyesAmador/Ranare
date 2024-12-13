@@ -148,7 +148,8 @@
                             option.dataset.maximhoreslloguer = vehicle.maximHoresLloguer;
                             option.dataset.passatgers = vehicle.passatgers;
                             option.dataset.tipus = vehicle.tipus;
-                            //option.dataset.localitzacio = vehicle.localitzacio.nom; // Supón que devuelve un objeto `localitzacio` con `nom`
+                            option.dataset.ciutat = vehicle.localitzacio.ciutat; // Supón que devuelve un objeto `localitzacio` con `nom`
+                            option.dataset.codipostal = vehicle.localitzacio.codiPostal;
                             vehicleSelect.appendChild(option);
                         });
 
@@ -170,7 +171,8 @@
                     document.getElementById('vehicleMaximHores').textContent = `${selectedOption.dataset.maximhoreslloguer} hores`;
                     document.getElementById('vehiclePassatgers').textContent = selectedOption.dataset.passatgers;
                     document.getElementById('vehicleTipus').textContent = selectedOption.dataset.tipus;
-                    //document.getElementById('vehicleLocalitzacio').textContent = selectedOption.dataset.localitzacio;
+                    document.getElementById('vehicleCodiPostal').textContent = selectedOption.dataset.codipostal;
+                    document.getElementById('vehicleCiutat').textContent = selectedOption.dataset.ciutat;
 
                     document.getElementById('vehicleDetails').style.display = 'block';
                     calcularReserva();
