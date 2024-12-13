@@ -61,6 +61,14 @@ public class LocalitzacioService {
             // Si ja existeix llança una excepció
             throw new DuplicateResourceException("El codi postal ja està assignat a una altre localització.");
         }
+        
+        if(local.getAgent()!= null){
+            Optional<Localitzacio> existeixLocalAgent = localitzacioRepository.findByAgentDni(local.getAgent().getDni());
+            if(existeixLocalAgent.isPresent()){
+                throw new DuplicateResourceException("Aquest agent ja està assignat a una altra localització.");
+            }
+        }
+            
         return localitzacioRepository.save(local);
     }
     
