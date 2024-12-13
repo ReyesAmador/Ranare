@@ -12,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -146,7 +147,7 @@ public class Vehicle {
      * Un vehicle està associat a una localització mitjançant el codi postal.
      * La relació es defineix com a "ManyToOne", ja que diversos vehicles poden compartir la mateixa localització.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "localitzacio", referencedColumnName = "codi_postal")
     private Localitzacio localitzacio;
     
