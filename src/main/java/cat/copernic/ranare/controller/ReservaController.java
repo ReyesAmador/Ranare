@@ -13,6 +13,7 @@ import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,29 +90,40 @@ public class ReservaController {
      * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
-    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String crearReserva(
+            @ModelAttribute @Valid Reserva reserva, BindingResult result,
+            RedirectAttributes redirectAttributes, Model model) {
+
         if (result.hasErrors()) {
             model.addAttribute("title", "Crear Reserva");
             model.addAttribute("content", "crear_reserva :: crearReservaContent");
             return "admin";
         }
-        
+
         // Validar cliente y vehículo
         Client client = clientService.getClientById(reserva.getClient().getDni())
-                .orElseThrow(() -> new IllegalArgumentException("Client no trobat."));
+                .orElseThrow(() -> new IllegalArgumentException("El client no existeix."));
         Vehicle vehicle = vehicleService.getVehicleByMatricula(reserva.getVehicle().getMatricula());
 
-        // Validar fechas
-        if (reserva.getDataInici().isAfter(reserva.getDataFin()) || reserva.getDataInici().isEqual(reserva.getDataFin())) {
-            redirectAttributes.addFlashAttribute("error", "La data de inici ha de ser abans que la data de finalització.");
-            model.addAttribute("title", "Crear Reserva");
-            model.addAttribute("content", "crear_reserva :: crearReservaContent");
-            return "admin";
+        // Validar disponibilitat del vehicle
+        if (!vehicle.isDisponibilitat()) {
+            redirectAttributes.addFlashAttribute("error", "El vehicle no està disponible.");
+            return "redirect:/admin/reserves/nova";
         }
 
-        // Calcular fiança y coste total
+        // Validar durada
+        LocalDateTime dataInici = reserva.getDataInici();
+        LocalDateTime dataFin = reserva.getDataFin();
+        long hores = ChronoUnit.HOURS.between(dataInici, dataFin);
+
+        if (hores < vehicle.getMinimHoresLloguer() || hores > vehicle.getMaximHoresLloguer()) {
+            redirectAttributes.addFlashAttribute("error", "La duració de la reserva no compleix els requisits del vehicle.");
+            return "redirect:/admin/reserves/nova";
+        }
+
+        // Calcular costos
         double fianca = reservaService.calcularFianca(client, vehicle);
-        double costReserva = reservaService.calcularCostReserva(reserva.getDataInici(), reserva.getDataFin(), vehicle.getPreuPerHoraLloguer(), fianca);
+        double costReserva = reservaService.calcularCostReserva(dataInici, dataFin, vehicle.getPreuPerHoraLloguer(), fianca);
 
         reserva.setFianca(fianca);
         reserva.setCostReserva(costReserva);
@@ -167,9 +179,11 @@ public class ReservaController {
 
     @GetMapping("/filtrar-vehiculos")
     @ResponseBody
-    public List<VehicleDTO> filtrarVehiculosDisponibles(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
+    public List<VehicleDTO> filtrarVehiculosDisponibles(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFin) {
-        // Filtrar vehículos disponibles en las fechas seleccionadas
+
+        // Obtenir vehicles disponibles per al període
         List<VehicleDTO> vehiclesDTO = vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin);
         return vehiclesDTO;
     }

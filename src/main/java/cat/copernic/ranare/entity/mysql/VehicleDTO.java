@@ -15,22 +15,18 @@ import lombok.Data;
 @Data
 public class VehicleDTO {
 
-    // Atributos que vamos a transferir al frontend
-    private String matricula;         // Matricula del vehículo
-    private String nomVehicle;        // Nombre del vehículo
-    private TipusCombustio combustio;        // Tipo de combustible
-    private double preuPerHoraLloguer; // Precio por hora de alquiler
-    private double fiancaStandard;     // Fianza estándar
-    private double limitQuilometratge; // Límite de kilometraje
-    private int minimHoresLloguer;    // Mínimo de horas de alquiler
-    private int maximHoresLloguer;    // Máximo de horas de alquiler
+    private String matricula;
+    private String nomVehicle;
+    private TipusCombustio combustio;
+    private double preuPerHoraLloguer;
+    private double fiancaStandard;
+    private int minimHoresLloguer;
+    private int maximHoresLloguer;
     private TipusVehicle tipus;
     private int passatgers;
     private boolean disponibilitat;
-    private int potencia;
-
-    public VehicleDTO() {
-    }
+    private LocalitzacioDTO localitzacio;
+    private String ciutat;
 
     public VehicleDTO(Vehicle vehicle) {
         this.matricula = vehicle.getMatricula();
@@ -38,13 +34,15 @@ public class VehicleDTO {
         this.combustio = vehicle.getCombustio();
         this.preuPerHoraLloguer = vehicle.getPreuPerHoraLloguer();
         this.fiancaStandard = vehicle.getFiancaStandard();
-        this.limitQuilometratge = vehicle.getLimitQuilometratge();
         this.minimHoresLloguer = vehicle.getMinimHoresLloguer();
         this.maximHoresLloguer = vehicle.getMaximHoresLloguer();
         this.tipus = vehicle.getTipus();
         this.passatgers = vehicle.getPassatgers();
         this.disponibilitat = vehicle.isDisponibilitat();
-        this.potencia = vehicle.getPotencia();
+        if (vehicle.getLocalitzacio() != null) {
+            this.localitzacio = new LocalitzacioDTO(vehicle.getLocalitzacio());
+            this.ciutat = vehicle.getLocalitzacio().getCiutat();
+            
+        }
     }
-
 }
