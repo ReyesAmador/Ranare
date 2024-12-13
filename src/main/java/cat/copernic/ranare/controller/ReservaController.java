@@ -95,7 +95,7 @@ public class ReservaController {
             model.addAttribute("content", "crear_reserva :: crearReservaContent");
             return "admin";
         }
-
+        
         // Validar cliente y vehículo
         Client client = clientService.getClientById(reserva.getClient().getDni())
                 .orElseThrow(() -> new IllegalArgumentException("Client no trobat."));

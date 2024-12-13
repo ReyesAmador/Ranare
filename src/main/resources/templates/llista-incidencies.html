@@ -49,6 +49,7 @@
                             <span th:if="${incidencia.dataFinal != null}" th:text="${#temporals.format(incidencia.dataFinal, 'yyyy-MM-dd HH:mm')}"></span>
                             <span th:unless="${incidencia.dataFinal != null}"></span>
                         </td>
+                        
                         <td th:text="${incidencia.culpabilitat ? 'Usuari' : 'Vehicle'}"></td>
                         <td>
                             <a th:href="@{/admin/vehicles/incidencies/modificar/{id}(id=${incidencia.idIncidencia})}" class="btn btn-sm btn-warning">Modificar</a>
