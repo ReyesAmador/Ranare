@@ -5,6 +5,7 @@
  */
 package cat.copernic.ranare.service.mysql;
 
+import cat.copernic.ranare.entity.mongodb.DocumentacioUsuari2;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.ArrayList;
@@ -15,8 +16,11 @@ import org.springframework.validation.BindingResult;
 import java.util.List;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.entity.mysql.Client;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -184,5 +188,36 @@ public class ClientService {
     public boolean existeixEmail(String email) {
         return clientRepository.findByEmail(email).isPresent();
     }
+    
+    public String guardarDocumento(MultipartFile document, String clientDni) {
+    try {
+        // Crear el documento a guardar en MongoDB
+        DocumentacioUsuari2 doc = new DocumentacioUsuari2();
+        doc.setNom(document.getOriginalFilename());
+        doc.setContingut(document.getBytes());
+        doc.setTipusContingut(document.getContentType());
+        doc.setDataPujada(LocalDateTime.now());
+
+        // Guardar el documento en MongoDB
+        DocumentacioUsuari2 emmagatzemat = mongoTemplate.save(doc);
+
+        // Recuperar el cliente y actualizar su lista de documentos
+        Optional<Client> optionalClient = clientRepository.findById(clientDni);
+        if (optionalClient.isPresent()) {
+            Client client = optionalClient.get();
+            if (client.getDocuments() == null) {
+                client.setDocuments(new ArrayList<>());
+            }
+            client.getDocuments().add(almacenado.getId());
+            clientRepository.save(client); // Guardar cliente con la referencia actualizada
+        }
+
+        // Retornar el ID del documento
+        return almacenado.getId();
+    } catch (IOException e) {
+        throw new RuntimeException("Error al guardar el documento", e);
+    }
+    }
+
 
 }

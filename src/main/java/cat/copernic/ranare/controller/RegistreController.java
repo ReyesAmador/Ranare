@@ -44,10 +44,6 @@ public class RegistreController {
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes, Model model){
         
-        if (bindingResult.hasErrors()){
-            return "registre-client";
-        }
-        
         if (client.getDni() != null) {
             client.setDni(client.getDni().toUpperCase());
         }
@@ -71,5 +67,9 @@ public class RegistreController {
             }
             return "registre-client";  // Vuelve al formulario si hay errores
         }
+        
+        return "redirect:/public/registre/pas2";
     }
+    
+    
 }
