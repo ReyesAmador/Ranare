@@ -61,8 +61,6 @@ public class ReservaController {
      * Aquest mètode inicialitza el formulari per la creació d'una reserva.
      * Carrega la llista de clients i vehicles disponibles per ser seleccionats.
      *
-     * @param dataInici
-     * @param dataFin
      * @param model Objecte del model utilitzat per passar dades a la vista.
      * @return El nom de la plantilla Thymeleaf "crear_reserva".
      */
@@ -140,6 +138,7 @@ public class ReservaController {
      * Aquest mètode carrega totes les reserves del sistema i les passa a la
      * vista.
      *
+     * @param query
      * @param model Objecte del model utilitzat per passar dades a la vista.
      * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
@@ -220,5 +219,27 @@ public class ReservaController {
         model.addAttribute("title", "Llista de reserves");
         model.addAttribute("content", "llista_reserves :: llistarReservaContent");
         return "admin"; // Devuelve a la plantilla con los resultados
+    }
+
+    @PostMapping("/{id}/lliurament")
+    public String marcarLliurament(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.marcarLliurament(id);
+            redirectAttributes.addFlashAttribute("missatge", "El lliurament s'ha marcat correctament.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/reserves/detall/" + id;
+    }
+
+    @PostMapping("/{id}/devolucio")
+    public String marcarDevolucio(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.marcarDevolucio(id);
+            redirectAttributes.addFlashAttribute("missatge", "La devolució s'ha marcat correctament.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/reserves/detall/" + id;
     }
 }
