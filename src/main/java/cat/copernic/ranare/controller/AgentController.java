@@ -8,6 +8,7 @@ import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
@@ -121,6 +122,8 @@ public class AgentController {
             redirectAttributes.addFlashAttribute("success", "Agent amb dni: " + dni +" eliminat correctament");
         }catch(AgentNotFoundException e){
             redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
+        }catch(EntitatRelacionadaException e){
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut eliminar l'agent: " + e.getMessage());
         }
         
         return "redirect:/admin/agents";
@@ -199,10 +202,10 @@ public class AgentController {
     
     @GetMapping("/buscar-agent")
     public String trobarAgent(@RequestParam("dni") String dni, Model model){
-        Optional<Agent> agent = agentService.findAgentByDni(dni);
+        List<Agent> agents = agentService.filtrarAgentByDni(dni);
         
-        if(agent.isPresent()){
-            model.addAttribute("agents", List.of(agent.get()));
+        if(!agents.isEmpty()){
+            model.addAttribute("agents", agents);
             model.addAttribute("content", "llista-agents :: llistaAgentsContent");
             model.addAttribute("title", "Llistar agents");
         }else{

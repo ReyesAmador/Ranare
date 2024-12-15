@@ -15,31 +15,35 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <h1>Detalls de la Localització</h1>
         <table class="table table-bordered">
             <tr>
-                <th>Codi Postal</th>
+                <th class="text-nowrap w-25">Codi Postal</th>
                 <td th:text="${localitzacio.codiPostal}"></td>
             </tr>
             <tr>
-                <th>Adreça</th>
+                <th class="text-nowrap w-25">Agent assignat</th>
+                <td th:text="${localitzacio.agent.nom + ' (' + localitzacio.agent.dni + ')'}"></td>
+            </tr>
+            <tr>
+                <th class="text-nowrap w-25">Adreça</th>
                 <td th:text="${localitzacio.adreca}"></td>
             </tr>
             <tr>
-                <th>Ciutat</th>
+                <th class="text-nowrap w-25">Ciutat</th>
                 <td th:text="${localitzacio.ciutat}"></td>
             </tr>
             <tr>
-                <th>País</th>
+                <th class="text-nowrap w-25">País</th>
                 <td th:text="${localitzacio.pais}"></td>
             </tr>
             <tr>
-                <th>Tipus</th>
+                <th class="text-nowrap w-25">Tipus</th>
                 <td th:text="${localitzacio.tipus}"></td>
             </tr>
             <tr>
-                <th>Horari Apertura</th>
+                <th class="text-nowrap w-25">Horari Apertura</th>
                 <td th:text="${localitzacio.horariApertura}"></td>
             </tr>
             <tr>
-                <th>Horari Tancament</th>
+                <th class="text-nowrap w-25">Horari Tancament</th>
                 <td th:text="${localitzacio.horariTancament}"></td>
             </tr>
         </table>
