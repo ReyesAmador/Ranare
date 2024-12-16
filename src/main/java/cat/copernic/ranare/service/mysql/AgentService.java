@@ -9,6 +9,7 @@ import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.DuplicateResourceException;
+import cat.copernic.ranare.exceptions.EntitatRelacionadaException;
 import cat.copernic.ranare.repository.mysql.AgentRepository;
 import java.util.List;
 import java.util.Optional;
@@ -84,16 +85,25 @@ public class AgentService {
     public void guardarAgent(Agent agent){
         agentRepository.save(agent);
     }
-     public Optional<Agent> findAgentByDni(String dni) {
+    public List<Agent> filtrarAgentByDni(String dni) {
+        return agentRepository.buscarDni(dni); // Busca un agent per el seu DNI
+    }
+    
+    public Optional<Agent> findAgentByDni(String dni) {
         return agentRepository.findById(dni); // Busca un agent per el seu DNI
     }
     
     public void eliminarAgent(String dni) {
-        Optional<Agent> agentOpt = agentRepository.findById(dni);
-        if(agentOpt.isPresent())
-            agentRepository.delete(agentOpt.get());
-        else
-            throw new AgentNotFoundException("L'agent amb DNI " + dni + " no existeix");
+        //busquem agent
+        Agent agent = agentRepository.findById(dni).orElseThrow(() -> 
+        new AgentNotFoundException("L'agent amb DNI " + dni + " no existeix"));
+        
+        //verifquem si té una localització
+        if(agent.getLocalitzacio() != null){
+            throw new EntitatRelacionadaException("L'agent té una localització assignada. Primer has d'eliminar la localització.");
+        }
+        
+        agentRepository.delete(agent);
     }
     
     public void modificarAgent(Agent agent){

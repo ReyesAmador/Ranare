@@ -31,15 +31,15 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 
         <script>
-        $(document).ready(function () {
-            $('#agentDropdown').select2({
-                placeholder: "Busca per DNI o per nom",
-                allowClear: true,
-                width: '100%'
+            $(document).ready(function () {
+                $('#agentDropdown').select2({
+                    placeholder: "Busca per DNI o per nom",
+                    allowClear: true,
+                    width: '100%'
+                });
             });
-        });
         </script>
-                <script>
+        <script>
             $(document).ready(function () {
                 $('#localitzacioDropdown').select2({
                     placeholder: "Buscar per Codi Postal",
@@ -48,7 +48,7 @@
                 });
             });
         </script>
-                <script>
+        <script>
             function setModifyLink() {
                 // Obtener todos los checkboxes seleccionados
                 const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
@@ -62,7 +62,7 @@
                     modifyLink.href = '#'; // Si no hay uno seleccionado, no permite modificar
                 }
             }
-            
+
             function setCreateIncidentLink() {
                 // Obtener todos los checkboxes seleccionados
                 const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
@@ -76,19 +76,19 @@
                     incidentLink.href = '#'; // Si no hay uno seleccionado, desactiva el enlace
                 }
             }
-            
-            function setListIncidentsLink(){
+
+            function setListIncidentsLink() {
                 const checkboxes = document.querySelectorAll('input[name="matriculas"]:checked');
                 const incidentLink = document.getElementById('list-incidents-link');
-                
-                if(checkboxes.length === 1){
-                const matricula = checkboxes[0].value;
-                incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
+
+                if (checkboxes.length === 1) {
+                    const matricula = checkboxes[0].value;
+                    incidentLink.href = '/admin/vehicles/incidencies?matricula=' + matricula;
                 } else {
                     incidentLink.href = '/admin/vehicles/incidencies';
                 }
             }
-            
+
             function toggleDetails(matricula) {
                 console.log("toggleDetails ejecutado para matrícula:", matricula);
                 const detailsRow = document.getElementById(`details-${matricula}`);
@@ -106,27 +106,24 @@
                 const checkAvailabilityButton = document.getElementById('checkAvailability');
                 const vehicleSelect = document.getElementById('vehicle');
                 const clienteSelect = document.getElementById('client');
-                const submitButton = document.querySelector('button[type="submit"]'); // Botón Crear Reserva
+                const submitButton = document.getElementById('crearReservaButton');
 
-                // Habilitar el botón de "Comprobar disponibilidad"
+                // Actualizar disponibilidad del botón
                 function habilitarBotonComprobar() {
                     checkAvailabilityButton.disabled = !(dataIniciElem.value && dataFinElem.value);
                 }
 
-                // Habilitar el selector de cliente cuando las fechas estén seleccionadas
                 function habilitarCliente() {
                     clienteSelect.disabled = !(dataIniciElem.value && dataFinElem.value);
                 }
 
-                // Habilitar el botón de "Crear Reserva" cuando las fechas y el vehículo estén seleccionados
                 function habilitarBotonReserva() {
                     submitButton.disabled = !(dataIniciElem.value && dataFinElem.value && vehicleSelect.value);
                 }
 
-                // Comprobar disponibilidad de vehículos
                 async function comprobarDisponibilidad() {
-                    const dataInici = document.getElementById('dataInici').value;
-                    const dataFin = document.getElementById('dataFin').value;
+                    const dataInici = dataIniciElem.value;
+                    const dataFin = dataFinElem.value;
 
                     if (!dataInici || !dataFin) {
                         alert("Selecciona les dates abans de comprovar la disponibilitat.");
@@ -137,20 +134,25 @@
                         const response = await fetch(`/admin/reserves/filtrar-vehiculos?dataInici=${dataInici}&dataFin=${dataFin}`);
                         if (!response.ok)
                             throw new Error("Error al consultar la disponibilitat.");
-                        const vehicles = await response.json();
 
-                        // Limpiar y actualizar el select de vehículos
+                        const vehicles = await response.json();
                         vehicleSelect.innerHTML = '<option value="" disabled selected>Selecciona un vehicle</option>';
                         vehicles.forEach(vehicle => {
                             const option = document.createElement('option');
                             option.value = vehicle.matricula;
                             option.textContent = `${vehicle.nomVehicle} (${vehicle.combustio})`;
+                            // Nuevos atributos añadidos como dataset
                             option.dataset.preuperhoralloguer = vehicle.preuPerHoraLloguer;
                             option.dataset.fiancastandard = vehicle.fiancaStandard;
+                            option.dataset.minimhoreslloguer = vehicle.minimHoresLloguer;
+                            option.dataset.maximhoreslloguer = vehicle.maximHoresLloguer;
+                            option.dataset.passatgers = vehicle.passatgers;
+                            option.dataset.tipus = vehicle.tipus;
+                            option.dataset.ciutat = vehicle.localitzacio.ciutat; // Supón que devuelve un objeto `localitzacio` con `nom`
+                            option.dataset.codipostal = vehicle.localitzacio.codiPostal;
                             vehicleSelect.appendChild(option);
                         });
 
-                        // Habilitar el selector de vehículos
                         vehicleSelect.disabled = false;
                     } catch (error) {
                         console.error(error);
@@ -158,32 +160,25 @@
                     }
                 }
 
-                // Actualizar los detalles del vehículo y recalcular costos
                 function actualizarVehiculo() {
                     const selectedOption = vehicleSelect.selectedOptions[0];
-
-                    if (!selectedOption) {
-                        console.error("No hay un vehículo seleccionado.");
+                    if (!selectedOption)
                         return;
-                    }
 
-                    // Actualizar la tabla con los detalles del vehículo
                     document.getElementById('vehiclePrice').textContent = `${selectedOption.dataset.preuperhoralloguer} €`;
                     document.getElementById('vehicleFianca').textContent = `${selectedOption.dataset.fiancastandard} €`;
-                    
-                    
+                    document.getElementById('vehicleMinimHores').textContent = `${selectedOption.dataset.minimhoreslloguer} hores`;
+                    document.getElementById('vehicleMaximHores').textContent = `${selectedOption.dataset.maximhoreslloguer} hores`;
+                    document.getElementById('vehiclePassatgers').textContent = selectedOption.dataset.passatgers;
+                    document.getElementById('vehicleTipus').textContent = selectedOption.dataset.tipus;
+                    document.getElementById('vehicleCodiPostal').textContent = selectedOption.dataset.codipostal;
+                    document.getElementById('vehicleCiutat').textContent = selectedOption.dataset.ciutat;
 
-                    // Mostrar los detalles del vehículo
                     document.getElementById('vehicleDetails').style.display = 'block';
-
-                    // Calcular el costo de la reserva
                     calcularReserva();
-
-                    // Habilitar el botón de "Crear Reserva"
                     habilitarBotonReserva();
                 }
 
-                // Calcular el costo de la reserva
                 function calcularReserva() {
                     const dataInici = new Date(dataIniciElem.value);
                     const dataFin = new Date(dataFinElem.value);
@@ -197,9 +192,9 @@
                     const precioHora = parseFloat(selectedOption.dataset.preuperhoralloguer || 0);
                     const fiancaStandard = parseFloat(selectedOption.dataset.fiancastandard || 0);
 
-                    let fianca = reputacio === 'PREMIUM' ? (fiancaStandard * 0.75).toFixed(2) : fiancaStandard.toFixed(2);
-                    let costeHoras = (horas * precioHora).toFixed(2);
-                    let costeTotal = (parseFloat(costeHoras) + parseFloat(fianca)).toFixed(2);
+                    const fianca = reputacio === 'PREMIUM' ? (fiancaStandard * 0.75).toFixed(2) : fiancaStandard.toFixed(2);
+                    const costeHoras = (horas * precioHora).toFixed(2);
+                    const costeTotal = (parseFloat(costeHoras) + parseFloat(fianca)).toFixed(2);
 
                     document.getElementById('totalHoras').textContent = horas;
                     document.getElementById('costHoras').textContent = costeHoras;
@@ -207,29 +202,23 @@
                     document.getElementById('costTotal').textContent = costeTotal;
                 }
 
-                // Eventos
-                dataIniciElem.addEventListener('input', () => {
-                    habilitarBotonComprobar();
-                    habilitarCliente();
-                });
-                dataFinElem.addEventListener('input', () => {
-                    habilitarBotonComprobar();
-                    habilitarCliente();
-                });
+                dataIniciElem.addEventListener('input', habilitarBotonComprobar);
+                dataFinElem.addEventListener('input', habilitarBotonComprobar);
+                dataIniciElem.addEventListener('input', habilitarCliente);
+                dataFinElem.addEventListener('input', habilitarCliente);
                 checkAvailabilityButton.addEventListener('click', comprobarDisponibilidad);
                 vehicleSelect.addEventListener('change', actualizarVehiculo);
-                vehicleSelect.addEventListener('change', habilitarBotonReserva); // Habilitar el botón al seleccionar un vehículo
             });
         </script>
     </head>
     <body>
         <div class="container-fluid">
             <!-- Encabezado -->
-        <header class="row bg-primary text-white py-3 px-4">
-            <div class="col">
-                <h1 class="mb-0" style="font-size: 24px;">RANARE</h1>
-            </div>
-        </header>
+            <header class="row bg-primary text-white py-3 px-4">
+                <div class="col">
+                    <h1 class="mb-0" style="font-size: 24px;">RANARE</h1>
+                </div>
+            </header>
             <div class="row">
                 <!-- Menú lateral -->
                 <nav class="col-md-2 d-none d-md-block bg-light sidebar vh-100" th:fragment="sidebar">

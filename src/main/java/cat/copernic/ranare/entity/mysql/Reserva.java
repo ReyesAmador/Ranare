@@ -95,5 +95,9 @@ public class Reserva {
     @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "vehiculo_id", referencedColumnName = "matricula", nullable = false)
     private Vehicle vehicle;
+    
+    
+    private boolean lliurament = false; // Inicializado como falso
+    private boolean devolucio = false; // Inicializado como falso
 
 }

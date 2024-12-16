@@ -50,18 +50,25 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
      */
     List<Reserva> findByEstat(EstatReserva estat);
 
+    /**
+     *
+     * @param dataInici
+     * @param dataFin
+     * @param estat
+     * @return
+     */
     @Query("SELECT r FROM Reserva r WHERE r.estat = :estat AND r.dataInici <= :dataFin AND r.dataFin >= :dataInici")
     List<Reserva> findOverlappingReservations(@Param("dataInici") LocalDateTime dataInici,
             @Param("dataFin") LocalDateTime dataFin,
             @Param("estat") EstatReserva estat);
 
     @Query("SELECT r FROM Reserva r WHERE "
-     + "CAST(r.id AS string) LIKE %:query% OR "
-     + "r.client.dni LIKE %:query% OR "
-     + "r.client.email LIKE %:query% OR "
-     + "r.client.nom LIKE %:query% OR "
-     + "r.client.cognoms LIKE %:query% OR "
-     + "r.vehicle.matricula LIKE %:query%")
-List<Reserva> findReservasByQuery(@Param("query") String query);
+            + "CAST(r.id AS string) LIKE %:query% OR "
+            + "r.client.dni LIKE %:query% OR "
+            + "r.client.email LIKE %:query% OR "
+            + "r.client.nom LIKE %:query% OR "
+            + "r.client.cognoms LIKE %:query% OR "
+            + "r.vehicle.matricula LIKE %:query%")
+    List<Reserva> findReservasByQuery(@Param("query") String query);
 
 }
