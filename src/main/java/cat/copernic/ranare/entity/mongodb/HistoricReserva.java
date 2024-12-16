@@ -4,6 +4,10 @@
  */
 package cat.copernic.ranare.entity.mongodb;
 
+import cat.copernic.ranare.entity.mysql.Agent;
+import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.entity.mysql.Localitzacio;
+import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.enums.EstatReserva;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
+
 
 /**
  * Representa l'històric d'una reserva al sistema.
@@ -25,38 +29,24 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "historic_reserves") // Col·lecció a MongoDB
+@Document(collection = "historic_reserva") // Col·lecció a MongoDB
 public class HistoricReserva {
 
-    /**
-     * Identificador únic de l'històric de la reserva.
-     */
     @Id
     private String id;
-
-   
-
-    /**
-     * Referències lògiques a les col·leccions relacionades.
-     * Aquests camps vinculen l'històric amb altres entitats a MongoDB.
-     */
-    @NotNull
-    private String clientDNI;      // Referència al DNI del client
-
-    @NotNull
-    private String clientEmail;
-    
-    @NotNull
-    private String agentDNI;       // Referència al DNI de l'agent
- 
-    @NotNull
-    private String vehicleMatricula;     // Referència a la matrícula del vehicle
-
-    @NotNull
+    private String idReserva; // ID de la reserva en la base de datos principal
+    private String accio; // Ejemplo: "CREAR", "ACTUALIZAR", "ELIMINAR", etc.
+    private String estat; // Estado de la reserva
     private Date dataInici;
-    
-    @NotNull
-    private Date dataFinal;
-    
+    private Date dataFin;
+    private Double costReserva;
+    private Double fianca;
+    private LocalDateTime timestamp; // Fecha y hora del cambio
 
+    private Client client; // Datos del cliente
+    private Agent agent;
+    private Vehicle vehiculo; // Datos del vehículo
+    private Localitzacio localizacion; // Detalles de la recogida
+
+    // Getters y Setters
 }
