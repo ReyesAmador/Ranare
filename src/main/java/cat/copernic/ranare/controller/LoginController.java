@@ -4,13 +4,18 @@
  */
 package cat.copernic.ranare.controller;
 
+import cat.copernic.ranare.configuration.ValidadorUsuaris;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.enums.Rol;
+import cat.copernic.ranare.exceptions.AgentNotFoundException;
+import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.service.mysql.AgentService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,45 +30,38 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
     
     @Autowired
-    private ClientService clientService;
+    private ValidadorUsuaris validador;
     
     @Autowired
-    private AgentService agentService;
+    private PasswordEncoder passEncoder;
     
-    @PostMapping("/login")
+    @PostMapping("/public/login")
     public String login(@RequestParam String username, @RequestParam String pass, Model model){
-        
-        Optional<Client> clientExisteix = clientService.findByUsername(username);
-        if(clientExisteix.isPresent() && clientService.comprovarCredencials(username, pass)){
-            Client client = clientExisteix.get();
-            if(!client.isActiu()){
-                model.addAttribute("error", "El compte està desactivat");
+        try{
+            UserDetails user = validador.loadUserByUsername(username);
+            if(!passEncoder.matches(pass, user.getPassword())){
+                model.addAttribute("error", "Usuari i/o contrasenya incorrectes");
                 return "login";
             }
             
-            return "redirect:/home";
-        }
-        
-        Optional<Agent> agentExisteix = agentService.findByUsername(username);
-        if(agentExisteix.isPresent() && agentService.comprovarCredencials(username, pass)){
-            Agent agent = agentExisteix.get();
-            if(!agent.isActiu()){
-                model.addAttribute("error", "El compte està desactivat");
-                return "login";
+            if (user.getAuthorities().stream()
+                    .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN") || 
+                                      auth.getAuthority().equals("ROLE_AGENT"))) {
+                return "redirect:/admin/clients";
             }
             
-            if(Rol.ADMIN.equals(agent.getRol())){
-                return "redirect:/admin/agents";
-            }else{
-                return "redirect:/admin/vehicles";
-            }
+            return "redirect:/index";
+        }catch(ClientNotFoundException e){
+            model.addAttribute("error", e.getMessage());
+            return "login";
+        }catch(AgentNotFoundException e){
+            model.addAttribute("error", e.getMessage());
+            return "login";
         }
-        
-        model.addAttribute("error", "Credencials incorrectes");
-        return "login";
+    
     }
     
-    @GetMapping("/login")
+    @GetMapping("/public/login")
     public String paginaLogin(){
         return "login";
     }

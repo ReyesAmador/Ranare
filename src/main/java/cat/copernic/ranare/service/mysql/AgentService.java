@@ -157,12 +157,6 @@ public class AgentService {
         return agentRepository.findByEmail(email).isPresent();
     }
     
-    public boolean comprovarCredencials(String username, String pass){
-        Optional<Agent> agent = agentRepository.findByUsername(username);
-        
-        return agent.isPresent() && pass.equals(agent.get().getPwd());
-    }
-    
     public boolean isAdmin(Agent agent){
 
         return Rol.ADMIN.equals(agent.getRol());

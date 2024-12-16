@@ -211,12 +211,6 @@ public class ClientService {
         }
     }
     
-    public boolean comprovarCredencials(String username, String pass){
-        Optional<Client> client = clientRepository.findByUsername(username);
-        
-        return client.isPresent() && pass.equals(client.get().getPwd());
-    }
-    
     public Optional<Client> findByUsername(String username) {
         return clientRepository.findByUsername(username);
     }

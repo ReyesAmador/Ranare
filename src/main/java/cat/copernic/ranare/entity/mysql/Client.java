@@ -23,6 +23,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -30,6 +31,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.Binary;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
@@ -42,7 +46,7 @@ import org.bson.types.Binary;
 @SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Client  {
+public class Client implements UserDetails {
 
     /**
      * Document Nacional d'Identitat (DNI). Actua com a clau primària única.
@@ -165,6 +169,18 @@ public class Client  {
     @Past (message = "{dataNaixement.Past}")
     @Column(nullable = false)
     private LocalDate dataNaixement;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.pwd;
+    }
+    
+    
 
     /**
      * Referència a la documentació en la base no relacional. Aquest camp pot
