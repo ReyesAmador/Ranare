@@ -35,63 +35,7 @@ import org.bson.types.Binary;
  *
  * @author Raú
  */
-/**
- * /**
- * Classe que representa un client del sistema com a entitat relacional. Aquesta
- * classe està mapejada a una base de dades relacional utilitzant JPA.
- *
- * Nota: Hereta atributs comuns de la classe Usuari (si s'aplica herència en un
- * futur) i afegeix atributs específics per als clie @PostMapping("/crear_client")
-    public String createClient(@ModelAttribute @Valid Client client,
-            BindingResult bindingResult,
-            RedirectAttributes redirectAttributes,
-            @RequestParam(required = false) Rol rol,
-            @AuthenticationPrincipal User loggedUser) {
 
-        // Si hay errores de validación, regresa al formulario
-        if (bindingResult.hasErrors()) {
-            return "crear_client";  // Vuelve al formulario de cliente si hay errores
-        }
-
-        // Convertir el DNI a mayúsculas
-        if (client.getDni() != null) {
-            client.setDni(client.getDni().toUpperCase());
-        }
-
-        try {
-            // Guardar el cliente
-            Client savedClient = clientService.saveClient(client, false, bindingResult);
-
-            if (savedClient == null || bindingResult.hasErrors()) {
-                return "crear_client";  // Si hay errores de duplicados, vuelve al formulario
-            }
-
-            // Si el rol es "AGENT" y el usuario es administrador, redirige al formulario de agente
-            if (loggedUser.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN")) && rol != null && rol == Rol.AGENT) {
-                // Crear un agente con los datos del cliente y redirigir al formulario de agente
-                redirectAttributes.addFlashAttribute("success", "Agent creat correctament.");
-                return "redirect:/agents/crear-agent";  // Redirige al formulario de agente
-            } else {
-                // Si es un cliente normal
-                redirectAttributes.addFlashAttribute("missatge", "Cliente creat correctament.");
-                return "redirect:/clients";  // Redirige a la lista de clientes
-            }
-
-        } catch (DuplicateResourceException e) {
-            // Manejar errores de duplicados
-            if (e.getMessage().contains("DNI")) {
-                bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
-            }
-            if (e.getMessage().contains("email")) {
-                bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
-            }
-            if (e.getMessage().contains("username)")){
-                bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
-            }
-            return "crear_client";  // Vuelve al formulario si hay errores
-        }
-    }nts.
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

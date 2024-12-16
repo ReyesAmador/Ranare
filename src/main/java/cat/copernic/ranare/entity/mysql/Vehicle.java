@@ -12,6 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -134,6 +135,12 @@ public class Vehicle {
     @Positive(message = "La potència ha de ser un valor positiu.")
     private int potencia;
     
+    @Column(name = "imatge_vehicle", columnDefinition = "LONGBLOB")
+    private byte[] imatgeVehicle;
+    
+    @Column(name = "pdf_id")
+    private String pdfId;
+    
     /**
      * Relació entre Vehicle i Incidència.
      * Aquesta relació es defineix com un "OneToMany" ja que un vehicle pot tenir diverses incidències associades.
@@ -146,7 +153,7 @@ public class Vehicle {
      * Un vehicle està associat a una localització mitjançant el codi postal.
      * La relació es defineix com a "ManyToOne", ja que diversos vehicles poden compartir la mateixa localització.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "localitzacio", referencedColumnName = "codi_postal")
     private Localitzacio localitzacio;
     

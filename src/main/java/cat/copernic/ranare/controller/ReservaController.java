@@ -13,6 +13,7 @@ import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,6 @@ public class ReservaController {
      * Aquest mètode inicialitza el formulari per la creació d'una reserva.
      * Carrega la llista de clients i vehicles disponibles per ser seleccionats.
      *
-     * @param dataInici
-     * @param dataFin
      * @param model Objecte del model utilitzat per passar dades a la vista.
      * @return El nom de la plantilla Thymeleaf "crear_reserva".
      */
@@ -89,29 +88,40 @@ public class ReservaController {
      * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
-    public String crearReserva(@ModelAttribute @Valid Reserva reserva, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String crearReserva(
+            @ModelAttribute @Valid Reserva reserva, BindingResult result,
+            RedirectAttributes redirectAttributes, Model model) {
+
         if (result.hasErrors()) {
             model.addAttribute("title", "Crear Reserva");
             model.addAttribute("content", "crear_reserva :: crearReservaContent");
             return "admin";
         }
-        
+
         // Validar cliente y vehículo
         Client client = clientService.getClientById(reserva.getClient().getDni())
-                .orElseThrow(() -> new IllegalArgumentException("Client no trobat."));
+                .orElseThrow(() -> new IllegalArgumentException("El client no existeix."));
         Vehicle vehicle = vehicleService.getVehicleByMatricula(reserva.getVehicle().getMatricula());
 
-        // Validar fechas
-        if (reserva.getDataInici().isAfter(reserva.getDataFin()) || reserva.getDataInici().isEqual(reserva.getDataFin())) {
-            redirectAttributes.addFlashAttribute("error", "La data de inici ha de ser abans que la data de finalització.");
-            model.addAttribute("title", "Crear Reserva");
-            model.addAttribute("content", "crear_reserva :: crearReservaContent");
-            return "admin";
+        // Validar disponibilitat del vehicle
+        if (!vehicle.isDisponibilitat()) {
+            redirectAttributes.addFlashAttribute("error", "El vehicle no està disponible.");
+            return "redirect:/admin/reserves/nova";
         }
 
-        // Calcular fiança y coste total
+        // Validar durada
+        LocalDateTime dataInici = reserva.getDataInici();
+        LocalDateTime dataFin = reserva.getDataFin();
+        long hores = ChronoUnit.HOURS.between(dataInici, dataFin);
+
+        if (hores < vehicle.getMinimHoresLloguer() || hores > vehicle.getMaximHoresLloguer()) {
+            redirectAttributes.addFlashAttribute("error", "La duració de la reserva no compleix els requisits del vehicle.");
+            return "redirect:/admin/reserves/nova";
+        }
+
+        // Calcular costos
         double fianca = reservaService.calcularFianca(client, vehicle);
-        double costReserva = reservaService.calcularCostReserva(reserva.getDataInici(), reserva.getDataFin(), vehicle.getPreuPerHoraLloguer(), fianca);
+        double costReserva = reservaService.calcularCostReserva(dataInici, dataFin, vehicle.getPreuPerHoraLloguer(), fianca);
 
         reserva.setFianca(fianca);
         reserva.setCostReserva(costReserva);
@@ -128,6 +138,7 @@ public class ReservaController {
      * Aquest mètode carrega totes les reserves del sistema i les passa a la
      * vista.
      *
+     * @param query
      * @param model Objecte del model utilitzat per passar dades a la vista.
      * @return El nom de la plantilla Thymeleaf "llista_reserves".
      */
@@ -167,9 +178,11 @@ public class ReservaController {
 
     @GetMapping("/filtrar-vehiculos")
     @ResponseBody
-    public List<VehicleDTO> filtrarVehiculosDisponibles(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
+    public List<VehicleDTO> filtrarVehiculosDisponibles(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFin) {
-        // Filtrar vehículos disponibles en las fechas seleccionadas
+
+        // Obtenir vehicles disponibles per al període
         List<VehicleDTO> vehiclesDTO = vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin);
         return vehiclesDTO;
     }
@@ -206,5 +219,27 @@ public class ReservaController {
         model.addAttribute("title", "Llista de reserves");
         model.addAttribute("content", "llista_reserves :: llistarReservaContent");
         return "admin"; // Devuelve a la plantilla con los resultados
+    }
+
+    @PostMapping("/{id}/lliurament")
+    public String marcarLliurament(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.marcarLliurament(id);
+            redirectAttributes.addFlashAttribute("missatge", "El lliurament s'ha marcat correctament.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/reserves/detall/" + id;
+    }
+
+    @PostMapping("/{id}/devolucio")
+    public String marcarDevolucio(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            reservaService.marcarDevolucio(id);
+            redirectAttributes.addFlashAttribute("missatge", "La devolució s'ha marcat correctament.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+        }
+        return "redirect:/admin/reserves/detall/" + id;
     }
 }

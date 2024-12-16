@@ -34,7 +34,7 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     @Query("SELECT c FROM Client c WHERE c.dni NOT IN (SELECT a.dni FROM Agent a)")
     List<Client> findAllClientsExcludingAgents();
     
-    @Query("SELECT c FROM Client c WHERE " +
+    @Query("SELECT c FROM Client c WHERE c.dni NOT IN (SELECT a.dni FROM Agent a) AND " +
            "Lower(c.dni) LIKE %:query% OR " +
            "LOWER(c.email) LIKE %:query% OR " +
            "LOWER(c.telefon) LIKE %:query% OR " +

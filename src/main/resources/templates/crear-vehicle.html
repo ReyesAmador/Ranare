@@ -21,7 +21,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <form th:action="@{/admin/vehicles/crear-vehicle}" th:object="${vehicle}" method="post">
+        <form th:action="@{/admin/vehicles/crear-vehicle}" th:object="${vehicle}" method="post" enctype="multipart/form-data">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="nomVehicle">Nom vehicle <span class="text-danger">*</span></label>
@@ -135,20 +135,22 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     </select>
                 </div>
             </div>
+            <div class="form-row">
+                <div class ="form-group col-md-6">
+                    <label for="imatge">Imatge del vehicle</label>
+                    <input type="file" class="form-control-file" id="imatge" name="imatge" accept="image/*">
+                    <small class="form-text text-muted">Selecciona una imatge per al vehicle (JPG, PNG, etc.).</small>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="document">Document PDF</label>
+                    <input type="file" class="form-control-file" id="document" name="document" accept="application/pdf">
+                    <small class="form-text text-muted">Adjunta un document PDF relacionat </small>
+                </div>
+            </div>
             <div>
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>
         </form>
-
-
-        <form th:action="@{/pujarImatge}" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="image">Insertar imatge del vehicle</label>
-                <input type="file" id="image" name="image" accept="image/*">
-            </div>
-            <button type="submit" class="btn btn-primary">Insertar Imatge</button>
-        </form>
         </div>
-        
     </body>
 </html>
