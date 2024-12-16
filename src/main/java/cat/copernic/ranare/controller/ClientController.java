@@ -5,6 +5,7 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import cat.copernic.ranare.response.ErrorResponse;
+import cat.copernic.ranare.service.mysql.ReservaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +24,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -50,8 +51,10 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
-
     
+    @Autowired
+    private ReservaService reservaService;
+
     /**
      * Processa el formulari de creació de clients o agents. Gestiona errors de
      * duplicació.
@@ -113,8 +116,8 @@ public class ClientController {
      * @param model El model per passar la llista de clients a la vista.
      * @return El nom de la plantilla Thymeleaf per mostrar la llista de
      * clients.
-     */    
-     @GetMapping
+     */
+    @GetMapping
     public String showClientList(
             @RequestParam(value = "filtro", required = false) String filtro,
             Model model) {
@@ -132,8 +135,6 @@ public class ClientController {
         model.addAttribute("content", "llista_de_clients :: llistaClientsContent");
         return "admin";
     }
-    
-    
 
     /**
      * Mostra el formulari per crear un nou client.
@@ -199,7 +200,7 @@ public class ClientController {
 
             if (savedClient == null || bindingResult.hasErrors()) {
                 model.addAttribute("title", "Crear client");
-            model.addAttribute("content", "crear_client :: crearClientsContent");
+                model.addAttribute("content", "crear_client :: crearClientsContent");
                 return "admin";  // Si hay errores de duplicados, vuelve al formulario
             }
 
@@ -222,7 +223,7 @@ public class ClientController {
             if (e.getMessage().contains("email")) {
                 bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
             }
-            if (e.getMessage().contains("username)")){
+            if (e.getMessage().contains("username)")) {
                 bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
             }
             model.addAttribute("title", "Crear client");
@@ -311,7 +312,6 @@ public class ClientController {
      * @return Una redirecció a la llista de clients després d'eliminar el
      * client.
      */
-
     @PostMapping("/eliminar_client")
     public String eliminarClient(@RequestParam("dni") String dni, RedirectAttributes redirectAttributes) {
         try {
@@ -323,8 +323,8 @@ public class ClientController {
 
         return "redirect:/admin/clients";
     }
-    
-     @GetMapping("/detall/{dni}")
+
+    @GetMapping("/detall/{dni}")
     public String veureDetallsClient(@PathVariable String dni, Model model) {
         Optional<Client> clientOpt = clientService.getClientById(dni);
         if (clientOpt.isPresent()) {
@@ -337,23 +337,21 @@ public class ClientController {
             return "redirect:/admin/clients";
         }
     }
-    
+
     @GetMapping("/inactius")
-    public String mostrarInactius(Model model){
+    public String mostrarInactius(Model model) {
         model.addAttribute("clients", clientService.getInactiveClients());
         model.addAttribute("title", "Clients inactius");
-            model.addAttribute("content", "llista-clients-inactius :: inactiusClientsContent");
+        model.addAttribute("content", "llista-clients-inactius :: inactiusClientsContent");
         return "admin";
     }
-    
+
     @PostMapping("/{dni}/activar")
-    public String activarClient(@PathVariable("dni") String dni, RedirectAttributes redirectAttributes){
+    public String activarClient(@PathVariable("dni") String dni, RedirectAttributes redirectAttributes) {
         clientService.activarClient(dni);
         redirectAttributes.addFlashAttribute("successMessage", "El client amb DNI " + dni + " s'ha activat correctament.");
         return "redirect:/admin/clients/inactius";
     }
-   
+
+
 }
-    
-
-

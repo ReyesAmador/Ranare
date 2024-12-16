@@ -40,7 +40,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <input type="hidden" name="dni" th:value="${client.dni}" />
         <button type="submit" class="btn btn-danger" onclick="return confirm('Estàs segur que vols eliminar aquest client?');">Eliminar</button>
     </form>
-
+    <a th:href="@{/admin/reserves?query={dni}(dni=${client.dni})}" class="btn btn-info">Veure les reserves del client</a>
     <br/><br/>
     <a href="/admin/clients">Tornar a la llista</a>
     </div>

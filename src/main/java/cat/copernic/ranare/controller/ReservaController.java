@@ -163,13 +163,18 @@ public class ReservaController {
             reserves = reservaService.getAllReserves();
         }
 
+        double sumaTotalCost = reserves.stream()
+                                   .mapToDouble(Reserva::getCostReserva)
+                                   .sum();
         model.addAttribute("reserves", reserves);
         model.addAttribute("totalReserves", reserves.size());
+        model.addAttribute("sumaTotalCost", sumaTotalCost);
         model.addAttribute("title", "Llista de reserves");
         model.addAttribute("content", "llista_reserves :: llistarReservaContent");
         return "admin";
     }
 
+    
     /**
      * Gestiona la sol·licitud per anul·lar una reserva existent.
      *
@@ -271,4 +276,7 @@ public class ReservaController {
         model.addAttribute("idReserva", idReserva); // Mostrar en la vista
         return "historic_reserva";
     }
+    
+    
+    
 }
