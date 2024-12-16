@@ -68,16 +68,36 @@ public class ControladorCrearVehicle {
     }
 
     @PostMapping("/crear-vehicle")
-    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String crearVehicle(@Valid Vehicle vehicle, BindingResult result, 
+            RedirectAttributes redirectAttributes, Model model, 
+            @RequestParam(value = "imatge", required = false) MultipartFile imatgeFile, 
+            @RequestParam(value = "document", required = false) MultipartFile documentFile) {
+        
         if (result.hasErrors()) {
             model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
             return "admin";
         }
-
-        vehicleService.saveVehicle(vehicle);
-
-        redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat o modificat correctament.");
-        return "redirect:/admin/vehicles/crear-vehicle";
+        
+        try{
+            if(imatgeFile != null && !imatgeFile.isEmpty()){
+                vehicle.setImatgeVehicle(imatgeFile.getBytes());
+            }
+            
+            if(documentFile != null && !documentFile.isEmpty()){
+                String fileName = StringUtils.cleanPath(documentFile.getOriginalFilename());
+                ObjectId pdfId = gridFsTemplate.store(documentFile.getInputStream(), fileName, documentFile.getContentType());
+                vehicle.setPdfId(pdfId.toString());
+            }
+            
+            vehicleService.saveVehicle(vehicle);
+            redirectAttributes.addFlashAttribute("message", "El vehicle s'ha creat o modificat correctament.");
+            return "redirect:/admin/vehicles/crear-vehicle";
+        }catch (IOException e){
+            e.printStackTrace();
+            model.addAttribute("errorMessage", "Error en carregar els fitxers. Si us plau, intenta-ho de nou.");
+            model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
+            return "admin";
+        } 
     }
 
     @PostMapping("/pujarImatge")
@@ -90,5 +110,4 @@ public class ControladorCrearVehicle {
         model.addAttribute("content", "crear-vehicle :: crearVehicleContent");
         return "admin";
     }
-
 }
