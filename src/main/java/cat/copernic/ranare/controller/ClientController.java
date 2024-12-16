@@ -72,7 +72,7 @@ public class ClientController {
 
         try {
             // Guardar o actualizar el cliente
-            Client savedClient = clientService.saveClient(client, true, bindingResult);
+            Client savedClient = clientService.saveClient(client, true, bindingResult, true);
 
             // Si no hay errores y el cliente se guarda correctamente
             return new ResponseEntity<>(savedClient, HttpStatus.CREATED);
@@ -195,7 +195,7 @@ public class ClientController {
 
         try {
             // Guardar el cliente
-            Client savedClient = clientService.saveClient(client, false, bindingResult);
+            Client savedClient = clientService.saveClient(client, false, bindingResult, true);
 
             if (savedClient == null || bindingResult.hasErrors()) {
                 model.addAttribute("title", "Crear client");
@@ -277,7 +277,7 @@ public class ClientController {
         try {
             // Asegúrate de que el DNI no cambia durante la actualización
             client.setDni(dni);
-            Client updatedClient = clientService.saveClient(client, true, result);
+            Client updatedClient = clientService.saveClient(client, true, result, true);
             if (updatedClient == null) {
                 model.addAttribute("title", "Modificar client");
                 model.addAttribute("content", "modificar_client :: modificarClientsContent");
@@ -338,7 +338,20 @@ public class ClientController {
         }
     }
     
+    @GetMapping("/inactius")
+    public String mostrarInactius(Model model){
+        model.addAttribute("clients", clientService.getInactiveClients());
+        model.addAttribute("title", "Clients inactius");
+            model.addAttribute("content", "llista-clients-inactius :: inactiusClientsContent");
+        return "admin";
+    }
     
+    @PostMapping("/{dni}/activar")
+    public String activarClient(@PathVariable("dni") String dni, RedirectAttributes redirectAttributes){
+        clientService.activarClient(dni);
+        redirectAttributes.addFlashAttribute("successMessage", "El client amb DNI " + dni + " s'ha activat correctament.");
+        return "redirect:/admin/clients/inactius";
+    }
    
 }
     

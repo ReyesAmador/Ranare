@@ -25,6 +25,8 @@ public interface ClientRepository extends JpaRepository<Client, String> {
     
     Optional<Client> findByUsername(String username);
     
+    List<Client> findByActiu(boolean actiu);
+    
     /**
      *
      * @return

@@ -7,11 +7,14 @@ package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.Reputacio;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
@@ -132,8 +135,10 @@ public class Client  {
     @Size(min = 2, max = 10, message = "{codiPostal.Size}")
     private String codiPostal;
 
-    @Transient
-    private List<Binary> documents;
+    @ElementCollection
+    @CollectionTable(name = "client_documents", joinColumns = @JoinColumn(name = "dni"))
+    @Column(name = "document_reference")
+    private List<String> documents;
 
     /**
      * Número de la targeta de crèdit associada al client.
@@ -147,6 +152,9 @@ public class Client  {
      */
     @Column(nullable = false)
     private Reputacio reputacio;
+    
+    @Column(nullable = false)
+    private boolean actiu;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reserva> reserves;
@@ -161,9 +169,9 @@ public class Client  {
     /**
      * Referència a la documentació en la base no relacional. Aquest camp pot
      * apuntar al document corresponent a MongoDB (pot ser un ID o una URL).
-     */
+     
     @Column(nullable = true)
-    private String referenciaDocumentacio;
+    private String referenciaDocumentacio;*/
     
 }  
 
