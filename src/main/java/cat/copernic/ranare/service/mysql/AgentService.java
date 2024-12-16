@@ -167,4 +167,8 @@ public class AgentService {
 
         return Rol.ADMIN.equals(agent.getRol());
     }
+    
+    public Optional<Agent> findByUsername(String username) {
+        return agentRepository.findByUsername(username);
+    }
 }

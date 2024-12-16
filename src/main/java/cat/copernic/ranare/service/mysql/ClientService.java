@@ -216,5 +216,9 @@ public class ClientService {
         
         return client.isPresent() && pass.equals(client.get().getPwd());
     }
+    
+    public Optional<Client> findByUsername(String username) {
+        return clientRepository.findByUsername(username);
+    }
 
 }
