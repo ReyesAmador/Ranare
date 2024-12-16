@@ -59,6 +59,7 @@
                                 <th>Nom del Vehicle</th>
                                 <th>Localització</th>
                                 <th>Disponibilitat</th>
+                                <th>Imatges</th>
                                 <th>Accions</th>
                             </tr>
                         </thead>
@@ -71,12 +72,24 @@
                                 <td th:text="${vehicle.nomVehicle}">Nom del Vehicle</td>
                                 <td th:text="${vehicle.localitzacio?.codiPostal}">Localització</td>
                                 <td th:text="${vehicle.disponibilitat} ? 'Disponible' : 'Ocupat'"></td><br>
+                                <td>
+                                    <img th:if="${vehicle.imatgeVehicle != null}"
+                                         th:src="@{/admin/vehicle/imatge/{matricula}(matricula=${vehicle.matricula})}"
+                                         style="width: 100px; height: 100px;" alt="Imatge Vehicle">
+                                    <span th:if="${vehicle.imatgeVehicle == null}"> No disponible</span>
+                                </td>
                         <td>
                             <button type="button" class="btn btn-info btn-sm" 
                                     th:attr="onclick=|toggleDetails('${vehicle.matricula}')|">
 
                                 Veure més
                             </button>
+                            <a th:if="${vehicle.pdfId != null}"
+                               th:href="@{/admin/vehicles/pdf/{id}(id=${vehicle.pdfId})}"
+                               class="btn btn-sm btn-danger" target="_blank">
+                                Descarregar PDF
+                            </a>
+                            <span th:if="${vehicle.pdfId == null}">No disponible</span>
                         </td>
                         </tr>
                         <tr th:each="vehicle : ${vehicles}" th:id="'details-' + ${vehicle.matricula}" class="details-row">

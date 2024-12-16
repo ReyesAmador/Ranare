@@ -135,6 +135,12 @@ public class Vehicle {
     @Positive(message = "La potència ha de ser un valor positiu.")
     private int potencia;
     
+    @Column(name = "imatge_vehicle", columnDefinition = "LONGBLOB")
+    private byte[] imatgeVehicle;
+    
+    @Column(name = "pdf_id")
+    private String pdfId;
+    
     /**
      * Relació entre Vehicle i Incidència.
      * Aquesta relació es defineix com un "OneToMany" ja que un vehicle pot tenir diverses incidències associades.
