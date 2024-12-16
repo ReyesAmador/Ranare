@@ -16,6 +16,7 @@ import org.springframework.validation.BindingResult;
 import java.util.List;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Reputacio;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
@@ -45,7 +46,7 @@ public class ClientService {
      * @return `true` si l'operació és correcta, `false` si falla per
      * duplicació.
      */
-    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
+    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult, boolean isAdmin) {
         // Verificación de duplicados sin interrumpir el flujo
         List<String> errorMessages = new ArrayList<>();
 
@@ -89,9 +90,14 @@ public class ClientService {
             return null; // Si hay errores de validación, no guardamos el cliente
         }
         
-        //per defecte es crea l'usuari amb l'atribut activat en false perquè l'admin l'ha d'activar
+        //si es crea un usuari sense que siguie l'admin, l'usuari apareix amb reputació normal i client desactivat, sino es activat
+        if(!isAdmin){
         client.setActiu(false);
-
+        client.setReputacio(Reputacio.NORMAL);   
+        }else{
+            client.setActiu(true);
+        }
+             
         // Si no hay duplicados, guardamos el cliente
         return clientRepository.save(client);
     }
@@ -193,7 +199,7 @@ public class ClientService {
     }
     
     public List<Client> getInactiveClients(){
-        return clientRepository.findbyActiu(false);
+        return clientRepository.findByActiu(false);
     }
     
     public void activarClient(String dni){

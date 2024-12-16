@@ -210,7 +210,7 @@ public class Client  {
     private Reputacio reputacio;
     
     @Column(nullable = false)
-    private boolean Actiu;
+    private boolean actiu;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reserva> reserves;

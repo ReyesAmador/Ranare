@@ -47,7 +47,7 @@ public class RegistreController {
         if (client.getDni() != null) {
             client.setDni(client.getDni().toUpperCase());
         }     
-        Client savedClient = clientService.saveClient(client, false, bindingResult);
+        Client savedClient = clientService.saveClient(client, false, bindingResult, false);
             
         if (savedClient == null || bindingResult.hasErrors()) {
             return "registre-client";  // Si hi ha errors, retorna al formulari
