@@ -84,6 +84,12 @@
 
                                 Veure més
                             </button>
+                            <a th:if="${vehicle.pdfId != null}"
+                               th:href="@{/admin/vehicles/pdf/{id}(id=${vehicle.pdfId})}"
+                               class="btn btn-sm btn-danger" target="_blank">
+                                Descarregar PDF
+                            </a>
+                            <span th:if="${vehicle.pdfId == null}">No disponible</span>
                         </td>
                         </tr>
                         <tr th:each="vehicle : ${vehicles}" th:id="'details-' + ${vehicle.matricula}" class="details-row">
