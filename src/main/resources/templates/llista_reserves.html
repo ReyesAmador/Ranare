@@ -34,6 +34,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <th>Data Fin</th>
                         <th>Fiança</th>
                         <th>Estat</th>
+                        <th>Lliurament</th>
+                        <th>Retorn</th>
                         <th>Accions</th>
                     </tr>
                 </thead>
@@ -42,19 +44,27 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                         <td th:text="${reserva.id}"></td>
                         <td th:text="${reserva.client.nom}"></td>
                         <td th:text="${reserva.vehicle.nomVehicle}"></td>
-                        <td th:text="${reserva.costReserva}"></td>
+                        <td th:text="${reserva.costReserva + ' €'}"></td>
                         <td th:if="${reserva.dataInici != null}" th:text="${#temporals.format(reserva.dataInici, 'dd-MM-yyyy HH:mm')}"></td>
                         <td th:if="${reserva.dataFin != null}" th:text="${#temporals.format(reserva.dataFin, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td th:text="${reserva.fianca}"></td>
+                        <td th:text="${reserva.fianca + ' €'}"></td>
                         <td th:text="${reserva.estat}"></td>
+                        <!-- Marcadores de Lliurament -->
                         <td>
-                            <form th:action="@{/admin/reserves/anular}" method="post">
-                                <input type="hidden" name="id" th:value="${reserva.id}" />
-                                <button type="submit" onclick="return confirm('Estàs segur que vols anul·lar aquesta reserva?')">Anul·lar</button>
-                            </form>
-                        <td>
-                            <a th:href="@{/admin/reserves/detall/{id}(id=${reserva.id})}" class="btn btn-primary">detalls</a>
+                            <span th:if="${reserva.lliurament}" style="color: green;">Lliurat</span>
+                            <span th:if="${!reserva.lliurament}" style="color: red;">No Lliurat</span>
                         </td>
+                        <!-- Marcadores de Retorn -->
+                        <td>
+                            <span th:if="${reserva.devolucio}" style="color: green;">Retornat</span>
+                            <span th:if="${!reserva.devolucio}" style="color: red;">No Retornat</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/admin/reserves/anular}" method="post" style="display:inline;">
+                                <input type="hidden" name="id" th:value="${reserva.id}" />
+                                <button type="submit" onclick="return confirm('Estàs segur que vols anul·lar aquesta reserva?')" class="btn btn-danger">Anul·lar</button>
+                            </form>
+                            <a th:href="@{/admin/reserves/detall/{id}(id=${reserva.id})}" class="btn btn-primary">Detalls</a>
                         </td>
                     </tr>
                 </tbody>
