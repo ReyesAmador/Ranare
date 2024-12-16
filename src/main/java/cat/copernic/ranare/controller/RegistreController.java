@@ -46,30 +46,28 @@ public class RegistreController {
         
         if (client.getDni() != null) {
             client.setDni(client.getDni().toUpperCase());
-        }
-        
-        try{
-            Client savedClient = clientService.saveClient(client, false, bindingResult);
+        }     
+        Client savedClient = clientService.saveClient(client, false, bindingResult);
             
-            if (savedClient == null || bindingResult.hasErrors()) {
-                return "registre-client";  // Si hay errores de duplicados, vuelve al formulario
-            }
-        }catch (DuplicateResourceException e) {
-            // Manejar errores de duplicados
-            if (e.getMessage().contains("DNI")) {
-                bindingResult.rejectValue("dni", "duplicate.dni", e.getMessage());
-            }
-            if (e.getMessage().contains("email")) {
-                bindingResult.rejectValue("email", "duplicate.email", e.getMessage());
-            }
-            if (e.getMessage().contains("username)")){
-                bindingResult.rejectValue("username", "duplicate.username", e.getMessage());
-            }
-            return "registre-client";  // Vuelve al formulario si hay errores
+        if (savedClient == null || bindingResult.hasErrors()) {
+            return "registre-client";  // Si hi ha errors, retorna al formulari
         }
-        
+            
         return "redirect:/public/registre/pas2";
     }
     
+    @GetMapping("/pas2")
+    public String showForm2(){
+        return "registre-client-documents";
+    }
     
+    @PostMapping("/pas2")
+    public String finalitzarRegistre(){
+        return "redirect:/public/registre/success";
+    }
+    
+    @GetMapping("/success")
+    public String mostrarSuccess(){
+        return "success";
+    }
 }

@@ -88,6 +88,9 @@ public class ClientService {
         if (bindingResult.hasErrors()) {
             return null; // Si hay errores de validación, no guardamos el cliente
         }
+        
+        //per defecte es crea l'usuari amb l'atribut activat en false perquè l'admin l'ha d'activar
+        client.setActiu(false);
 
         // Si no hay duplicados, guardamos el cliente
         return clientRepository.save(client);
@@ -189,35 +192,17 @@ public class ClientService {
         return clientRepository.findByEmail(email).isPresent();
     }
     
-    public String guardarDocumento(MultipartFile document, String clientDni) {
-    try {
-        // Crear el documento a guardar en MongoDB
-        DocumentacioUsuari2 doc = new DocumentacioUsuari2();
-        doc.setNom(document.getOriginalFilename());
-        doc.setContingut(document.getBytes());
-        doc.setTipusContingut(document.getContentType());
-        doc.setDataPujada(LocalDateTime.now());
-
-        // Guardar el documento en MongoDB
-        DocumentacioUsuari2 emmagatzemat = mongoTemplate.save(doc);
-
-        // Recuperar el cliente y actualizar su lista de documentos
-        Optional<Client> optionalClient = clientRepository.findById(clientDni);
-        if (optionalClient.isPresent()) {
-            Client client = optionalClient.get();
-            if (client.getDocuments() == null) {
-                client.setDocuments(new ArrayList<>());
-            }
-            client.getDocuments().add(almacenado.getId());
-            clientRepository.save(client); // Guardar cliente con la referencia actualizada
+    public List<Client> getInactiveClients(){
+        return clientRepository.findbyActiu(false);
+    }
+    
+    public void activarClient(String dni){
+        Optional<Client> clientExisteix = clientRepository.findById(dni);
+        if(clientExisteix.isPresent()){
+            Client client = clientExisteix.get();
+            client.setActiu(true);
+            clientRepository.save(client);
         }
-
-        // Retornar el ID del documento
-        return almacenado.getId();
-    } catch (IOException e) {
-        throw new RuntimeException("Error al guardar el documento", e);
     }
-    }
-
 
 }

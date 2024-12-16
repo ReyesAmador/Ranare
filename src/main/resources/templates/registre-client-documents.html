@@ -10,11 +10,11 @@
         <form th:action="@{/public/registre/pas2}" method="post" enctype="multipart/form-data">
             <div class="mb-3">
                 <label for="dniImatge" class="form-label">Imatge del DNI</label>
-                <input type="file" class="form-control" id="dniImatge" name="dniImatge" required />
+                <input type="file" class="form-control" id="dniImatge" name="dniImatge" />
             </div>
             <div class="mb-3">
                 <label for="llicenciaImg" class="form-label">Imatge llicència de conduir</label>
-                <input type="file" class="form-control" id="llicenciaImg" name="llicenciaImg" required />
+                <input type="file" class="form-control" id="llicenciaImg" name="llicenciaImg" />
             </div>
             <button type="submit" class="btn btn-primary">Finalitzar registre</button>
         </form>
