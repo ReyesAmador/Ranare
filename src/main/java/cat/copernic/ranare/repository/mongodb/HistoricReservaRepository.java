@@ -16,4 +16,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface HistoricReservaRepository extends MongoRepository<HistoricReserva, String> {
     List<HistoricReserva> findByIdReserva(String idReserva);
+    
 }
