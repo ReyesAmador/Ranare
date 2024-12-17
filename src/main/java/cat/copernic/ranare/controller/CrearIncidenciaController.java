@@ -6,7 +6,7 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Incidencia;
 import cat.copernic.ranare.entity.mysql.Vehicle;
-import cat.copernic.ranare.repository.mongodb.ImatgesIncidenciaRepository;
+import cat.copernic.ranare.service.mongodb.ImatgesIncidenciaService;
 import cat.copernic.ranare.service.mysql.IncidenciaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
@@ -41,7 +41,7 @@ public class CrearIncidenciaController {
     private VehicleService vehicleService;
     
     @Autowired
-    private ImatgesIncidenciaRepository imatgesIncidenciaRepository;
+    private ImatgesIncidenciaService imatgesIncidenciaService;
 
     // Método para mostrar el formulario de crear incidencia
     @GetMapping("/crear-incidencia")
@@ -83,10 +83,7 @@ public class CrearIncidenciaController {
         List<String> imatgesIds = new ArrayList<>();
         if(imatges != null && imatges.length > 0){
             try{
-                for(MultipartFile imatge : imatges){
-                    String imatgeId = imatgesIncidenciaRepository.storeImage(imatge);
-                    imatgesIds.add(imatgeId);
-                }
+                imatgesIds = imatgesIncidenciaService.storeImages(imatges);
             } catch (IOException e) {
                 redirectAttributes.addFlashAttribute("error", "Error al guardar las imágenes: " + e.getMessage());
                 return "redirect:/admin/vehicles/crear-incidencia";
