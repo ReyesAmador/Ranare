@@ -5,6 +5,7 @@
 package cat.copernic.ranare.repository.mysql;
 
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Rol;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -41,5 +42,7 @@ public interface ClientRepository extends JpaRepository<Client, String> {
            "LOWER(c.cognoms) LIKE %:query% OR " +
            "LOWER(c.nacionalitat) LIKE %:query%")
     List<Client> searchByFilters(@Param("query") String query);
+    
+    boolean existsByUsername(String username);
      
 }

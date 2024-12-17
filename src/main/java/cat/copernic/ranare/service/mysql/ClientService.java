@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -33,6 +34,9 @@ public class ClientService {
 
     @Autowired
     private ClientRepository clientRepository;
+    
+   @Autowired
+   private PasswordEncoder passwordEncoder;
 
     /**
      * Desa un client a la base de dades.
@@ -88,6 +92,11 @@ public class ClientService {
         // Si se encontraron errores, no procedemos a guardar el cliente
         if (bindingResult.hasErrors()) {
             return null; // Si hay errores de validación, no guardamos el cliente
+        }
+        
+        //encriptem la password
+        if(client.getPwd() != null && !client.getPwd().isEmpty()){
+            client.setPwd(passwordEncoder.encode(client.getPwd()));
         }
         
         //si es crea un usuari sense que siguie l'admin, l'usuari apareix amb reputació normal i client desactivat, sino es activat
@@ -209,6 +218,10 @@ public class ClientService {
             client.setActiu(true);
             clientRepository.save(client);
         }
+    }
+    
+    public Optional<Client> findByUsername(String username) {
+        return clientRepository.findByUsername(username);
     }
 
 }

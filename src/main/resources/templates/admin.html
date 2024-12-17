@@ -218,6 +218,11 @@
                 <div class="col">
                     <h1 class="mb-0" style="font-size: 24px;">RANARE</h1>
                 </div>
+                <div class="col text-end">
+                <form th:action="@{/public/logout}" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-link text-white" style="text-decoration: none;">Tancar sessió</button>
+                </form>
+            </div>
             </header>
             <div class="row">
                 <!-- Menú lateral -->

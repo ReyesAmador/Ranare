@@ -156,4 +156,13 @@ public class AgentService {
     public boolean existeixEmail(String email){
         return agentRepository.findByEmail(email).isPresent();
     }
+    
+    public boolean isAdmin(Agent agent){
+
+        return Rol.ADMIN.equals(agent.getRol());
+    }
+    
+    public Optional<Agent> findByUsername(String username) {
+        return agentRepository.findByUsername(username);
+    }
 }
