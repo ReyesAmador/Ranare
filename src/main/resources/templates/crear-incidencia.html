@@ -16,7 +16,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
         <div th:if="${message}" class="alert alert-success" role="alert">
             <p th:text="${message}"></p>
         </div>
-        <form th:action="@{/admin/vehicles/crear-incidencia}" th:object="${incidencia}" method="post">
+        <form th:action="@{/admin/vehicles/crear-incidencia}" th:object="${incidencia}" method="post" enctype="multipart/form-data">
             <input type="hidden" th:field="*{idIncidencia}"/>
             
             <div class="form-row">
@@ -72,6 +72,13 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     <input type="text" class="form-control" id="documentsIncidenciaId" placeholder="ID dels documents" th:field="*{documentsIncidenciaId}">
                 </div>
             </div>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="imatges">Pujar Imatges</label>
+                    <input type="file" class="form-control-file" id="imatges" name="imatges" multiple accept="image/*">
+                    <small class="form-text text-muted">Podeu pujar múltiples imatges relacionades amb l'incidència.</small>
+                </div>
+            </div>    
             <div>
                 <button type="submit" class="btn btn-primary">Desa</button>
             </div>   

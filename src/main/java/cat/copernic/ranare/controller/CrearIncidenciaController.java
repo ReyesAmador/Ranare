@@ -6,11 +6,16 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Incidencia;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.repository.mongodb.ImatgesIncidenciaRepository;
 import cat.copernic.ranare.service.mysql.IncidenciaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,6 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -33,6 +39,9 @@ public class CrearIncidenciaController {
 
     @Autowired
     private VehicleService vehicleService;
+    
+    @Autowired
+    private ImatgesIncidenciaRepository imatgesIncidenciaRepository;
 
     // Método para mostrar el formulario de crear incidencia
     @GetMapping("/crear-incidencia")
@@ -57,7 +66,11 @@ public class CrearIncidenciaController {
     
     // Método para manejar el formulario de creación de incidencia
     @PostMapping("/crear-incidencia")
-    public String createOrUpdateIncidencia(@Valid Incidencia incidencia,BindingResult result, RedirectAttributes redirectAttributes, Model model) {
+    public String createOrUpdateIncidencia(@Valid Incidencia incidencia, 
+                                           BindingResult result,
+                                           @RequestParam("imatges") MultipartFile[] imatges,
+                                           RedirectAttributes redirectAttributes,
+                                           Model model) {
         
         if(result.hasErrors()) {
             List<Vehicle> vehicles = vehicleService.getAllVehicles();
@@ -65,6 +78,19 @@ public class CrearIncidenciaController {
             model.addAttribute("title", "Crear indicència");
             model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
             return "admin";
+        }
+        
+        List<String> imatgesIds = new ArrayList<>();
+        if(imatges != null && imatges.length > 0){
+            try{
+                for(MultipartFile imatge : imatges){
+                    String imatgeId = imatgesIncidenciaRepository.storeImage(imatge);
+                    imatgesIds.add(imatgeId);
+                }
+            } catch (IOException e) {
+                redirectAttributes.addFlashAttribute("error", "Error al guardar las imágenes: " + e.getMessage());
+                return "redirect:/admin/vehicles/crear-incidencia";
+            }
         }
         
         if(incidencia.getIdIncidencia() != null){
@@ -78,6 +104,7 @@ public class CrearIncidenciaController {
                 existingIncidencia.setCost(incidencia.getCost());
                 existingIncidencia.setDocumentsIncidenciaId(incidencia.getDocumentsIncidenciaId());
                 existingIncidencia.setVehicle(incidencia.getVehicle());
+                existingIncidencia.setImatgesIncidenciesIDs(imatgesIds);
                 
                 incidenciaService.save(existingIncidencia);
                 redirectAttributes.addFlashAttribute("message","La incidència s'ha actualitzat correctament.");          
@@ -85,10 +112,10 @@ public class CrearIncidenciaController {
                 redirectAttributes.addFlashAttribute("error","Error: La incidència no existeix.");
             }
         }else{
+            incidencia.setImatgesIncidenciesIDs(imatgesIds);
             incidenciaService.save(incidencia); 
             redirectAttributes.addFlashAttribute("message", "La incidència s'ha creat correctament.");
         }
-        return "redirect:/admin/vehicles/crear-incidencia";
-        
+        return "redirect:/admin/vehicles/crear-incidencia";  
     }
 }

@@ -53,6 +53,7 @@
                         <td th:text="${incidencia.culpabilitat ? 'Usuari' : 'Vehicle'}"></td>
                         <td>
                             <a th:href="@{/admin/vehicles/incidencies/modificar/{id}(id=${incidencia.idIncidencia})}" class="btn btn-sm btn-warning">Modificar</a>
+                            <a th:href="@{/admin/vehicles/incidencies/visualitzar/{id}(id=${incidencia.idIncidencia})}" class="btn btn-sm btn-info">Visualitzar Imatges</a>
                         </td>
                     </tr>
                     <tr th:if="${#lists.isEmpty(incidencies)}">
