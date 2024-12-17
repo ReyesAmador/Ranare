@@ -17,9 +17,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DocumentacioUsuariRepository extends MongoRepository<DocumentacioUsuari, String> {
 
-    // Obtener documentos activos de un usuario
-    List<DocumentacioUsuari> findByUserIdAndDocumentState(String userId, DocumentState state);
+    List<DocumentacioUsuari> findByUserIdAndDocumentState(String userId, DocumentState documentState);
 
-    // Obtener todos los documentos (incluyendo caducados) de un usuario
     List<DocumentacioUsuari> findByUserId(String userId);
 }

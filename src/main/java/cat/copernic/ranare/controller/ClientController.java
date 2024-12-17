@@ -356,11 +356,11 @@ public class ClientController {
         return "redirect:/admin/clients/inactius";
     }
 
-    @GetMapping("/admin/clients/{id}/documents")
-    public String veureDocumentacioClient(@PathVariable("id") String userId, Model model) {
-        List<DocumentacioUsuari> documents = documentacioUsuariService.obtenirDocumentsActiusPerUsuari(userId);
+    @GetMapping("/admin/clients/{dni}/documents")
+    public String veureDocumentacioClient(@PathVariable("dni") String dni, Model model) {
+        List<DocumentacioUsuari> documents = documentacioUsuariService.obtenirDocumentsActiusPerUsuari(dni);
 
-        DocumentacioUsuari dni = documents.stream()
+        DocumentacioUsuari dniDocument = documents.stream()
                 .filter(doc -> doc.getDocumentType() == DocumentType.DNI)
                 .findFirst()
                 .orElse(null);
@@ -370,18 +370,42 @@ public class ClientController {
                 .findFirst()
                 .orElse(null);
 
-        model.addAttribute("dni", dni);
+        model.addAttribute("dniDocument", dniDocument);
         model.addAttribute("license", license);
 
         return "admin/detalls_client";
     }
 
+    @GetMapping("/{id}/documents/dni/new")
+    public String afegirDocumentacioDNI(@PathVariable("id") String clientId, Model model) {
+        // Obtener el cliente
+        Optional<Client> client = clientService.getClientById(clientId);
 
+        // Verificar si el cliente existe
+        if (client.isEmpty()) {  // Cambiado a isEmpty() en lugar de client == null
+            model.addAttribute("error", "Client no trobat.");
+            return "redirect:/admin/clients";  // Redirige a la lista de clientes o a una página de error
+        }
 
-    @GetMapping("/{id}/documents/new")
-    public String afegirNovaDocumentacio(@PathVariable("id") String clientId, Model model) {
-        model.addAttribute("client", clientService.getClientById(clientId));
-        return "admin/add_documentation";
+        model.addAttribute("client", client.get());  // .get() para acceder al cliente dentro del Optional
+        model.addAttribute("documentType", "DNI");
+        return "admin/afegir_documentacio";
+    }
+
+    @GetMapping("/{id}/documents/license/new")
+    public String afegirDocumentacioLlicencia(@PathVariable("id") String clientId, Model model) {
+        // Obtener el cliente
+        Optional<Client> client = clientService.getClientById(clientId);
+
+        // Verificar si el cliente existe
+        if (client.isEmpty()) {  // Cambiado a isEmpty() en lugar de client == null
+            model.addAttribute("error", "Client no trobat.");
+            return "redirect:/admin/clients";  // Redirige a la lista de clientes o a una página de error
+        }
+
+        model.addAttribute("client", client.get());  // .get() para acceder al cliente dentro del Optional
+        model.addAttribute("documentType", "LLICENCIA");
+        return "admin/afegir_documentacio";
     }
 
     @PostMapping("/{id}/documents/save")
@@ -389,16 +413,43 @@ public class ClientController {
             @PathVariable("id") String clientId,
             @RequestParam("documentType") String documentType,
             @RequestParam("frontFile") MultipartFile frontFile,
-            @RequestParam("backFile") MultipartFile backFile) {
+            @RequestParam("backFile") MultipartFile backFile,
+            RedirectAttributes redirectAttributes) {
 
-        documentacioUsuariService.afegirDocument(clientId, documentType, frontFile, backFile);
-        return "redirect:/admin/clients/" + clientId;
+        try {
+            // Validar el tipo de documento
+            if (!"DNI".equals(documentType) && !"LLICENCIA".equals(documentType)) {
+                redirectAttributes.addFlashAttribute("error", "Tipus de document no vàlid.");
+                return "redirect:/admin/clients/" + clientId;
+            }
+
+            // Verificar que ambos archivos se han cargado
+            if (frontFile.isEmpty() || backFile.isEmpty()) {
+                redirectAttributes.addFlashAttribute("error", "Els dos arxius (anvers i revers) són obligatoris.");
+                return "redirect:/admin/clients/" + clientId + "/documents/" + documentType.toLowerCase() + "/new";
+            }
+
+            // Llamar al servicio para guardar el documento
+            documentacioUsuariService.afegirDocument(clientId, documentType, frontFile, backFile);
+
+            // Agregar mensaje de éxito y redirigir a la página de detalles del cliente
+            redirectAttributes.addFlashAttribute("success", "Documentació guardada correctament.");
+        } catch (Exception e) {
+            // Manejo de errores y redirección a la página de detalles del cliente
+            redirectAttributes.addFlashAttribute("error", "Error al guardar la documentació: " + e.getMessage());
+        }
+
+        return "redirect:/admin/clients/" + clientId;  // Redirigir al detalle del cliente
     }
 
     @GetMapping("/{id}/documents/historic")
     public String veureHistoricDocumentacio(@PathVariable("id") String userId, Model model) {
-        model.addAttribute("documents", documentacioUsuariService.obtenirHistoricDocuments(userId));
-        model.addAttribute("client", clientService.getClientById(userId));
+        try {
+            model.addAttribute("documents", documentacioUsuariService.obtenirHistoricDocuments(userId));
+            model.addAttribute("client", clientService.getClientById(userId));
+        } catch (Exception e) {
+            model.addAttribute("error", "Error al carregar l'històric de documentació.");
+        }
         return "admin/historic_documents";
     }
 }

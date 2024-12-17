@@ -61,6 +61,7 @@ public class ReservaController {
     @Autowired
     private HistoricReservaService historicReservaService;
 
+
     /**
      * Mostra el formulari per crear una nova reserva.
      *
@@ -267,7 +268,7 @@ public class ReservaController {
     }
 
     @GetMapping("/historic/{id}")
-    public String veureHistoricPerReserva(@PathVariable("id") String idReserva, Model model) {
+    public String veureHistoricPerReserva(@PathVariable("dni") String idReserva, Model model) {
         List<HistoricReserva> historic = historicReservaService.obtenerHistoricPorIdReserva(idReserva);
         if (historic == null || historic.isEmpty()) {
             throw new UnsupportedOperationException("No hi ha dades històriques disponibles.");

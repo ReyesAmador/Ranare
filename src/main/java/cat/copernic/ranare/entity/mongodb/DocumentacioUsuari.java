@@ -74,7 +74,7 @@ public class DocumentacioUsuari {
     private LocalDateTime creationDate;
 
     /**
-     * Estado del documento (Ej.: ACTIVO, CADUCADO).
+     * Estado del documento (Ej.: ACTIVA, CADUCADA).
      */
     private DocumentState documentState;
 
