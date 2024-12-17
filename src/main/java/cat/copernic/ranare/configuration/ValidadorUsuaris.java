@@ -40,7 +40,7 @@ public class ValidadorUsuaris implements UserDetailsService {
         
         if(agentExisteix.isPresent()){
             Agent agent = agentExisteix.get();
-            if(agent.isActiu()){
+            if(!agent.isActiu()){
                 throw new AgentNotFoundException("El compte està desactivat");
             }
            return agent;         
@@ -50,7 +50,7 @@ public class ValidadorUsuaris implements UserDetailsService {
         
         if(clientExisteix.isPresent()){
             Client client = clientExisteix.get();
-            if(client.isActiu()){
+            if(!client.isActiu()){
                 throw new AgentNotFoundException("El compte està desactivat");
             }
             return client;

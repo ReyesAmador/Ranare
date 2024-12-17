@@ -5,14 +5,8 @@
 package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.configuration.ValidadorUsuaris;
-import cat.copernic.ranare.entity.mysql.Agent;
-import cat.copernic.ranare.entity.mysql.Client;
-import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
-import cat.copernic.ranare.service.mysql.AgentService;
-import cat.copernic.ranare.service.mysql.ClientService;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,7 +44,7 @@ public class LoginController {
                 return "redirect:/admin/clients";
             }
             
-            return "redirect:/index";
+            return "redirect:/";
         }catch(ClientNotFoundException e){
             model.addAttribute("error", e.getMessage());
             return "login";
