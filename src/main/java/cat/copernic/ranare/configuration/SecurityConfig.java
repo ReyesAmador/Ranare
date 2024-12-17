@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
 /**
  *
@@ -118,6 +119,10 @@ public class SecurityConfig{
     }
     
     @Bean
+    public AuthenticationFailureHandler autentificacioPersonalitzadaFallida(){
+        return new AutentificacioFallidaHandler();
+    }
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Para cifrar las contraseñas
     }
@@ -132,8 +137,17 @@ public class SecurityConfig{
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
             )
-        .formLogin(form -> form.permitAll().defaultSuccessUrl("/admin/clients"))
-        .logout(logout -> logout.logoutSuccessUrl("/public/login"));
+        .formLogin(form -> form.loginPage("/public/login")
+                .loginProcessingUrl("/public/login")
+                .defaultSuccessUrl("/public", true)
+                .failureHandler(autentificacioPersonalitzadaFallida())
+                .permitAll())
+                .logout(logout -> logout
+                .logoutUrl("/public/logout")
+                .logoutSuccessUrl("/public/login?logout=true")
+                .invalidateHttpSession(true)
+                .clearAuthentication(true)
+                .permitAll());
 
         return http.build();
     }

@@ -6,8 +6,8 @@ package cat.copernic.ranare.configuration;
 
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
-import cat.copernic.ranare.exceptions.AgentNotFoundException;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
+import cat.copernic.ranare.exceptions.UsuariNoActivatException;
 import cat.copernic.ranare.repository.mysql.AgentRepository;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.Optional;
@@ -41,7 +41,7 @@ public class ValidadorUsuaris implements UserDetailsService {
         if(agentExisteix.isPresent()){
             Agent agent = agentExisteix.get();
             if(!agent.isActiu()){
-                throw new AgentNotFoundException("El compte està desactivat");
+                throw new UsuariNoActivatException("El compte està desactivat");
             }
            return agent;         
         }
@@ -51,7 +51,7 @@ public class ValidadorUsuaris implements UserDetailsService {
         if(clientExisteix.isPresent()){
             Client client = clientExisteix.get();
             if(!client.isActiu()){
-                throw new AgentNotFoundException("El compte està desactivat");
+                throw new UsuariNoActivatException("El compte està desactivat");
             }
             return client;
         }

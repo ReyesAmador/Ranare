@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
  * @author reyes
  */
 @Controller
-public class LoginController {
-
-    @GetMapping("/public/login")
-    public String paginaLogin(){
-        return "login";
+public class HomeController {
+    
+    @GetMapping("/public")
+    public String mostrarHome(){
+        return "index";
     }
 }
