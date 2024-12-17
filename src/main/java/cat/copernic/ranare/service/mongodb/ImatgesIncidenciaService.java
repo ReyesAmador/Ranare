@@ -5,10 +5,15 @@
 package cat.copernic.ranare.service.mongodb;
 
 import cat.copernic.ranare.repository.mongodb.ImatgesIncidenciaRepository;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,6 +27,9 @@ public class ImatgesIncidenciaService {
     @Autowired
     private ImatgesIncidenciaRepository imatgesIncidenciaRepository;
     
+    @Autowired
+    private GridFsTemplate gridFsTemplate;
+    
     public List<String> storeImages(MultipartFile[] imatges) throws IOException {
         List<String> imatgesIds = new ArrayList<>();
         
@@ -33,5 +41,20 @@ public class ImatgesIncidenciaService {
         }
         
         return imatgesIds;
+    }
+    
+    public List<String> filterImatgesBuides(List<String> imatgesIds){
+        List<String> validImatgesIds = new ArrayList<>();
+        
+        for(String imageId : imatgesIds){
+            ObjectId objectId = new ObjectId(imageId);
+            
+            GridFSFile file = gridFsTemplate.findOne(Query.query(Criteria.where("_id").is(objectId)));
+            
+            if(file != null && file.getLength() > 0){
+                validImatgesIds.add(imageId);
+            }
+        }
+        return validImatgesIds;
     }
 }

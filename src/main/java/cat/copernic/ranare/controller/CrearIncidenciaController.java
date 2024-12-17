@@ -81,18 +81,29 @@ public class CrearIncidenciaController {
         }
         
         List<String> imatgesIds = new ArrayList<>();
+        
         if(imatges != null && imatges.length > 0){
             try{
                 imatgesIds = imatgesIncidenciaService.storeImages(imatges);
+                imatgesIds = imatgesIncidenciaService.filterImatgesBuides(imatgesIds);
             } catch (IOException e) {
-                redirectAttributes.addFlashAttribute("error", "Error al guardar las imágenes: " + e.getMessage());
+                redirectAttributes.addFlashAttribute("error", "Error al guardar les imatges: " + e.getMessage());
                 return "redirect:/admin/vehicles/crear-incidencia";
             }
         }
         
         if(incidencia.getIdIncidencia() != null){
             Incidencia existingIncidencia = incidenciaService.findById(incidencia.getIdIncidencia());
+            
             if(existingIncidencia != null){
+                List<String> existingImatges = existingIncidencia.getImatgesIncidenciesIDs();
+                
+                if(imatgesIds.isEmpty()){
+                    imatgesIds = existingImatges;
+                }else{
+                    imatgesIds.addAll(existingImatges);
+                }
+                
                 existingIncidencia.setCulpabilitat(incidencia.isCulpabilitat());
                 existingIncidencia.setEstat(incidencia.getEstat());
                 existingIncidencia.setMotiu(incidencia.getMotiu());
@@ -101,7 +112,10 @@ public class CrearIncidenciaController {
                 existingIncidencia.setCost(incidencia.getCost());
                 existingIncidencia.setDocumentsIncidenciaId(incidencia.getDocumentsIncidenciaId());
                 existingIncidencia.setVehicle(incidencia.getVehicle());
-                existingIncidencia.setImatgesIncidenciesIDs(imatgesIds);
+                
+                if(!imatgesIds.isEmpty()){
+                    existingIncidencia.setImatgesIncidenciesIDs(imatgesIds);
+                }
                 
                 incidenciaService.save(existingIncidencia);
                 redirectAttributes.addFlashAttribute("message","La incidència s'ha actualitzat correctament.");          
