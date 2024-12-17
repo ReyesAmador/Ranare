@@ -130,9 +130,10 @@ public class SecurityConfig{
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(requests -> requests
+                .requestMatchers("/admin/clients/inactius").hasRole("ADMIN")
                 .requestMatchers("/admin/clients/**").hasAnyRole("ADMIN", "AGENT")
                 .requestMatchers("/admin/vehicles/**").hasAnyRole("ADMIN", "AGENT")
-                .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")
+                .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")               
                 .requestMatchers("/admin/agents/**").hasRole("ADMIN")
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()

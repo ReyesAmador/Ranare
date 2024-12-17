@@ -236,10 +236,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="/admin/vehicles" th:href="@{/admin/vehicles}">Vehicles</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" th:if="${#authentication.principal.rol.name() == 'ADMIN'}">
                                 <a class="nav-link" href="/admin/agents" th:href="@{/admin/agents}">Agents</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item" th:if="${#authentication.principal.rol.name() == 'ADMIN'}">
                                 <a class="nav-link" href="/admin/localitzacio" th:href="@{/admin/localitzacio}">Localitzacions</a>
                             </li>
                             <li class="nav-item">
