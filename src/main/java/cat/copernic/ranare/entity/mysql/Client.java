@@ -173,5 +173,7 @@ public class Client  {
     @Column(nullable = true)
     private String referenciaDocumentacio;*/
     
+    
+    
 }  
 

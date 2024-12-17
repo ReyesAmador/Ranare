@@ -4,8 +4,10 @@
  */
 package cat.copernic.ranare.controller;
 
+import cat.copernic.ranare.entity.mongodb.DocumentacioUsuari;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.entity.mysql.Reserva;
+import cat.copernic.ranare.enums.DocumentType;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 
@@ -16,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import cat.copernic.ranare.response.ErrorResponse;
-import cat.copernic.ranare.service.mysql.ReservaService;
+import cat.copernic.ranare.service.mongodb.DocumentacioUsuariService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 /**
@@ -51,9 +54,9 @@ public class ClientController {
 
     @Autowired
     private ClientService clientService;
-    
+
     @Autowired
-    private ReservaService reservaService;
+    private DocumentacioUsuariService documentacioUsuariService;
 
     /**
      * Processa el formulari de creació de clients o agents. Gestiona errors de
@@ -353,5 +356,49 @@ public class ClientController {
         return "redirect:/admin/clients/inactius";
     }
 
+    @GetMapping("/admin/clients/{id}/documents")
+    public String veureDocumentacioClient(@PathVariable("id") String userId, Model model) {
+        List<DocumentacioUsuari> documents = documentacioUsuariService.obtenirDocumentsActiusPerUsuari(userId);
 
+        DocumentacioUsuari dni = documents.stream()
+                .filter(doc -> doc.getDocumentType() == DocumentType.DNI)
+                .findFirst()
+                .orElse(null);
+
+        DocumentacioUsuari license = documents.stream()
+                .filter(doc -> doc.getDocumentType() == DocumentType.LLICENCIA)
+                .findFirst()
+                .orElse(null);
+
+        model.addAttribute("dni", dni);
+        model.addAttribute("license", license);
+
+        return "admin/detalls_client";
+    }
+
+
+
+    @GetMapping("/{id}/documents/new")
+    public String afegirNovaDocumentacio(@PathVariable("id") String clientId, Model model) {
+        model.addAttribute("client", clientService.getClientById(clientId));
+        return "admin/add_documentation";
+    }
+
+    @PostMapping("/{id}/documents/save")
+    public String guardarNovaDocumentacio(
+            @PathVariable("id") String clientId,
+            @RequestParam("documentType") String documentType,
+            @RequestParam("frontFile") MultipartFile frontFile,
+            @RequestParam("backFile") MultipartFile backFile) {
+
+        documentacioUsuariService.afegirDocument(clientId, documentType, frontFile, backFile);
+        return "redirect:/admin/clients/" + clientId;
+    }
+
+    @GetMapping("/{id}/documents/historic")
+    public String veureHistoricDocumentacio(@PathVariable("id") String userId, Model model) {
+        model.addAttribute("documents", documentacioUsuariService.obtenirHistoricDocuments(userId));
+        model.addAttribute("client", clientService.getClientById(userId));
+        return "admin/historic_documents";
+    }
 }
