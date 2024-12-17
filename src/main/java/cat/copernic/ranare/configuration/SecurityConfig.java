@@ -137,7 +137,8 @@ public class SecurityConfig{
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
             )
-        .formLogin(form -> form.loginPage("/public/login")
+        .formLogin(form -> form
+                .loginPage("/public/login")
                 .loginProcessingUrl("/public/login")
                 .defaultSuccessUrl("/public", true)
                 .failureHandler(autentificacioPersonalitzadaFallida())

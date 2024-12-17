@@ -9,6 +9,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
@@ -18,12 +21,22 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
  */
 public class AutentificacioFallidaHandler implements AuthenticationFailureHandler {
 
+    
+    private static final Logger logger = LoggerFactory.getLogger(AutentificacioFallidaHandler.class);
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-        if(exception.getCause() instanceof UsuariNoActivatException){
-            response.sendRedirect("/login?error=desactivat");
+        if(exception instanceof InternalAuthenticationServiceException){
+            if(exception.getCause() instanceof UsuariNoActivatException){
+                logger.info("Redirigiendo a /public/login?error=desactivat");
+                response.sendRedirect("/public/login?error=desactivat");
+            }else{
+                logger.info("Redirigiendo a /public/login?error");
+                response.sendRedirect("/public/login?error");
+            }
+            
         }else{
-            response.sendRedirect("/login?error");
+            logger.info("Redirigiendo a /public/login?error");
+            response.sendRedirect("/public/login?error");
         }
             
     }
