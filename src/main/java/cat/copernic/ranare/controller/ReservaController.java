@@ -4,10 +4,13 @@
  */
 package cat.copernic.ranare.controller;
 
+import cat.copernic.ranare.entity.mongodb.HistoricReserva;
 import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.entity.mysql.VehicleDTO;
+import cat.copernic.ranare.service.mongodb.HistoricReservaService;
+
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
@@ -55,6 +58,9 @@ public class ReservaController {
     @Autowired
     private VehicleService vehicleService;
 
+    @Autowired
+    private HistoricReservaService historicReservaService;
+
     /**
      * Mostra el formulari per crear una nova reserva.
      *
@@ -85,6 +91,7 @@ public class ReservaController {
      * @param result Resultat de la validació del formulari.
      * @param redirectAttributes Objecte per afegir missatges d'estat a les
      * redireccions.
+     * @param model
      * @return Redirecció a la pàgina de llista de reserves.
      */
     @PostMapping("/crear")
@@ -126,9 +133,13 @@ public class ReservaController {
         reserva.setFianca(fianca);
         reserva.setCostReserva(costReserva);
 
-        // Guardar reserva
-        reservaService.crearReserva(reserva);
-        redirectAttributes.addFlashAttribute("missatge", "Reserva creada correctament.");
+        try {
+            reservaService.crearReserva(reserva); // Este método debe registrar en el histórico
+            redirectAttributes.addFlashAttribute("missatge", "Reserva creada correctament.");
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", e.getMessage());
+            return "redirect:/admin/reserves/nova";
+        }
         return "redirect:/admin/reserves";
     }
 
@@ -241,5 +252,23 @@ public class ReservaController {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
         }
         return "redirect:/admin/reserves/detall/" + id;
+    }
+
+    @GetMapping("/historic")
+    public String mostrarHistoric(Model model) {
+        List<HistoricReserva> historic = historicReservaService.getAllHistoricReserva();
+        model.addAttribute("historic", historic);
+        return "historic_reserva"; // Nombre del archivo HTML Thymeleaf
+    }
+
+    @GetMapping("/historic/{id}")
+    public String veureHistoricPerReserva(@PathVariable("id") String idReserva, Model model) {
+        List<HistoricReserva> historic = historicReservaService.obtenerHistoricPorIdReserva(idReserva);
+        if (historic == null || historic.isEmpty()) {
+            throw new UnsupportedOperationException("No hi ha dades històriques disponibles.");
+        }
+        model.addAttribute("historic", historic);
+        model.addAttribute("idReserva", idReserva); // Mostrar en la vista
+        return "historic_reserva";
     }
 }
