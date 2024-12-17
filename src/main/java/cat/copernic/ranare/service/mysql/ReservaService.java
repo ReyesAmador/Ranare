@@ -1,4 +1,4 @@
-/*
+ /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
@@ -10,6 +10,7 @@ import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.enums.EstatReserva;
 import cat.copernic.ranare.enums.Reputacio;
 import cat.copernic.ranare.repository.mysql.ReservaRepository;
+import cat.copernic.ranare.service.mongodb.HistoricReservaService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -27,6 +28,9 @@ public class ReservaService {
     @Autowired
     private ReservaRepository reservaRepository;
 
+    @Autowired
+    private HistoricReservaService historicReservaService;
+
     /**
      * Crea una nova reserva.
      *
@@ -34,9 +38,18 @@ public class ReservaService {
      * @return La reserva guardada.
      */
     public Reserva crearReserva(Reserva reserva) {
-        reserva.setEstat(EstatReserva.ACTIVA);
+        // Asegúrate de que 'estat' no sea nulo
+        if (reserva.getEstat() == null) {
+            reserva.setEstat(EstatReserva.ACTIVA); // Asigna un valor predeterminado
+        }
 
-        return reservaRepository.save(reserva);
+        // Guarda la reserva
+        reserva = reservaRepository.save(reserva);
+
+        // Registrar en el histórico después de guardar
+        historicReservaService.registrarEnHistoric(reserva, "CREAR");
+
+        return reserva;
     }
 
     /**
@@ -70,6 +83,7 @@ public class ReservaService {
             Reserva reserva = reservaOpt.get();
             reserva.setEstat(EstatReserva.ANULADA);
             reservaRepository.save(reserva);
+            historicReservaService.registrarEnHistoric(reserva, "ANULADA");
         }
     }
 
@@ -112,15 +126,15 @@ public class ReservaService {
     public List<Reserva> buscarReservas(String query) {
         return reservaRepository.findReservasByQuery(query);
     }
-    
-    
+
     /**
      * Marca el lliurament de la reserva com a fet.
+     *
      * @param id
      */
-     public void marcarLliurament(Long id) {
+    public void marcarLliurament(Long id) {
         Reserva reserva = reservaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("La reserva amb ID " + id + " no existeix."));
+                .orElseThrow(() -> new IllegalArgumentException("La reserva amb ID " + id + " no existeix."));
 
         if (!EstatReserva.ACTIVA.equals(reserva.getEstat())) {
             throw new IllegalArgumentException("Només es poden lliurar reserves actives.");
@@ -128,11 +142,12 @@ public class ReservaService {
 
         reserva.setLliurament(true);
         reservaRepository.save(reserva);
+        historicReservaService.registrarEnHistoric(reserva, "LLIURAMENT");
     }
 
     public void marcarDevolucio(Long id) {
         Reserva reserva = reservaRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("La reserva amb ID " + id + " no existeix."));
+                .orElseThrow(() -> new IllegalArgumentException("La reserva amb ID " + id + " no existeix."));
 
         if (!reserva.isLliurament()) {
             throw new IllegalArgumentException("El vehicle no s'ha lliurat encara.");
@@ -141,7 +156,7 @@ public class ReservaService {
         reserva.setDevolucio(true);
         reserva.setEstat(EstatReserva.FINALITZADA);
         reservaRepository.save(reserva);
+        historicReservaService.registrarEnHistoric(reserva, "DEVOLUCIO");
     }
-    
 
 }
