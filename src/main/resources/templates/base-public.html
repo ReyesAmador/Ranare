@@ -53,11 +53,6 @@
                 const startDate = urlParams.get('startDate');
                 const endDate = urlParams.get('endDate');
 
-                if (!startDate || !endDate) {
-                    alert("Las fechas de inicio y fin no están presentes en la URL.");
-                    return;
-                }
-
                 // Añadir evento a cada tarjeta de vehículo
                 document.querySelectorAll('.vehicle-card').forEach(card => {
                     card.addEventListener('click', () => {

@@ -16,8 +16,14 @@
                 <div class="col-md-6">
                     <h3>Detalles de la Reserva</h3>
                     <form th:object="${reserva}" th:action="@{/public/vehicles/reserva/confirmar}" method="post">
-                        <p><strong>Nombre del Vehículo:</strong> <span th:text="*{vehicle.nomVehicle}"></span></p>
-                        <p><strong>Cliente:</strong> <span th:text="*{client.username}"></span></p>
+                        <input type="hidden" th:field="*{client.dni}" />
+                        <input type="hidden" th:field="*{vehicle.matricula}" />
+                        <input type="hidden" th:field="*{dataInici}" th:value="${#temporals.format(reserva.dataInici, 'yyyy-MM-dd''T''HH:mm:ss')}" />
+                        <input type="hidden" th:field="*{dataFin}" th:value="${#temporals.format(reserva.dataFin, 'yyyy-MM-dd''T''HH:mm:ss')}" />
+                        <input type="hidden" th:field="*{fianca}" th:value="${deposit}" />
+                        <input type="hidden" th:field="*{costReserva}" th:value="${totalCost}" />
+                        <p><strong>Nombre del Vehículo:</strong> <span th:text="${reserva.vehicle.nomVehicle}"></span></p>
+                        <p><strong>Cliente:</strong> <span th:text="${reserva.client.username}"></span></p>
                         <div>
                             <label for="creditCard" class="form-label">Número de la Tarjeta de Crédito</label>
                             <input type="text" id="creditCard" th:field="*{client.numeroTarjetaCredit}" class="form-control" placeholder="Ingrese su tarjeta de crédito" />
@@ -31,7 +37,7 @@
                     </div>
                     <p><strong>Fecha Inicio:</strong> <span th:text="${#temporals.format(reserva.dataInici, 'dd/MM/yyyy HH:mm')}"></span></p>
                     <p><strong>Fecha Fin:</strong> <span th:text="${#temporals.format(reserva.dataFin, 'dd/MM/yyyy HH:mm')}"></span></p>
-                    <p><strong>Precio/hora:</strong> <span th:text="*{vehicle.preuPerHoraLloguer}"></span> €</p>
+                    <p><strong>Precio/hora:</strong> <span th:text="${reserva.vehicle.preuPerHoraLloguer}"></span> €</p>
                     <p><strong>Precio Total:</strong> <span th:text="${totalPrice}"></span> €</p>
                     <p><strong>Fianza:</strong> <span th:text="${deposit}"></span> €</p>
                     <h5><strong>TOTAL:</strong> <span th:text="${totalCost}"></span> €</h5>
