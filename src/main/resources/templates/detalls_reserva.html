@@ -76,6 +76,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
                     Marcar Devolució
                 </button>
             </form>
+            <a th:href="@{/admin/reserves/historic/{id}(id=${reserva.id})}" class="btn btn-info">Veure Històric</a>
 
             <!-- Botón para volver -->
             <form th:action="@{/admin/reserves}" method="get" style="margin-top: 10px;">

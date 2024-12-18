@@ -7,11 +7,14 @@ package cat.copernic.ranare.entity.mysql;
 
 import cat.copernic.ranare.enums.Reputacio;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
@@ -20,6 +23,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -27,6 +31,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.bson.types.Binary;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 /**
  *
@@ -39,7 +46,7 @@ import org.bson.types.Binary;
 @SuperBuilder
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Client  {
+public class Client implements UserDetails {
 
     /**
      * Document Nacional d'Identitat (DNI). Actua com a clau primària única.
@@ -132,8 +139,10 @@ public class Client  {
     @Size(min = 2, max = 10, message = "{codiPostal.Size}")
     private String codiPostal;
 
-    @Transient
-    private List<Binary> documents;
+    @ElementCollection
+    @CollectionTable(name = "client_documents", joinColumns = @JoinColumn(name = "dni"))
+    @Column(name = "document_reference")
+    private List<String> documents;
 
     /**
      * Número de la targeta de crèdit associada al client.
@@ -147,6 +156,9 @@ public class Client  {
      */
     @Column(nullable = false)
     private Reputacio reputacio;
+    
+    @Column(nullable = false)
+    private boolean actiu;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Reserva> reserves;
@@ -158,12 +170,24 @@ public class Client  {
     @Column(nullable = false)
     private LocalDate dataNaixement;
 
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.pwd;
+    }
+    
+    
+
     /**
      * Referència a la documentació en la base no relacional. Aquest camp pot
      * apuntar al document corresponent a MongoDB (pot ser un ID o una URL).
-     */
+     
     @Column(nullable = true)
-    private String referenciaDocumentacio;
+    private String referenciaDocumentacio;*/
     
 }  
 

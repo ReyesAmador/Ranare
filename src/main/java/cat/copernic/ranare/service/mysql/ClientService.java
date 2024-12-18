@@ -5,6 +5,7 @@
  */
 package cat.copernic.ranare.service.mysql;
 
+import cat.copernic.ranare.entity.mongodb.DocumentacioUsuari2;
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.repository.mysql.ClientRepository;
 import java.util.ArrayList;
@@ -15,8 +16,13 @@ import org.springframework.validation.BindingResult;
 import java.util.List;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Reputacio;
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -28,6 +34,9 @@ public class ClientService {
 
     @Autowired
     private ClientRepository clientRepository;
+    
+   @Autowired
+   private PasswordEncoder passwordEncoder;
 
     /**
      * Desa un client a la base de dades.
@@ -41,7 +50,7 @@ public class ClientService {
      * @return `true` si l'operació és correcta, `false` si falla per
      * duplicació.
      */
-    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult) {
+    public Client saveClient(Client client, boolean isUpdate, BindingResult bindingResult, boolean isAdmin) {
         // Verificación de duplicados sin interrumpir el flujo
         List<String> errorMessages = new ArrayList<>();
 
@@ -84,7 +93,20 @@ public class ClientService {
         if (bindingResult.hasErrors()) {
             return null; // Si hay errores de validación, no guardamos el cliente
         }
-
+        
+        //encriptem la password
+        if(client.getPwd() != null && !client.getPwd().isEmpty()){
+            client.setPwd(passwordEncoder.encode(client.getPwd()));
+        }
+        
+        //si es crea un usuari sense que siguie l'admin, l'usuari apareix amb reputació normal i client desactivat, sino es activat
+        if(!isAdmin){
+        client.setActiu(false);
+        client.setReputacio(Reputacio.NORMAL);   
+        }else{
+            client.setActiu(true);
+        }
+             
         // Si no hay duplicados, guardamos el cliente
         return clientRepository.save(client);
     }
@@ -183,6 +205,23 @@ public class ClientService {
     }
     public boolean existeixEmail(String email) {
         return clientRepository.findByEmail(email).isPresent();
+    }
+    
+    public List<Client> getInactiveClients(){
+        return clientRepository.findByActiu(false);
+    }
+    
+    public void activarClient(String dni){
+        Optional<Client> clientExisteix = clientRepository.findById(dni);
+        if(clientExisteix.isPresent()){
+            Client client = clientExisteix.get();
+            client.setActiu(true);
+            clientRepository.save(client);
+        }
+    }
+    
+    public Optional<Client> findByUsername(String username) {
+        return clientRepository.findByUsername(username);
     }
 
 }

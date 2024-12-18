@@ -6,6 +6,7 @@ package cat.copernic.ranare.repository.mysql;
 
 import cat.copernic.ranare.entity.mysql.Agent;
 import cat.copernic.ranare.entity.mysql.Client;
+import cat.copernic.ranare.enums.Rol;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface AgentRepository extends JpaRepository<Agent, String>{
     @Query("SELECT c FROM Agent c WHERE " +
            "Lower(c.dni) LIKE %:query%")
     List<Agent> buscarDni(@Param("query") String query);
+    
+    boolean existsByUsername(String username);
 }

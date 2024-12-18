@@ -6,7 +6,6 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Localitzacio;
 import cat.copernic.ranare.entity.mysql.Vehicle;
-import cat.copernic.ranare.repository.mysql.LocalitzacioRepository;
 import cat.copernic.ranare.service.mysql.LocalitzacioService;
 import cat.copernic.ranare.service.mysql.VehicleService;
 import jakarta.validation.Valid;
@@ -39,9 +38,6 @@ public class ControladorCrearVehicle {
 
     @Autowired
     LocalitzacioService localitzacioService;
-
-    @Autowired
-    LocalitzacioRepository localitzacioRepository;
 
     @Autowired
     GridFsTemplate gridFsTemplate;
@@ -79,14 +75,24 @@ public class ControladorCrearVehicle {
         }
         
         try{
+            Vehicle existingVehicle = null;
+            
+            if(vehicle.getMatricula() != null){
+                existingVehicle = vehicleService.getVehicleByMatricula(vehicle.getMatricula());
+            }
+            
             if(imatgeFile != null && !imatgeFile.isEmpty()){
                 vehicle.setImatgeVehicle(imatgeFile.getBytes());
+            }else if(existingVehicle != null){
+                vehicle.setImatgeVehicle(existingVehicle.getImatgeVehicle());
             }
             
             if(documentFile != null && !documentFile.isEmpty()){
                 String fileName = StringUtils.cleanPath(documentFile.getOriginalFilename());
                 ObjectId pdfId = gridFsTemplate.store(documentFile.getInputStream(), fileName, documentFile.getContentType());
                 vehicle.setPdfId(pdfId.toString());
+            }else if(existingVehicle != null){
+                vehicle.setPdfId(existingVehicle.getPdfId());
             }
             
             vehicleService.saveVehicle(vehicle);
