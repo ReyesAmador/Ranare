@@ -35,7 +35,7 @@ public class RegistreController {
     }
     
     @PostMapping("/pas1")
-    public String validarPas1(@ModelAttribute @Valid Client client,
+    public String validarPas1(@Valid @ModelAttribute("client") Client client,
             BindingResult bindingResult,
             RedirectAttributes redirectAttributes, Model model){
         
