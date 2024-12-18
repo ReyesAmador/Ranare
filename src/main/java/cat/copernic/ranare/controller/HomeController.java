@@ -24,8 +24,8 @@ public class HomeController {
     
     @GetMapping("/public")
     public String mostrarHome(Model model){
-        List<Vehicle> randomVehicles = vehicleService.getRandomVehicles();
-        model.addAttribute("randomVehicles", randomVehicles);
+        //obtenim 3 vehicles random per mostrar per pantalla
+        model.addAttribute("randomVehicles", vehicleService.getRandomVehicles());
         model.addAttribute("content", "seleccionar-dates :: datesClientContent");
         return "base-public";
     }

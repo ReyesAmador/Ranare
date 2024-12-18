@@ -16,6 +16,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, String> {
-    @Query(value = "SELECT * FROM Vehicle ORDER BY RAND() LIMIT 3, nativeQuery = true")
+    @Query(value = "SELECT * FROM Vehicle ORDER BY RAND() LIMIT 3", nativeQuery = true)
     List<Vehicle> findRandomVehicles();
 }

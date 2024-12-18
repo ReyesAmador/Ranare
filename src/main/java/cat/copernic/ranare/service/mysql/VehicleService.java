@@ -7,6 +7,7 @@ package cat.copernic.ranare.service.mysql;
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.entity.mysql.VehicleDTO;
+import cat.copernic.ranare.entity.mysql.VehicleDto2;
 import cat.copernic.ranare.enums.EstatReserva;
 import cat.copernic.ranare.repository.mysql.ReservaRepository;
 
@@ -14,6 +15,7 @@ import cat.copernic.ranare.repository.mysql.VehicleRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -134,8 +136,16 @@ public class VehicleService {
         return horesSolicitades >= vehicle.getMinimHoresLloguer() && horesSolicitades <= vehicle.getMaximHoresLloguer();
     }
     
-    public List<Vehicle> getRandomVehicles(){
-        return vehicleRepository.findRandomVehicles();
+    public List<VehicleDto2> getRandomVehicles(){
+        return vehicleRepository.findRandomVehicles().stream().map(vehicle -> {
+            String base64Img = Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle());
+            return new VehicleDto2(
+            vehicle.getNomVehicle(),
+            "data:image/jpeg;base64," + base64Img,
+            vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getPreuPerHoraLloguer()
+            );
+        }).collect(Collectors.toList());
     }
 
 }
