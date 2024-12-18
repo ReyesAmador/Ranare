@@ -14,6 +14,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class VehicleDto2 {
+    private String matricula;
     private String nomVehicle;
     private String imgBase64;
     private String codiPostal;

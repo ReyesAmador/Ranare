@@ -125,6 +125,7 @@ public class VehicleService {
         }else{
             return availableVehicles.stream().map(vehicle -> 
             new VehicleDto2(
+            vehicle.getMatricula(),
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle()),
             vehicle.getLocalitzacio().getCodiPostal(),
@@ -150,6 +151,7 @@ public class VehicleService {
         return vehicleRepository.findRandomVehicles().stream().map(vehicle -> {
             String base64Img = Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle());
             return new VehicleDto2(
+            vehicle.getMatricula(),
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + base64Img,
             vehicle.getLocalitzacio().getCodiPostal(),

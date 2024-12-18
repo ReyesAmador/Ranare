@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -222,6 +223,14 @@ public class ClientService {
     
     public Optional<Client> findByUsername(String username) {
         return clientRepository.findByUsername(username);
+    }
+    
+    public Client usuariLogejat(){
+        //obtenir l'usuari desde seguretat
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        
+        //trobar l'usuari a la BBDD
+        return clientRepository.findByUsername(username).orElseThrow(() -> new ClientNotFoundException("Usuari no trobat: " + username));
     }
 
 }

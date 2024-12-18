@@ -9,7 +9,10 @@ import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.enums.EstatReserva;
 import cat.copernic.ranare.enums.Reputacio;
+import cat.copernic.ranare.exceptions.ResourceNotFoundException;
+import cat.copernic.ranare.repository.mysql.ClientRepository;
 import cat.copernic.ranare.repository.mysql.ReservaRepository;
+import cat.copernic.ranare.repository.mysql.VehicleRepository;
 import cat.copernic.ranare.service.mongodb.HistoricReservaService;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -27,6 +30,12 @@ public class ReservaService {
 
     @Autowired
     private ReservaRepository reservaRepository;
+    
+    @Autowired 
+    private VehicleRepository vehicleRepository;
+    
+    @Autowired
+    private ClientRepository clientRepository;
 
     @Autowired
     private HistoricReservaService historicReservaService;
@@ -109,9 +118,21 @@ public class ReservaService {
         double fiancaStandard = vehicle.getFiancaStandard();
         return client.getReputacio() == Reputacio.PREMIUM ? fiancaStandard * 0.75 : fiancaStandard;
     }
+    
+    public long calcularHores(LocalDateTime dataInici, LocalDateTime dataFin){
+        return ChronoUnit.HOURS.between(dataInici, dataFin);
+    }
+    
+    public double calcularCostSenseFianca(LocalDateTime dataInici, LocalDateTime dataFin, double preuPerHoraLloguer){
+        long hores = calcularHores(dataInici, dataFin);
+        if (hores <= 0) {
+            throw new IllegalArgumentException("La data de finalització ha de ser com a mínim 1 hora posterior a la data d'inici.");
+        }
+        return (hores * preuPerHoraLloguer);
+    }
 
     public double calcularCostReserva(LocalDateTime dataInici, LocalDateTime dataFin, double preuPerHoraLloguer, double fianca) {
-        long hores = ChronoUnit.HOURS.between(dataInici, dataFin);
+        long hores = calcularHores(dataInici, dataFin);
         if (hores <= 0) {
             throw new IllegalArgumentException("La data de finalització ha de ser com a mínim 1 hora posterior a la data d'inici.");
         }
@@ -157,6 +178,30 @@ public class ReservaService {
         reserva.setEstat(EstatReserva.FINALITZADA);
         reservaRepository.save(reserva);
         historicReservaService.registrarEnHistoric(reserva, "DEVOLUCIO");
+    }
+    
+    public Reserva prepararReserva(LocalDateTime dataInici, LocalDateTime dataFinal, String matricula, String username){
+        Vehicle vehicle = vehicleRepository.findById(matricula)
+            .orElseThrow(() -> new ResourceNotFoundException("Vehicle no trobat amb matricula: " + matricula));
+        Client client = clientRepository.findByUsername(username)
+            .orElseThrow(() -> new ResourceNotFoundException("Client no trobat: " + username));
+        
+        //calcular preus
+        double preuHora = vehicle.getPreuPerHoraLloguer();
+        double fianca = calcularFianca(client, vehicle);
+        double costReserva = calcularCostReserva(dataInici, dataFinal, preuHora, fianca);
+        double costSenseFianca = calcularCostSenseFianca(dataInici, dataFinal, preuHora);
+        
+        //crear reserva
+        Reserva reserva = new Reserva();
+        reserva.setDataInici(dataInici);
+        reserva.setDataFin(dataFinal);
+        reserva.setVehicle(vehicle);
+        reserva.setClient(client);
+        reserva.setFianca(fianca);
+        reserva.setCostReserva(costReserva);
+        
+        return reserva;
     }
 
 }
