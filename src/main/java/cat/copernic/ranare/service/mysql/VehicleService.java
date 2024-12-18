@@ -133,5 +133,9 @@ public class VehicleService {
         long horesSolicitades = ChronoUnit.HOURS.between(dataInici, dataFin);
         return horesSolicitades >= vehicle.getMinimHoresLloguer() && horesSolicitades <= vehicle.getMaximHoresLloguer();
     }
+    
+    public List<Vehicle> getRandomVehicles(){
+        return vehicleRepository.findRandomVehicles();
+    }
 
 }
