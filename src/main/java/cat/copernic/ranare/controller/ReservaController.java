@@ -194,7 +194,7 @@ public class ReservaController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFin) {
 
         // Obtenir vehicles disponibles per al període
-        List<VehicleDTO> vehiclesDTO = vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin);
+        List<VehicleDTO> vehiclesDTO = (List<VehicleDTO>)vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin, false);
         return vehiclesDTO;
     }
 

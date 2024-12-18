@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    <div th:fragment="datesClientContent">
+    <div th:fragment="vehiclesClientContent">
         <div class="container mt-5">
             <!-- Formulario para seleccionar fechas -->
             <div class="d-flex justify-content-center">
@@ -27,9 +27,9 @@
             </div>
 
             <!-- Sección de vehículos aleatorios -->
-            <h2 class="text-center title-blue mt-5">Vehicles destacats</h2>
+            <h2 class="text-center title-blue mt-5">Vehicles disponibles</h2>
             <div class="row g-4">
-                <div class="col-md-4" th:each="vehicle : ${randomVehicles}">
+                <div class="col-md-4" th:each="vehicle : ${vehiclesDisponibles}">
                     <div class="vehicle-card">
                         <img th:src="${vehicle.imgBase64}" th:alt="${vehicle.nomVehicle}" />
                         <div class="vehicle-card-body">

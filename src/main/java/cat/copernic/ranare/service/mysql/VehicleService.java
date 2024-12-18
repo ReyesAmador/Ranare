@@ -99,7 +99,7 @@ public class VehicleService {
      * @param dataFin Data de finalització de la reserva.
      * @return Una llista de vehicles disponibles en el període.
      */
-    public List<VehicleDTO> filtrarVehiculosDisponiblesDTO(LocalDateTime dataInici, LocalDateTime dataFin) {
+    public List<?> filtrarVehiculosDisponiblesDTO(LocalDateTime dataInici, LocalDateTime dataFin, boolean isPublic) {
         // Obtenir reserves solapades només amb estat ACTIVA
         List<Reserva> overlappingReservations = reservaRepository.findOverlappingReservations(dataInici, dataFin);
 
@@ -116,11 +116,21 @@ public class VehicleService {
                 .filter(Vehicle::isDisponibilitat) // Només disponibles
                 .filter(vehicle -> validarDuracio(dataInici, dataFin, vehicle)) // Validar duració
                 .collect(Collectors.toList());
-
+        
+        if(!isPublic){
         // Convertir a DTO
         return availableVehicles.stream()
                 .map(VehicleDTO::new)
                 .collect(Collectors.toList());
+        }else{
+            return availableVehicles.stream().map(vehicle -> 
+            new VehicleDto2(
+            vehicle.getNomVehicle(),
+            "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle()),
+            vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getPreuPerHoraLloguer()
+            )).collect(Collectors.toList());
+        }
     }
 
     /**
