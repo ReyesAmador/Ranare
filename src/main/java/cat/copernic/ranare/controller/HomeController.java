@@ -16,6 +16,6 @@ public class HomeController {
     
     @GetMapping("/public")
     public String mostrarHome(){
-        return "index";
+        return "base-public";
     }
 }
