@@ -7,6 +7,7 @@ package cat.copernic.ranare.service.mysql;
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.entity.mysql.VehicleDTO;
+import cat.copernic.ranare.entity.mysql.VehicleDto2;
 import cat.copernic.ranare.enums.EstatReserva;
 import cat.copernic.ranare.repository.mysql.ReservaRepository;
 
@@ -14,6 +15,7 @@ import cat.copernic.ranare.repository.mysql.VehicleRepository;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,7 +99,7 @@ public class VehicleService {
      * @param dataFin Data de finalització de la reserva.
      * @return Una llista de vehicles disponibles en el període.
      */
-    public List<VehicleDTO> filtrarVehiculosDisponiblesDTO(LocalDateTime dataInici, LocalDateTime dataFin) {
+    public List<?> filtrarVehiculosDisponiblesDTO(LocalDateTime dataInici, LocalDateTime dataFin, boolean isPublic) {
         // Obtenir reserves solapades només amb estat ACTIVA
         List<Reserva> overlappingReservations = reservaRepository.findOverlappingReservations(dataInici, dataFin);
 
@@ -114,11 +116,21 @@ public class VehicleService {
                 .filter(Vehicle::isDisponibilitat) // Només disponibles
                 .filter(vehicle -> validarDuracio(dataInici, dataFin, vehicle)) // Validar duració
                 .collect(Collectors.toList());
-
+        
+        if(!isPublic){
         // Convertir a DTO
         return availableVehicles.stream()
                 .map(VehicleDTO::new)
                 .collect(Collectors.toList());
+        }else{
+            return availableVehicles.stream().map(vehicle -> 
+            new VehicleDto2(
+            vehicle.getNomVehicle(),
+            "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle()),
+            vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getPreuPerHoraLloguer()
+            )).collect(Collectors.toList());
+        }
     }
 
     /**
@@ -132,6 +144,18 @@ public class VehicleService {
     private boolean validarDuracio(LocalDateTime dataInici, LocalDateTime dataFin, Vehicle vehicle) {
         long horesSolicitades = ChronoUnit.HOURS.between(dataInici, dataFin);
         return horesSolicitades >= vehicle.getMinimHoresLloguer() && horesSolicitades <= vehicle.getMaximHoresLloguer();
+    }
+    
+    public List<VehicleDto2> getRandomVehicles(){
+        return vehicleRepository.findRandomVehicles().stream().map(vehicle -> {
+            String base64Img = Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle());
+            return new VehicleDto2(
+            vehicle.getNomVehicle(),
+            "data:image/jpeg;base64," + base64Img,
+            vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getPreuPerHoraLloguer()
+            );
+        }).collect(Collectors.toList());
     }
 
 }
