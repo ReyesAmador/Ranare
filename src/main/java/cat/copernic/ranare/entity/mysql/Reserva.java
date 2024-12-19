@@ -98,6 +98,7 @@ public class Reserva {
     
     
     private boolean lliurament = false; // Inicializado como falso
+    
     private boolean devolucio = false; // Inicializado como falso
 
 }
