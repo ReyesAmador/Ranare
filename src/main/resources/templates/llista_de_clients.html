@@ -18,7 +18,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
             <input type="text" name="filtro" th:value="${filtro}" placeholder="Busca por correo, DNI, apellidos o nacionalidad" />
             <button type="submit">Buscar</button>
         </form>
-        <a th:href="@{/admin/clients/inactius}" class="btn btn-secondary">Veure Clients Inactius</a>
+        <a th:if="${#authentication.principal.rol.name() == 'ADMIN'}" th:href="@{/admin/clients/inactius}" class="btn btn-secondary">Veure Clients Inactius</a>
     </div>
 
     <!-- Tabla de Resultados -->
