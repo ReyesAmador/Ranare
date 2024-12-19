@@ -21,9 +21,13 @@ public class AutentificacioEntrada implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json");
-        response.getWriter().write("{\"error\": \"Necessites estar autenticat per accedir a aquesta pàgina.\"}");
+        String requestUri = request.getRequestURI();
+        if ("/public/vehicles/reserva".equals(requestUri) || "/public/vehicles/reserva/confirmar".equals(requestUri)){
+            response.sendRedirect("/public/login?errorAuth=auth_required");
+        }else{
+            response.sendRedirect("/public/login");
+        }
+        
     }
     
 }
