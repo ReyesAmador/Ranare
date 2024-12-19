@@ -135,6 +135,7 @@ public class SecurityConfig{
                 .requestMatchers("/admin/vehicles/**").hasAnyRole("ADMIN", "AGENT")
                 .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")               
                 .requestMatchers("/admin/agents/**").hasRole("ADMIN")
+                .requestMatchers("/public/vehicles/reserva", "/public/vehicles/reserva/confirmar").authenticated()
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
             )
@@ -149,7 +150,8 @@ public class SecurityConfig{
                 .logoutSuccessUrl("/public/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .permitAll());
+                .permitAll())
+        .exceptionHandling(exception -> exception.authenticationEntryPoint(new AutentificacioEntrada()));
 
         return http.build();
     }
