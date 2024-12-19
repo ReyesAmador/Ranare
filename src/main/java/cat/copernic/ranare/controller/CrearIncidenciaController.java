@@ -6,6 +6,7 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mysql.Incidencia;
 import cat.copernic.ranare.entity.mysql.Vehicle;
+import cat.copernic.ranare.service.mongodb.DocumentService;
 import cat.copernic.ranare.service.mongodb.ImatgesIncidenciaService;
 import cat.copernic.ranare.service.mysql.IncidenciaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
@@ -42,6 +43,9 @@ public class CrearIncidenciaController {
     
     @Autowired
     private ImatgesIncidenciaService imatgesIncidenciaService;
+    
+    @Autowired
+    private DocumentService documentService;
 
     // Método para mostrar el formulario de crear incidencia
     @GetMapping("/crear-incidencia")
@@ -69,6 +73,7 @@ public class CrearIncidenciaController {
     public String createOrUpdateIncidencia(@Valid Incidencia incidencia, 
                                            BindingResult result,
                                            @RequestParam("imatges") MultipartFile[] imatges,
+                                           @RequestParam("pdfs") MultipartFile[] pdfs,
                                            RedirectAttributes redirectAttributes,
                                            Model model) {
         
@@ -81,6 +86,7 @@ public class CrearIncidenciaController {
         }
         
         List<String> imatgesIds = new ArrayList<>();
+        List<String> pdfIds = new ArrayList<>();
         
         if(imatges != null && imatges.length > 0){
             try{
@@ -92,16 +98,35 @@ public class CrearIncidenciaController {
             }
         }
         
+        if(pdfs != null && pdfs.length > 0){
+            try{
+                for(MultipartFile pdf : pdfs){
+                    if(!pdf.isEmpty()){
+                        String pdfId = documentService.saveDocument(pdf);
+                        pdfIds.add(pdfId);
+                    }
+                }
+            } catch(IOException e){
+                redirectAttributes.addFlashAttribute("error", "Error al guardar els PDFs: " + e.getMessage());
+                return "redirect:/admin/vehicles/crear-incidencia";
+            }
+        }
+        
         if(incidencia.getIdIncidencia() != null){
             Incidencia existingIncidencia = incidenciaService.findById(incidencia.getIdIncidencia());
             
             if(existingIncidencia != null){
                 List<String> existingImatges = existingIncidencia.getImatgesIncidenciesIDs();
+                List<String> existingPdfs = existingIncidencia.getDocumentsIncidenciaId();
                 
                 if(imatgesIds.isEmpty()){
                     imatgesIds = existingImatges;
                 }else{
                     imatgesIds.addAll(existingImatges);
+                }
+                
+                if(!pdfIds.isEmpty()){
+                    pdfIds.addAll(existingPdfs);
                 }
                 
                 existingIncidencia.setCulpabilitat(incidencia.isCulpabilitat());
@@ -112,6 +137,7 @@ public class CrearIncidenciaController {
                 existingIncidencia.setCost(incidencia.getCost());
                 existingIncidencia.setDocumentsIncidenciaId(incidencia.getDocumentsIncidenciaId());
                 existingIncidencia.setVehicle(incidencia.getVehicle());
+                existingIncidencia.setDocumentsIncidenciaId(pdfIds);
                 
                 if(!imatgesIds.isEmpty()){
                     existingIncidencia.setImatgesIncidenciesIDs(imatgesIds);
@@ -124,6 +150,7 @@ public class CrearIncidenciaController {
             }
         }else{
             incidencia.setImatgesIncidenciesIDs(imatgesIds);
+            incidencia.setDocumentsIncidenciaId(pdfIds);
             incidenciaService.save(incidencia); 
             redirectAttributes.addFlashAttribute("message", "La incidència s'ha creat correctament.");
         }

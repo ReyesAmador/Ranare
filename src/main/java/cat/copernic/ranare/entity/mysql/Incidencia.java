@@ -82,7 +82,7 @@ public class Incidencia {
      * Aquest camp és Transient, això evita que sigui persistit a la base de dades SQL
      */
     @Transient
-    private String documentsIncidenciaId;
+    private List<String> documentsIncidenciaId;
     
     private List<String> imatgesIncidenciesIDs;
     
