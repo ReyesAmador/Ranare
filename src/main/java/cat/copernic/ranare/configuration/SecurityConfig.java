@@ -135,6 +135,7 @@ public class SecurityConfig{
                 .requestMatchers("/admin/vehicles/**").hasAnyRole("ADMIN", "AGENT")
                 .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")               
                 .requestMatchers("/admin/agents/**").hasRole("ADMIN")
+                .requestMatchers("/public/vehicles/reserva", "/public/vehicles/reserva/confirmar").authenticated()
                 .requestMatchers("/public/**").permitAll()
                 .anyRequest().authenticated()
             )
