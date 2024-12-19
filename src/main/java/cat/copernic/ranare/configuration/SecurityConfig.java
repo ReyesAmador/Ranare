@@ -150,7 +150,8 @@ public class SecurityConfig{
                 .logoutSuccessUrl("/public/login?logout=true")
                 .invalidateHttpSession(true)
                 .clearAuthentication(true)
-                .permitAll());
+                .permitAll())
+        .exceptionHandling(exception -> exception.authenticationEntryPoint(new AutentificacioEntrada()));
 
         return http.build();
     }
