@@ -61,7 +61,6 @@ public class ReservaController {
     @Autowired
     private HistoricReservaService historicReservaService;
 
-
     /**
      * Mostra el formulari per crear una nova reserva.
      *
@@ -165,8 +164,8 @@ public class ReservaController {
         }
 
         double sumaTotalCost = reserves.stream()
-                                   .mapToDouble(Reserva::getCostReserva)
-                                   .sum();
+                .mapToDouble(Reserva::getCostReserva)
+                .sum();
         model.addAttribute("reserves", reserves);
         model.addAttribute("totalReserves", reserves.size());
         model.addAttribute("sumaTotalCost", sumaTotalCost);
@@ -175,7 +174,6 @@ public class ReservaController {
         return "admin";
     }
 
-    
     /**
      * Gestiona la sol·licitud per anul·lar una reserva existent.
      *
@@ -200,7 +198,7 @@ public class ReservaController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFin) {
 
         // Obtenir vehicles disponibles per al període
-        List<VehicleDTO> vehiclesDTO = (List<VehicleDTO>)vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin, false);
+        List<VehicleDTO> vehiclesDTO = (List<VehicleDTO>) vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFin, false);
         return vehiclesDTO;
     }
 
@@ -268,7 +266,7 @@ public class ReservaController {
     }
 
     @GetMapping("/historic/{id}")
-    public String veureHistoricPerReserva(@PathVariable("dni") String idReserva, Model model) {
+    public String veureHistoricPerReserva(@PathVariable("id") String idReserva, Model model) {
         List<HistoricReserva> historic = historicReservaService.obtenerHistoricPorIdReserva(idReserva);
         if (historic == null || historic.isEmpty()) {
             throw new UnsupportedOperationException("No hi ha dades històriques disponibles.");
@@ -277,7 +275,6 @@ public class ReservaController {
         model.addAttribute("idReserva", idReserva); // Mostrar en la vista
         return "historic_reserva";
     }
-    
-    
-    
+
+
 }
