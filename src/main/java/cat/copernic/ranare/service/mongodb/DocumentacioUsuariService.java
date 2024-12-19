@@ -11,6 +11,7 @@ import cat.copernic.ranare.repository.mongodb.DocumentacioUsuariRepository;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,19 @@ public class DocumentacioUsuariService {
     DocumentacioUsuariRepository documentacioUsuariRepository;
 
     public List<DocumentacioUsuari> obtenirDocumentsActiusPerUsuari(String userId) {
-        return documentacioUsuariRepository.findByUserIdAndDocumentState(userId, DocumentState.ACTIVA);
+        System.out.println("Buscando documentos activos para el usuario: " + userId);
+        List<DocumentacioUsuari> documents = documentacioUsuariRepository.findByUserIdAndDocumentState(userId, DocumentState.ACTIVA);
+
+        if (documents.isEmpty()) {
+            System.out.println("No hay documentos activos para el usuario: " + userId);
+        } else {
+            documents.forEach(doc -> {
+                System.out.println("Documento encontrado: " + doc.getDocumentType()
+                        + ", Front MIME: " + doc.getFrontFileMimeType()
+                        + ", Back MIME: " + doc.getBackFileMimeType());
+            });
+        }
+        return documents;
     }
 
     public List<DocumentacioUsuari> obtenirHistoricDocuments(String userId) {
@@ -38,46 +51,42 @@ public class DocumentacioUsuariService {
         return documentacioUsuariRepository.findByUserIdAndDocumentState(userId, estat);
     }
 
-    public void afegirDocument(String userId, String documentType, MultipartFile frontFile, MultipartFile backFile) {
-        DocumentType docType = DocumentType.valueOf(documentType.toUpperCase()); // Convertir a Enum
+    private static final List<String> ALLOWED_MIME_TYPES = Arrays.asList(
+            "image/jpeg",
+            "image/png",
+            "application/pdf"
+    );
 
-        // Marcar documentos previos del mismo tipo como caducados
+    public void afegirDocument(String userId, String documentType, MultipartFile frontFile, MultipartFile backFile) throws IOException {
+        DocumentType docType = DocumentType.valueOf(documentType.toUpperCase());
+        String frontMimeType = frontFile.getContentType();
+        String backMimeType = backFile.getContentType();
+
+        if (!ALLOWED_MIME_TYPES.contains(frontMimeType) || !ALLOWED_MIME_TYPES.contains(backMimeType)) {
+            throw new IllegalArgumentException("Format de fitxer no suportat");
+        }
+
+        // Marcar documentos previos como caducados
         List<DocumentacioUsuari> documentsActius = documentacioUsuariRepository.findByUserIdAndDocumentState(userId, DocumentState.ACTIVA);
         for (DocumentacioUsuari doc : documentsActius) {
-            if (doc.getDocumentType() == docType) {
+            if (doc.getDocumentType().equals(docType)) {
                 doc.setDocumentState(DocumentState.CADUCADA);
                 documentacioUsuariRepository.save(doc);
             }
         }
 
-        // Crear un nuevo documento activo
+        // Crear y guardar el nuevo documento
         DocumentacioUsuari nouDocument = new DocumentacioUsuari();
         nouDocument.setUserId(userId);
         nouDocument.setDocumentType(docType);
         nouDocument.setDocumentState(DocumentState.ACTIVA);
-        nouDocument.setFrontUrl(guardarFitxer(frontFile));
-        nouDocument.setBackUrl(guardarFitxer(backFile));
         nouDocument.setCreationDate(LocalDateTime.now());
+        nouDocument.setFrontFile(frontFile.getBytes());
+        nouDocument.setBackFile(backFile.getBytes());
+        nouDocument.setFrontFileMimeType(frontMimeType);
+        nouDocument.setBackFileMimeType(backMimeType);
+
         documentacioUsuariRepository.save(nouDocument);
     }
 
-    public String guardarFitxer(MultipartFile fitxer) {
-        try {
-            String uploadDir = "uploads/documents";
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-
-            // Crear archivo y guardar
-            String nomFitxer = System.currentTimeMillis() + "_" + fitxer.getOriginalFilename();
-            File destinationFile = new File(dir, nomFitxer);
-            fitxer.transferTo(destinationFile);
-
-            // Retornar la ruta del archivo
-            return destinationFile.getPath();
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar el fitxer: " + fitxer.getOriginalFilename(), e);
-        }
-    }
 }

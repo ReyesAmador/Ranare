@@ -3,46 +3,34 @@
 Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
 Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this template
 -->
+
 <html xmlns:th="http://www.thymeleaf.org">
-    <head>
-        <title>Afegir Documentació</title>
-    </head>
     <body>
+        <div th:fragment="afegirDocumentacioClientContent">
+            <section>
+                <h2>Afegir Documentació</h2>
+                <form th:action="@{/admin/clients/{id}/documents/save(id=${client.dni})}" 
+                      method="post" enctype="multipart/form-data">
+                    <div>
+                        <label for="documentType">Tipus de document:</label>
+                        <select name="documentType" id="documentType" required>
+                            <option value="DNI">DNI</option>
+                            <option value="LLICENCIA">Licència de Conduir</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="frontFile">Anvers:</label>
+                        <input type="file" name="frontFile" accept="image/*" required />
+                    </div>
+                    <div>
+                        <label for="backFile">Revers:</label>
+                        <input type="file" name="backFile" accept="image/*" required />
+                    </div>
+                    <button type="submit" class="btn btn-success">Guardar Document</button>
+                </form>
 
-        <h2>Afegir Documentació</h2>
-
-        <!-- Formulario para cargar documentos (DNI o Licencia) -->
-        <form th:action="@{/admin/clients/{id}/documents/{documentType}/new(id=${client.dni}, documentType=${documentType})}" 
-              method="post" enctype="multipart/form-data">
-            <h3>Selecciona el tipus de document</h3>
-
-            <!-- Campo para seleccionar el tipo de documento -->
-            <div>
-                <label for="documentType">Selecciona el tipus de document:</label>
-                <select name="documentType" id="documentType" required>
-                    <option value="DNI">DNI</option>
-                    <option value="LLICENCIA">Licència de Conduir</option>
-                </select>
-            </div>
-
-            <!-- Campo para cargar la parte delantera del documento -->
-            <div>
-                <label for="frontFile">Parte Delantera:</label>
-                <input type="file" name="frontFile" accept="image/*" required />
-            </div>
-
-            <!-- Campo para cargar la parte trasera del documento -->
-            <div>
-                <label for="backFile">Parte Trasera:</label>
-                <input type="file" name="backFile" accept="image/*" required />
-            </div>
-
-            <button type="submit" class="btn btn-success">Subir Documento</button>
-        </form>
-
-        <br>
-
-        <a href="/admin/clients/{id}" class="btn btn-primary">Tornar a la informació del client</a>
-
-    </body>
+                <a th:href="@{/admin/clients/{id}(id=${client.dni})}" class="btn btn-primary">Tornar</a>
+            </section>
+        </div>
+    </body><!-- comment -->
 </html>

@@ -18,10 +18,11 @@ import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * Representa la informació addicional i no estructurada d'un usuari.
- * Aquesta informació és comuna per a tots els tipus d'usuaris (ADMIN, CLIENT, etc.).
- * Es mapeja a la col·lecció "documentacio_usuaris" de la base de dades no relacional.
- * 
+ * Representa la informació addicional i no estructurada d'un usuari. Aquesta
+ * informació és comuna per a tots els tipus d'usuaris (ADMIN, CLIENT, etc.). Es
+ * mapeja a la col·lecció "documentacio_usuaris" de la base de dades no
+ * relacional.
+ *
  * @author Raú
  */
 @Data
@@ -51,22 +52,12 @@ public class DocumentacioUsuari {
     /**
      * Archivo binario del anverso.
      */
-    private Binary frontFile;
+    private byte[] frontFile;
 
     /**
      * Archivo binario del reverso.
      */
-    private Binary backFile;
-
-    /**
-     * URL del anverso.
-     */
-    private String frontUrl;
-
-    /**
-     * URL del reverso.
-     */
-    private String backUrl;
+    private byte[] backFile;
 
     /**
      * Fecha de creación del documento.
@@ -79,4 +70,6 @@ public class DocumentacioUsuari {
     private DocumentState documentState;
 
     // Getters y Setters
+    private String frontFileMimeType; // Tipo MIME del archivo (ej: "image/jpeg", "application/pdf")
+    private String backFileMimeType;
 }

@@ -6,7 +6,6 @@ package cat.copernic.ranare.controller;
 
 import cat.copernic.ranare.entity.mongodb.DocumentacioUsuari;
 import cat.copernic.ranare.entity.mysql.Client;
-import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.enums.DocumentType;
 import cat.copernic.ranare.enums.Rol;
 import cat.copernic.ranare.exceptions.ClientNotFoundException;
@@ -19,6 +18,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import cat.copernic.ranare.response.ErrorResponse;
 import cat.copernic.ranare.service.mongodb.DocumentacioUsuariService;
+import java.util.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -327,6 +327,7 @@ public class ClientController {
         return "redirect:/admin/clients";
     }
 
+    /*
     @GetMapping("/detall/{dni}")
     public String veureDetallsClient(@PathVariable String dni, Model model) {
         Optional<Client> clientOpt = clientService.getClientById(dni);
@@ -339,8 +340,7 @@ public class ClientController {
             model.addAttribute("missatge", "Client no trobat.");
             return "redirect:/admin/clients";
         }
-    }
-
+    } */
     @GetMapping("/inactius")
     public String mostrarInactius(Model model) {
         model.addAttribute("clients", clientService.getInactiveClients());
@@ -356,10 +356,35 @@ public class ClientController {
         return "redirect:/admin/clients/inactius";
     }
 
-    @GetMapping("/admin/clients/{dni}/documents")
+    /*
+    @GetMapping("/detall/{dni}")
     public String veureDocumentacioClient(@PathVariable("dni") String dni, Model model) {
+        // Log para identificar si el cliente existe
+        System.out.println("Buscando cliente con DNI: " + dni);
+        Optional<Client> client = clientService.getClientById(dni);
+
+        if (!client.isPresent()) { // Corrige el chequeo de existencia
+            System.out.println("Cliente no encontrado para el DNI: " + dni);
+            return "error/404"; // Página de error si no existe
+        }
+
+        model.addAttribute("client", client.get());
+
+        // Log para identificar documentos asociados
+        System.out.println("Buscando documentación activa para el cliente: " + dni);
         List<DocumentacioUsuari> documents = documentacioUsuariService.obtenirDocumentsActiusPerUsuari(dni);
 
+        if (documents.isEmpty()) {
+            System.out.println("No se encontraron documentos activos para el cliente con DNI: " + dni);
+        } else {
+            documents.forEach(doc -> {
+                System.out.println("Documento encontrado: " + doc.getDocumentType()
+                        + ", Front MIME: " + doc.getFrontFileMimeType()
+                        + ", Back MIME: " + doc.getBackFileMimeType());
+            });
+        }
+
+        // Filtrar documentos según el tipo
         DocumentacioUsuari dniDocument = documents.stream()
                 .filter(doc -> doc.getDocumentType() == DocumentType.DNI)
                 .findFirst()
@@ -370,26 +395,36 @@ public class ClientController {
                 .findFirst()
                 .orElse(null);
 
+        // Logs de documentos cargados
+        if (dniDocument != null) {
+            System.out.println("DNI Document cargado: " + dniDocument.getDocumentType());
+        } else {
+            System.out.println("No se encontró documentación de tipo DNI para el cliente.");
+        }
+
+        if (license != null) {
+            System.out.println("Licencia cargada: " + license.getDocumentType());
+        } else {
+            System.out.println("No se encontró documentación de tipo LLICENCIA para el cliente.");
+        }
+
         model.addAttribute("dniDocument", dniDocument);
         model.addAttribute("license", license);
 
         return "admin/detalls_client";
     }
-
+     */
     @GetMapping("/{id}/documents/dni/new")
     public String afegirDocumentacioDNI(@PathVariable("id") String clientId, Model model) {
-        // Obtener el cliente
         Optional<Client> client = clientService.getClientById(clientId);
-
-        // Verificar si el cliente existe
-        if (client.isEmpty()) {  // Cambiado a isEmpty() en lugar de client == null
+        if (client.isEmpty()) {
             model.addAttribute("error", "Client no trobat.");
-            return "redirect:/admin/clients";  // Redirige a la lista de clientes o a una página de error
+            return "redirect:/admin/clients";
         }
-
-        model.addAttribute("client", client.get());  // .get() para acceder al cliente dentro del Optional
+        model.addAttribute("client", client.get());
         model.addAttribute("documentType", "DNI");
-        return "admin/afegir_documentacio";
+        model.addAttribute("content", "afegir_documentacio :: afegirDocumentacioClientContent");
+        return "admin";  // Vista general
     }
 
     @GetMapping("/{id}/documents/license/new")
@@ -405,7 +440,8 @@ public class ClientController {
 
         model.addAttribute("client", client.get());  // .get() para acceder al cliente dentro del Optional
         model.addAttribute("documentType", "LLICENCIA");
-        return "admin/afegir_documentacio";
+        model.addAttribute("content", "afegir_documentacio :: afegirDocumentacioClientContent");
+        return "admin";
     }
 
     @PostMapping("/{id}/documents/save")
@@ -416,30 +452,29 @@ public class ClientController {
             @RequestParam("backFile") MultipartFile backFile,
             RedirectAttributes redirectAttributes) {
 
+        boolean documentSaved = false;
         try {
-            // Validar el tipo de documento
-            if (!"DNI".equals(documentType) && !"LLICENCIA".equals(documentType)) {
-                redirectAttributes.addFlashAttribute("error", "Tipus de document no vàlid.");
-                return "redirect:/admin/clients/" + clientId;
-            }
-
-            // Verificar que ambos archivos se han cargado
-            if (frontFile.isEmpty() || backFile.isEmpty()) {
-                redirectAttributes.addFlashAttribute("error", "Els dos arxius (anvers i revers) són obligatoris.");
-                return "redirect:/admin/clients/" + clientId + "/documents/" + documentType.toLowerCase() + "/new";
-            }
-
-            // Llamar al servicio para guardar el documento
+            // Intentamos guardar la documentación
             documentacioUsuariService.afegirDocument(clientId, documentType, frontFile, backFile);
-
-            // Agregar mensaje de éxito y redirigir a la página de detalles del cliente
+            documentSaved = true; // Si no hay excepciones, consideramos que el documento se ha guardado correctamente
             redirectAttributes.addFlashAttribute("success", "Documentació guardada correctament.");
+            System.out.println("Documento guardado correctamente.");
         } catch (Exception e) {
-            // Manejo de errores y redirección a la página de detalles del cliente
-            redirectAttributes.addFlashAttribute("error", "Error al guardar la documentació: " + e.getMessage());
+            // Si ocurre un error, capturamos la excepción
+            redirectAttributes.addFlashAttribute("error", "Error: " + e.getMessage());
+            System.out.println("Error al guardar el documento: " + e.getMessage());
         }
 
-        return "redirect:/admin/clients/" + clientId;  // Redirigir al detalle del cliente
+        // Comprobamos si el documento se guardó correctamente
+        if (!documentSaved) {
+            redirectAttributes.addFlashAttribute("error", "No s'ha pogut guardar el document.");
+            System.out.println("No se ha podido guardar el documento.");
+        }
+
+        // Este log te dirá a dónde llega el código
+        System.out.println("Redirigiendo a la página de detalle.");
+
+        return "redirect:/admin/clients/detall/" + clientId;
     }
 
     @GetMapping("/{id}/documents/historic")
@@ -452,4 +487,67 @@ public class ClientController {
         }
         return "admin/historic_documents";
     }
+
+    @GetMapping("/detall/{dni}")
+    public String veureDetallsClient(@PathVariable("dni") String dni, Model model) {
+        // Obtener cliente por DNI
+        Optional<Client> clientOpt = clientService.getClientById(dni);
+        if (!clientOpt.isPresent()) {
+            System.out.println("Cliente no encontrado para el DNI: " + dni);
+            return "error/404";
+        }
+
+        // Agregar cliente al modelo
+        Client client = clientOpt.get();
+        model.addAttribute("client", client);
+        model.addAttribute("title", "Detalls del Client");
+
+        // Obtener documentación asociada
+        List<DocumentacioUsuari> documents = documentacioUsuariService.obtenirDocumentsActiusPerUsuari(dni);
+        if (documents.isEmpty()) {
+            System.out.println("No se encontraron documentos activos para el cliente con DNI: " + dni);
+        } else {
+            documents.forEach(doc -> {
+                System.out.println("Documento encontrado: " + doc.getDocumentType()
+                        + ", Front MIME: " + doc.getFrontFileMimeType()
+                        + ", Back MIME: " + doc.getBackFileMimeType());
+            });
+        }
+
+        // Filtrar documento tipo DNI
+        DocumentacioUsuari dniDocument = documents.stream()
+                .filter(doc -> doc.getDocumentType() == DocumentType.DNI)
+                .findFirst()
+                .orElse(null);
+        if (dniDocument != null) {
+            String dniFrontBase64 = Base64.getEncoder().encodeToString(dniDocument.getFrontFile());
+            String dniBackBase64 = Base64.getEncoder().encodeToString(dniDocument.getBackFile());
+            model.addAttribute("dniDocument", dniDocument);
+            model.addAttribute("dniFrontBase64", dniFrontBase64);
+            model.addAttribute("dniBackBase64", dniBackBase64);
+        } else {
+            System.out.println("No se encontró un documento tipo DNI.");
+        }
+
+        // Filtrar documento tipo LICENSE
+        DocumentacioUsuari licenseDocument = documents.stream()
+                .filter(doc -> doc.getDocumentType() == DocumentType.LLICENCIA)
+                .findFirst()
+                .orElse(null);
+        if (licenseDocument != null) {
+            String licenseFrontBase64 = Base64.getEncoder().encodeToString(licenseDocument.getFrontFile());
+            String licenseBackBase64 = Base64.getEncoder().encodeToString(licenseDocument.getBackFile());
+            model.addAttribute("licenseDocument", licenseDocument);
+            model.addAttribute("licenseFrontBase64", licenseFrontBase64);
+            model.addAttribute("licenseBackBase64", licenseBackBase64);
+        } else {
+            System.out.println("No se encontró un documento tipo LICENSE.");
+        }
+
+        // Agregar contenido para Thymeleaf
+        model.addAttribute("content", "detalls_client :: detallClientsContent");
+
+        return "admin";
+    }
+
 }
