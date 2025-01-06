@@ -11,8 +11,11 @@
 <body>
     <div th:fragment="confirmarReservaContent">
         <div class="container mt-5 text-center">
+            <i class="fas fa-check-circle" style="color: #006400;"></i>
             <h1 class="text-success">¡Reserva Realitzada amb Éxit!</h1>
-            <p>El teu codi de reserva és: <strong th:text="${reservaId}"></strong></p>
+            <p style="font-size: 2rem; font-weight: bold;">
+                El teu codi de reserva és: <strong th:text="${reservaId}" style="font-size: 2.5rem; color: black;"></strong>
+            </p>
             <a href="/public" class="btn btn-primary mt-3">Tornar a la pàgina principal</a>
         </div>
 
