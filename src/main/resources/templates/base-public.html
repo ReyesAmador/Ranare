@@ -94,6 +94,8 @@
 
                     <!-- Verificación si el usuario está autenticado -->
                     <div th:if="${#authorization.expression('isAuthenticated()')}">
+                        <a class="nav-link fs-5" th:href="@{/public/usuari/detalls}">Detalls Usuari</a>
+                        <a class="nav-link fs-5" th:href="@{/public/usuari/reserves}">Llista de Reserves</a>
                         <span class="nav-link fs-5" th:text="${#authentication.name}">Usuari</span>
                     </div>
 
