@@ -11,6 +11,9 @@
 <body>
     <div th:fragment="datesClientContent">
         <div class="container mt-5">
+            <div th:if="${error}" class="alert alert-danger mt-3">
+                <p th:text="${error}"></p>
+            </div>
             <!-- Formulario para seleccionar fechas -->
             <div class="d-flex justify-content-center">
                 <form th:action="@{/public/vehicles/disponibles}" method="get" class="mb-5">

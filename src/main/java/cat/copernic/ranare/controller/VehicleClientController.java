@@ -8,6 +8,7 @@ import cat.copernic.ranare.entity.mysql.Client;
 import cat.copernic.ranare.entity.mysql.Reserva;
 import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.entity.mysql.VehicleDto2;
+import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
@@ -46,10 +47,20 @@ public class VehicleClientController {
     public String filtrarVehiclesDisponibilitat(
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInici,
             @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFinal, Model model){
-        List<VehicleDto2> vehiclesDisponibles = (List<VehicleDto2>)vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFinal, true);
+        try{
+            vehicleService.validarDates(dataInici, dataFinal);
+            
+            List<VehicleDto2> vehiclesDisponibles = (List<VehicleDto2>)vehicleService.filtrarVehiculosDisponiblesDTO(dataInici, dataFinal, true);
+
+            model.addAttribute("content", "llista-vehicles-disponibles :: vehiclesClientContent");
+            model.addAttribute("vehiclesDisponibles", vehiclesDisponibles);
         
-        model.addAttribute("content", "llista-vehicles-disponibles :: vehiclesClientContent");
-        model.addAttribute("vehiclesDisponibles", vehiclesDisponibles);
+        }catch(InvalidHorariException e){
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("content", "seleccionar-dates :: datesClientContent");
+            model.addAttribute("randomVehicles", vehicleService.getRandomVehicles());
+            return "base-public";
+        }
         
         return "base-public";
     }
