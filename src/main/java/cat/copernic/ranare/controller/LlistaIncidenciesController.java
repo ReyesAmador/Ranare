@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.bson.types.ObjectId;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.model.GridFSFile;
+import java.io.FileNotFoundException;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.HttpHeaders;
@@ -34,58 +35,58 @@ import org.springframework.http.ResponseEntity;
 @Controller
 @RequestMapping("/admin/vehicles/incidencies")
 public class LlistaIncidenciesController {
-    
+
     @Autowired
     private IncidenciaService incidenciaService;
-    
+
     @Autowired
     private DocumentService documentService;
-    
+
     @Autowired
     private GridFsTemplate gridFsTemplate;
-    
+
     @Autowired
     private GridFSBucket gridFSBucket;
-    
+
     @GetMapping
-    public String listIncidencies(@RequestParam(value = "matricula", required = false) String matricula, Model model){
+    public String listIncidencies(@RequestParam(value = "matricula", required = false) String matricula, Model model) {
         List<Incidencia> incidencies;
-        
-        if(matricula != null && !matricula.isEmpty()){
+
+        if (matricula != null && !matricula.isEmpty()) {
             incidencies = incidenciaService.findByVehicleMatricula(matricula);
-        }else{
+        } else {
             incidencies = incidenciaService.findAll();
         }
-        
+
         model.addAttribute("incidencies", incidencies);
         model.addAttribute("title", "Indicències");
         model.addAttribute("content", "llista-incidencies :: llistarIncidenciaContent");
         return "admin";
     }
-    
+
     @GetMapping("/modificar/{id}")
-    public String modificarIncidencia(@PathVariable Long id, Model model){
+    public String modificarIncidencia(@PathVariable Long id, Model model) {
         Incidencia incidencia = incidenciaService.findById(id);
-        if(incidencia != null){
+        if (incidencia != null) {
             model.addAttribute("incidencia", incidencia);
         }
         model.addAttribute("title", "Modificar indicència");
         model.addAttribute("content", "crear-incidencia :: crearIncidenciaContent");
         return "admin";
     }
-    
+
     @GetMapping("/imatges/{imageId}")
-    public ResponseEntity<?> mostrarImatge(@PathVariable String imageId) throws IOException{
-        try{
+    public ResponseEntity<?> mostrarImatge(@PathVariable String imageId) throws IOException {
+        try {
             GridFSFile file = gridFSBucket.find(new org.bson.Document("_id", new ObjectId(imageId))).first();
 
-            if(file == null){
+            if (file == null) {
                 return ResponseEntity.notFound().build();
             }
 
             InputStream stream = gridFSBucket.openDownloadStream(file.getObjectId());
             String filename = file.getFilename();
-            
+
             String mimeType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
             if (filename.endsWith(".jpg") || filename.endsWith(".jpeg")) {
                 mimeType = MediaType.IMAGE_JPEG_VALUE;
@@ -94,18 +95,18 @@ public class LlistaIncidenciesController {
             } else if (filename.endsWith(".gif")) {
                 mimeType = MediaType.IMAGE_GIF_VALUE;
             }
-            
+
             return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(mimeType))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
-                .body(new InputStreamResource(stream));
+                    .contentType(MediaType.parseMediaType(mimeType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + filename + "\"")
+                    .body(new InputStreamResource(stream));
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Error: " + e.getMessage());
         }
     }
-    
+
     @GetMapping("/visualitzar/{id}")
-    public String visualitzarImatges(@PathVariable Long id, Model model){
+    public String visualitzarImatges(@PathVariable Long id, Model model) {
         Incidencia incidencia = incidenciaService.findById(id);
         if (incidencia != null) {
             model.addAttribute("imatgesIds", incidencia.getImatgesIncidenciesIDs());
@@ -113,45 +114,52 @@ public class LlistaIncidenciesController {
         model.addAttribute("title", "Visualitzar Imatges");
         return "mostrar-imatges-incidencies";
     }
-    
+
     @GetMapping("/descarregar/{id}/{pdfId}")
-    public ResponseEntity<byte[]> descarregarPdf(@PathVariable Long id, @PathVariable String pdfId){
-        byte[] pdfBytes = documentService.getPdfById(pdfId);
+    public ResponseEntity<byte[]> descarregarPdf(@PathVariable Long id, @PathVariable String pdfId) {
+        System.out.println("Descarregar PDF amb ID: " + pdfId);
+        try {
+            byte[] pdfBytes = documentService.getPdfById(pdfId);
 
-        if (pdfBytes == null) {
+            if (pdfBytes == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "incidencia_" + pdfId + ".pdf");
+
+            return ResponseEntity.ok().headers(headers).body(pdfBytes);
+        } catch (FileNotFoundException e) {
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_PDF);
-        headers.setContentDispositionFormData("attachment", "incidencia_" + pdfId + ".pdf");
-
-        return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
-    
+
     @GetMapping("/descarregarTots/{id}")
     public ResponseEntity<byte[]> descarregarTotsPdfs(@PathVariable Long id) {
         Incidencia incidencia = incidenciaService.findById(id);
-        
+
         if (incidencia == null) {
             return ResponseEntity.notFound().build();
         }
-        
+
         List<String> pdfIds = incidencia.getDocumentsIncidenciaId();
-        if(pdfIds == null || pdfIds.isEmpty()){
+        if (pdfIds == null || pdfIds.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
         byte[] zipBytes = documentService.getPdfsAsZip(pdfIds);
 
-        if(zipBytes == null){
+        if (zipBytes == null) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        
+
         HttpHeaders headers = new HttpHeaders();
         headers.setContentDispositionFormData("attachment", "incidencia_pdfs.zip");
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-        
+
         return ResponseEntity.ok().headers(headers).body(zipBytes);
     }
 }

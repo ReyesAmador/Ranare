@@ -81,7 +81,6 @@ public class Incidencia {
      * Identificador dels documents relacionats amb la incidència.
      * Aquest camp és Transient, això evita que sigui persistit a la base de dades SQL
      */
-    @Transient
     private List<String> documentsIncidenciaId;
     
     private List<String> imatgesIncidenciesIDs;
