@@ -9,6 +9,7 @@ import cat.copernic.ranare.entity.mysql.Vehicle;
 import cat.copernic.ranare.entity.mysql.VehicleDTO;
 import cat.copernic.ranare.entity.mysql.VehicleDto2;
 import cat.copernic.ranare.enums.EstatReserva;
+import cat.copernic.ranare.exceptions.InvalidHorariException;
 import cat.copernic.ranare.repository.mysql.ReservaRepository;
 
 import cat.copernic.ranare.repository.mysql.VehicleRepository;
@@ -129,6 +130,10 @@ public class VehicleService {
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle()),
             vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getCombustio(),
+            vehicle.getTransmissio(),
+            vehicle.getLimitQuilometratge(),
+            vehicle.getFiancaStandard(),
             vehicle.getPreuPerHoraLloguer()
             )).collect(Collectors.toList());
         }
@@ -155,9 +160,24 @@ public class VehicleService {
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + base64Img,
             vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getCombustio(),
+            vehicle.getTransmissio(),
+            vehicle.getLimitQuilometratge(),
+            vehicle.getFiancaStandard(),
             vehicle.getPreuPerHoraLloguer()
             );
         }).collect(Collectors.toList());
+    }
+    
+    public void validarDates(LocalDateTime dataInici, LocalDateTime dataFinal) {
+        // Validar que la data de inici no sigui abans del moment actual
+        if (dataInici.isBefore(LocalDateTime.now())) {
+            throw new InvalidHorariException("La data d'inici no pot ser anterior a la data actual.");
+        }
+        // Validar que la data final sigui posterior a la data d'inici
+        if (dataFinal.isBefore(dataInici)) {
+            throw new InvalidHorariException("La data final ha de ser posterior a la data d'inici.");
+        }
     }
 
 }
