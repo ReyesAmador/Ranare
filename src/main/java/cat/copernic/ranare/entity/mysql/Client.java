@@ -189,5 +189,7 @@ public class Client implements UserDetails {
     @Column(nullable = true)
     private String referenciaDocumentacio;*/
     
+    
+    
 }  
 
