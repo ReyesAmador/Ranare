@@ -170,11 +170,11 @@ public class VehicleService {
     }
     
     public void validarDates(LocalDateTime dataInici, LocalDateTime dataFinal) {
-        // Validar que la fecha de inicio no sea anterior a la actual
+        // Validar que la data de inici no sigui abans del moment actual
         if (dataInici.isBefore(LocalDateTime.now())) {
             throw new InvalidHorariException("La data d'inici no pot ser anterior a la data actual.");
         }
-        // Validar que la fecha final sea posterior a la de inicio
+        // Validar que la data final sigui posterior a la data d'inici
         if (dataFinal.isBefore(dataInici)) {
             throw new InvalidHorariException("La data final ha de ser posterior a la data d'inici.");
         }
