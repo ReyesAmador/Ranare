@@ -37,10 +37,24 @@
                         <img th:src="${vehicle.imgBase64}" th:alt="${vehicle.nomVehicle}" />
                         <div class="vehicle-card-body">
                             <h5 class="card-title" th:text="${vehicle.nomVehicle}">Nom</h5>
-                            <p class="card-text">
-                                <strong>Localització:</strong> <span th:text="${vehicle.codiPostal}">Ubicació</span><br>
-                                <strong>Preu/hora:</strong> <span th:text="${vehicle.preuPerHoraLloguer}">0.00</span> €
-                            </p>
+                            <div class="d-flex">
+                                <div class="me-3">
+                                <p class="card-text">
+                                    <strong>Localització:</strong> <span th:text="${vehicle.codiPostal}">Ubicació</span><br>
+                                    <strong>Fiança:</strong> <span th:text="${vehicle.fianca}">Fiança</span> €<br> 
+                                    <strong>Preu/hora:</strong> <span th:text="${vehicle.preuPerHoraLloguer}">0.00</span> €
+                                </p>
+                                </div>
+                                <!-- Línea vertical -->
+                                <div class="vr mx-2"></div>
+                                <div>
+                                    <p class="card-text">
+                                        <strong>Combustió:</strong> <span th:text="${vehicle.combustio}">Combustió</span><br>
+                                        <strong>Transmissio:</strong> <span th:text="${vehicle.transmissio}">Transmissió</span><br>
+                                        <strong>Limit Km:</strong> <span th:text="${vehicle.limitQuilometratge}">Límit Km</span> Km
+                                    </p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

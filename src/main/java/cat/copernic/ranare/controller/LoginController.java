@@ -5,6 +5,7 @@
 package cat.copernic.ranare.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 /**
@@ -15,7 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class LoginController {
 
     @GetMapping("/public/login")
-    public String paginaLogin(){
-        return "login";
+    public String paginaLogin(Model model){
+        model.addAttribute("content", "login :: loginContent");
+        return "base-public";
     }
 }
