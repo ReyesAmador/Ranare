@@ -28,137 +28,145 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
  *
  * @author reyes
  */
-
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig{
-    
+public class SecurityConfig {
+
     @Autowired
     private ValidadorUsuaris validador;
-    
+
     @Autowired
     private ClientRepository clientRepository;
 
     @Autowired
     private AgentRepository agentRepository;
-    
+
     @Bean
-    public CommandLineRunner initData(PasswordEncoder passwordEncoder){
+    public CommandLineRunner initData(PasswordEncoder passwordEncoder) {
         return args -> {
             //crear un admin si no existeix
-            if(!agentRepository.existsByUsername("admin")){
+            if (!agentRepository.existsByUsername("admin")) {
                 Agent admin = Agent.builder()
-                .dni("12345678A")
-                .nom("Admin")
-                .cognoms("Administrador")
-                .nacionalitat("Espanyola")
-                .telefon("600000001")
-                .username("admin")
-                .pwd(passwordEncoder.encode("admin123"))
-                .email("admin@example.com")
-                .adreca("Carrer Admin 1")
-                .pais("Espanya")
-                .ciutat("Barcelona")
-                .codiPostal("08001")
-                .numeroTarjetaCredit("1111222233334444")
-                .reputacio(Reputacio.NORMAL)
-                .actiu(true)
-                .dataNaixement(LocalDate.of(1990, 1, 1))
-                .rol(Rol.ADMIN)
-                .build();
-            agentRepository.save(admin);
+                        .dni("12345678A")
+                        .nom("Admin")
+                        .cognoms("Administrador")
+                        .nacionalitat("Espanyola")
+                        .telefon("600000001")
+                        .username("admin")
+                        .pwd(passwordEncoder.encode("admin123"))
+                        .email("admin@example.com")
+                        .adreca("Carrer Admin 1")
+                        .pais("Espanya")
+                        .ciutat("Barcelona")
+                        .codiPostal("08001")
+                        .numeroTarjetaCredit("1111222233334444")
+                        .reputacio(Reputacio.NORMAL)
+                        .actiu(true)
+                        .dataNaixement(LocalDate.of(1990, 1, 1))
+                        .rol(Rol.ADMIN)
+                        .build();
+                agentRepository.save(admin);
             }
-            
+
             //crear agent de prova si no existeix
-            if(!agentRepository.existsByUsername("agent")){
+            if (!agentRepository.existsByUsername("agent")) {
                 Agent agent = Agent.builder()
-                .dni("12345678B")
-                .nom("Agent")
-                .cognoms("Agente")
-                .nacionalitat("Espanyola")
-                .telefon("600000002")
-                .username("agent")
-                .pwd(passwordEncoder.encode("agent123"))
-                .email("agent@example.com")
-                .adreca("Carrer Agent 1")
-                .pais("Espanya")
-                .ciutat("Valencia")
-                .codiPostal("46001")
-                .numeroTarjetaCredit("5555666677778888")
-                .reputacio(Reputacio.PREMIUM)
-                .actiu(true)
-                .dataNaixement(LocalDate.of(1995, 5, 15))
-                .rol(Rol.AGENT)
-                .build();
-            agentRepository.save(agent);
+                        .dni("12345678B")
+                        .nom("Agent")
+                        .cognoms("Agente")
+                        .nacionalitat("Espanyola")
+                        .telefon("600000002")
+                        .username("agent")
+                        .pwd(passwordEncoder.encode("agent123"))
+                        .email("agent@example.com")
+                        .adreca("Carrer Agent 1")
+                        .pais("Espanya")
+                        .ciutat("Valencia")
+                        .codiPostal("46001")
+                        .numeroTarjetaCredit("5555666677778888")
+                        .reputacio(Reputacio.PREMIUM)
+                        .actiu(true)
+                        .dataNaixement(LocalDate.of(1995, 5, 15))
+                        .rol(Rol.AGENT)
+                        .build();
+                agentRepository.save(agent);
             }
-            
+
             //crear client de prova si no existeix
-            if(!clientRepository.existsByUsername("client")){
+            if (!clientRepository.existsByUsername("client")) {
                 Client client = Client.builder()
-                .dni("12345678C")
-                .nom("Client")
-                .cognoms("Cliente")
-                .nacionalitat("Espanyola")
-                .telefon("600000003")
-                .username("client")
-                .pwd(passwordEncoder.encode("client123"))
-                .email("client@example.com")
-                .adreca("Carrer Client 1")
-                .pais("Espanya")
-                .ciutat("Madrid")
-                .codiPostal("28001")
-                .numeroTarjetaCredit("9999000011112222")
-                .reputacio(Reputacio.NORMAL)
-                .actiu(true)
-                .dataNaixement(LocalDate.of(2000, 7, 20))
-                .build();
-            clientRepository.save(client);
+                        .dni("12345678C")
+                        .nom("Client")
+                        .cognoms("Cliente")
+                        .nacionalitat("Espanyola")
+                        .telefon("600000003")
+                        .username("client")
+                        .pwd(passwordEncoder.encode("client123"))
+                        .email("client@example.com")
+                        .adreca("Carrer Client 1")
+                        .pais("Espanya")
+                        .ciutat("Madrid")
+                        .codiPostal("28001")
+                        .numeroTarjetaCredit("9999000011112222")
+                        .reputacio(Reputacio.NORMAL)
+                        .actiu(true)
+                        .dataNaixement(LocalDate.of(2000, 7, 20))
+                        .build();
+                clientRepository.save(client);
             }
         };
     }
-    
+
     @Bean
-    public AuthenticationFailureHandler autentificacioPersonalitzadaFallida(){
+    public AuthenticationFailureHandler autentificacioPersonalitzadaFallida() {
         return new AutentificacioFallidaHandler();
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(); // Para cifrar las contraseñas
     }
-    
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/admin/clients/inactius").hasRole("ADMIN")
-                .requestMatchers("/admin/clients/**").hasAnyRole("ADMIN", "AGENT")
-                .requestMatchers("/admin/vehicles/**").hasAnyRole("ADMIN", "AGENT")
-                .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")               
-                .requestMatchers("/admin/agents/**").hasRole("ADMIN")
-                .requestMatchers("/public/vehicles/reserva", "/public/vehicles/reserva/confirmar").authenticated()
-                .requestMatchers("/public/**").permitAll()
-                .anyRequest().authenticated()
-            )
-        .formLogin(form -> form
-                .loginPage("/public/login")
-                .loginProcessingUrl("/public/login")
-                .defaultSuccessUrl("/public", true)
-                .failureHandler(autentificacioPersonalitzadaFallida())
-                .permitAll())
-                .logout(logout -> logout
-                .logoutUrl("/public/logout")
-                .logoutSuccessUrl("/public/login?logout=true")
-                .invalidateHttpSession(true)
-                .clearAuthentication(true)
-                .permitAll())
-        .exceptionHandling(exception -> exception.authenticationEntryPoint(new AutentificacioEntrada()));
 
-        return http.build();
-    }
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception{
+public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.authorizeHttpRequests(requests -> requests
+            // Rutas administrativas
+            .requestMatchers("/admin/clients/inactius").hasRole("ADMIN")
+            .requestMatchers("/admin/clients/**").hasAnyRole("ADMIN", "AGENT")
+            .requestMatchers("/admin/vehicles/**").hasAnyRole("ADMIN", "AGENT")
+            .requestMatchers("/admin/localitzacio/**").hasRole("ADMIN")
+            .requestMatchers("/admin/agents/**").hasRole("ADMIN")
+            
+            // Rutas públicas que requieren autenticación
+            .requestMatchers("/public/usuari/detalls", "/public/usuari/update", "/public/usuari/eliminar", "/public/usuari/reserves/**").authenticated()
+
+            // Rutas completamente públicas
+            .requestMatchers("/public/login", "/public/registre/**", "/public/").permitAll()
+            
+            // Cualquier otra ruta requiere autenticación
+            .anyRequest().authenticated()
+    )
+    .formLogin(form -> form
+            .loginPage("/public/login")
+            .loginProcessingUrl("/public/login")
+            .defaultSuccessUrl("/public", true)
+            .failureHandler(autentificacioPersonalitzadaFallida())
+            .permitAll()
+    )
+    .logout(logout -> logout
+            .logoutUrl("/public/logout")
+            .logoutSuccessUrl("/public/login?logout=true")
+            .invalidateHttpSession(true)
+            .clearAuthentication(true)
+            .permitAll()
+    )
+    .exceptionHandling(exception -> exception.authenticationEntryPoint(new AutentificacioEntrada()));
+
+    return http.build();
+}
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).userDetailsService(validador).and().build();
     }
-    
-}
 
+}

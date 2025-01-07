@@ -70,5 +70,13 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
             + "r.client.cognoms LIKE %:query% OR "
             + "r.vehicle.matricula LIKE %:query%")
     List<Reserva> findReservasByQuery(@Param("query") String query);
-
+    
+    
+     @Query("SELECT r FROM Reserva r WHERE r.client.username = :username")
+    List<Reserva> findByClientUsername(@Param("username") String username);
+    
+    @Query("SELECT r FROM Reserva r WHERE r.id = :id")
+List<Reserva> findReservasByIdExacto(@Param("id") Long id);
 }
+
+

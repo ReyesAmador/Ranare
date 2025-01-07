@@ -14,9 +14,11 @@ import cat.copernic.ranare.service.mongodb.HistoricReservaService;
 import cat.copernic.ranare.service.mysql.ClientService;
 import cat.copernic.ranare.service.mysql.ReservaService;
 import cat.copernic.ranare.service.mysql.VehicleService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -166,11 +168,14 @@ public class ReservaController {
         double sumaTotalCost = reserves.stream()
                 .mapToDouble(Reserva::getCostReserva)
                 .sum();
+
         model.addAttribute("reserves", reserves);
         model.addAttribute("totalReserves", reserves.size());
         model.addAttribute("sumaTotalCost", sumaTotalCost);
+        model.addAttribute("isAdmin", true); // Este método corresponde al admin
         model.addAttribute("title", "Llista de reserves");
         model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+
         return "admin";
     }
 
@@ -203,7 +208,7 @@ public class ReservaController {
     }
 
     @GetMapping("/detall/{id}")
-    public String detallsReserva(@PathVariable Long id, Model model) {
+    public String detallsReserva(@PathVariable Long id, Model model, HttpServletRequest request) {
         Optional<Reserva> reservaOpt = reservaService.obtenirReservaPerId(id);
         if (reservaOpt.isEmpty()) {
             return "error"; // Redirige a una página de error si la reserva no existe
@@ -212,29 +217,38 @@ public class ReservaController {
 
         // Comprueba si client y vehicle no son nulos
         if (reserva.getClient() == null || reserva.getVehicle() == null) {
-            System.out.println("Cliente esta vacio  o el vehiculo máquina");
+            System.out.println("Cliente está vacío o el vehículo no está definido");
         }
+
+        // Determina si es un administrador según la URL
+        boolean isAdmin = request.getRequestURI().contains("/admin");
 
         model.addAttribute("reserva", reserva);
         model.addAttribute("title", "Detall reserva");
         model.addAttribute("content", "detalls_reserva :: detallReservaContent");
+        model.addAttribute("isAdmin", isAdmin);
+
         return "admin";
     }
 
     @GetMapping("/buscar")
-    public String buscarReservas(@RequestParam(value = "query", required = false) String query, Model model) {
-        List<Reserva> reservasFiltradas;
-        if (query != null && !query.isEmpty()) {
-            reservasFiltradas = reservaService.buscarReservas(query);
-        } else {
-            reservasFiltradas = reservaService.getAllReserves(); // Si no hay búsqueda, muestra todas
-        }
-        model.addAttribute("reserves", reservasFiltradas);
-        model.addAttribute("totalReserves", reservasFiltradas.size());
-        model.addAttribute("title", "Llista de reserves");
-        model.addAttribute("content", "llista_reserves :: llistarReservaContent");
-        return "admin"; // Devuelve a la plantilla con los resultados
+public String buscarReservas(@RequestParam(value = "query", required = false) String query, Model model) {
+    List<Reserva> reservasFiltradas;
+
+    if (query != null && !query.isEmpty()) {
+        reservasFiltradas = reservaService.buscarReservas(query);
+    } else {
+        reservasFiltradas = reservaService.getAllReserves();
     }
+
+    model.addAttribute("reserves", reservasFiltradas);
+    model.addAttribute("totalReserves", reservasFiltradas.size());
+    model.addAttribute("isAdmin", true); // Asegúrate de agregar siempre esta variable
+    model.addAttribute("title", "Llista de reserves");
+    model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+
+    return "admin";
+}
 
     @PostMapping("/{id}/lliurament")
     public String marcarLliurament(@PathVariable Long id, RedirectAttributes redirectAttributes) {
@@ -276,5 +290,24 @@ public class ReservaController {
         return "historic_reserva";
     }
 
+    @GetMapping("/buscar-per-id")
+public String buscarReservaPorId(@RequestParam(value = "id", required = false) Long id, Model model) {
+    List<Reserva> reservasFiltradas;
+
+    if (id != null) {
+        Optional<Reserva> reservaOpt = reservaService.obtenirReservaPerId(id);
+        reservasFiltradas = reservaOpt.map(Collections::singletonList).orElse(Collections.emptyList());
+    } else {
+        reservasFiltradas = reservaService.getAllReserves();
+    }
+
+    model.addAttribute("reserves", reservasFiltradas);
+    model.addAttribute("totalReserves", reservasFiltradas.size());
+    model.addAttribute("isAdmin", true); // Asegúrate de agregar siempre esta variable
+    model.addAttribute("title", "Llista de reserves");
+    model.addAttribute("content", "llista_reserves :: llistarReservaContent");
+
+    return "admin";
+}
 
 }

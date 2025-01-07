@@ -203,5 +203,12 @@ public class ReservaService {
         
         return reserva;
     }
+    
+    public List<Reserva> findByClientUsername(String username) {
+        return reservaRepository.findByClientUsername(username);
+    }
+    
+    
+    
 
 }
