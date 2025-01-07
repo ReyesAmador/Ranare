@@ -4,6 +4,8 @@
  */
 package cat.copernic.ranare.entity.mysql;
 
+import cat.copernic.ranare.enums.TipusCombustio;
+import cat.copernic.ranare.enums.TipusTransmissio;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -18,5 +20,9 @@ public class VehicleDto2 {
     private String nomVehicle;
     private String imgBase64;
     private String codiPostal;
+    private TipusCombustio combustio;
+    private TipusTransmissio transmissio;
+    private int limitQuilometratge;
+    private double fianca;
     private Double preuPerHoraLloguer;
 }

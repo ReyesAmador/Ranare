@@ -129,6 +129,10 @@ public class VehicleService {
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(vehicle.getImatgeVehicle()),
             vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getCombustio(),
+            vehicle.getTransmissio(),
+            vehicle.getLimitQuilometratge(),
+            vehicle.getFiancaStandard(),
             vehicle.getPreuPerHoraLloguer()
             )).collect(Collectors.toList());
         }
@@ -155,6 +159,10 @@ public class VehicleService {
             vehicle.getNomVehicle(),
             "data:image/jpeg;base64," + base64Img,
             vehicle.getLocalitzacio().getCodiPostal(),
+            vehicle.getCombustio(),
+            vehicle.getTransmissio(),
+            vehicle.getLimitQuilometratge(),
+            vehicle.getFiancaStandard(),
             vehicle.getPreuPerHoraLloguer()
             );
         }).collect(Collectors.toList());
