@@ -16,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -80,11 +81,13 @@ public class Incidencia {
      * Identificador dels documents relacionats amb la incidència.
      * Aquest camp és Transient, això evita que sigui persistit a la base de dades SQL
      */
-    @Transient
-    private String documentsIncidenciaId; 
+    private List<String> documentsIncidenciaId;
+    
+    private List<String> imatgesIncidenciesIDs;
     
     @ManyToOne
     @JoinColumn(name = "vehicle_id", nullable = false)
     private Vehicle vehicle;
 
+    
 }
