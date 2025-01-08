@@ -15,8 +15,8 @@ Click nbfs://nbhost/SystemFileSystem/Templates/Other/html.html to edit this temp
     <!-- Formulario de Búsqueda -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <form th:action="@{/admin/clients}" method="get">
-            <input type="text" name="filtro" th:value="${filtro}" placeholder="Busca por correo, DNI, apellidos o nacionalidad" />
-            <button type="submit">Buscar</button>
+            <input type="text" name="filtro" th:value="${filtro}" placeholder="Cerca per correu, DNI, cognoms o nacionalitat" />
+            <button type="submit">Cerca</button>
         </form>
         <a th:if="${#authentication.principal.rol.name() == 'ADMIN'}" th:href="@{/admin/clients/inactius}" class="btn btn-secondary">Veure Clients Inactius</a>
     </div>
