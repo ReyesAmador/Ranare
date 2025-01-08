@@ -9,5 +9,5 @@ package cat.copernic.repository;
  * @author reyes
  */
 public class NewClass {
-    asdasd;
+    
 }
