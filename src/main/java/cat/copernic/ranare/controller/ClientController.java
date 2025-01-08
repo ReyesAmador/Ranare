@@ -22,6 +22,7 @@ import java.util.Base64;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -150,11 +151,16 @@ public class ClientController {
      * @return El nom de la plantilla Thymeleaf per crear un client.
      */
     @GetMapping("/crear_client")
-    public String showForm(Model model, @AuthenticationPrincipal User loggedUser) {
+    public String showForm(Model model) {
 
-        //verificar si es admin
-        boolean isAdmin = loggedUser.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        
+        boolean isAdmin = false;
+        if(principal instanceof User){
+            User loggedUser = (User)principal;
+            isAdmin = loggedUser.getAuthorities().stream().anyMatch(auth ->
+            auth.getAuthority().equals("ROLE_ADMIN"));
+        }
         model.addAttribute("isAdmin", isAdmin);
 
         model.addAttribute("client", new Client());
